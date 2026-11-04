@@ -42,10 +42,10 @@ class SidebarState {
 
 	// Event handler to apply to the `<svelte:window>`
 	handleShortcutKeydown = (e: KeyboardEvent) => {
-		// Cmd/Ctrl+B is "bold" inside an editor: leave it to the field.
-		const t = e.target;
-		if (t instanceof HTMLElement && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName))) return;
 		if (e.key === SIDEBAR_KEYBOARD_SHORTCUT && (e.metaKey || e.ctrlKey)) {
+			// Cmd+B is bold in a text editor: leave it to the field being typed in, or to a handler that already took it.
+			if (e.defaultPrevented || e.repeat || isEditableTarget(e.composedPath()[0] ?? e.target))
+				return;
 			e.preventDefault();
 			this.toggle();
 		}
@@ -58,6 +58,27 @@ class SidebarState {
 	toggle = () => {
 		return this.#isMobile.current ? (this.openMobile = !this.openMobile) : this.setOpen(!this.open);
 	};
+}
+
+const NON_TEXT_INPUTS = [
+	"button",
+	"checkbox",
+	"color",
+	"file",
+	"image",
+	"radio",
+	"range",
+	"reset",
+	"submit",
+];
+
+function isEditableTarget(target: EventTarget | null) {
+	if (!(target instanceof HTMLElement)) return false;
+	if (target.isContentEditable) return true;
+	const field = target.closest("input, textarea, select, [role='textbox']");
+	if (!field) return false;
+	// A checkbox or slider has no Bold, so the shortcut still works there.
+	return !(field instanceof HTMLInputElement && NON_TEXT_INPUTS.includes(field.type));
 }
 
 const SYMBOL_KEY = "scn-sidebar";
