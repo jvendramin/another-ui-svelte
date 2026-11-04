@@ -79,6 +79,7 @@ Copy and paste the following code into your project.
 | `to`, `time`        | Plain text under and beside the sender, such as "to me, a@x.example, b@y.example". Format them yourself. |
 | `open`              | Whether the body shows. Bindable, default true. The header toggles it.                          |
 | `preview`           | One line shown instead of the body while closed.                                                |
+| `attachments`       | Number of attachments. Shows a paperclip, and the count above 1, beside the time. The `footer` snippet is for the attachments row itself. |
 | `unread`            | Bold sender.                                                                                    |
 | `quotedLabel`       | Screen reader name of the quoted-text button. It reads with `aria-expanded`, so keep it neutral. Default "Quoted text". |
 | `actions`           | Header buttons, beside the toggle rather than inside it.                                        |

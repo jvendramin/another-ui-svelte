@@ -15,6 +15,7 @@
 		fromAddress="priya@acme.example"
 		to="to me, alex@vwork.example, sam@acme.example"
 		time="Nov 3, 9:40 AM"
+		attachments={1}
 		preview="Thanks for the quick turnaround. Can you also price the lit option?"
 	>
 		<p>Thanks for the quick turnaround. Can you also price the lit option?</p>
@@ -22,6 +23,7 @@
 	<MessageCard
 		bind:open={second}
 		unread
+		attachments={2}
 		from="Alex Moreau"
 		fromAddress="alex@vwork.example"
 		bind:showQuoted={quotedOpen}
