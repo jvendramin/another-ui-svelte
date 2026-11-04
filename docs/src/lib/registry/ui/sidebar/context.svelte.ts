@@ -43,6 +43,8 @@ class SidebarState {
 	// Event handler to apply to the `<svelte:window>`
 	handleShortcutKeydown = (e: KeyboardEvent) => {
 		if (e.key === SIDEBAR_KEYBOARD_SHORTCUT && (e.metaKey || e.ctrlKey)) {
+			// Cmd+B is bold in a text editor: leave it to the field being typed in, or to a handler that already took it.
+			if (e.defaultPrevented || e.repeat || isEditableTarget(e.target)) return;
 			e.preventDefault();
 			this.toggle();
 		}
@@ -55,6 +57,16 @@ class SidebarState {
 	toggle = () => {
 		return this.#isMobile.current ? (this.openMobile = !this.openMobile) : this.setOpen(!this.open);
 	};
+}
+
+function isEditableTarget(target: EventTarget | null) {
+	if (!(target instanceof HTMLElement)) return false;
+	return (
+		target.isContentEditable ||
+		target.closest(
+			"input, textarea, select, [contenteditable=''], [contenteditable='true'], [role='textbox']"
+		) !== null
+	);
 }
 
 const SYMBOL_KEY = "scn-sidebar";
