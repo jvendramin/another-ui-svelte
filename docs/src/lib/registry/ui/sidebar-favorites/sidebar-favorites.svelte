@@ -56,16 +56,19 @@
 		class?: string;
 	} = $props();
 
-	const TOP = "__top__";
 	// One shared type so a row can cross between the top level and the folders.
 	const uid = $props.id();
 	const dndType = `favorites-${uid}`;
 
 	let local = $state<FavoriteItem[]>([]);
-	let dragging = false;
+	let dragging = $state(false);
+	// Copy `items` in when it changes, but never in the middle of a drag; a change that arrives during a drag lands when it ends.
+	let synced: FavoriteItem[] | null = null;
 	$effect(() => {
 		const next = items;
-		if (!dragging) local = next;
+		if (dragging || next === synced) return;
+		synced = next;
+		local = next;
 	});
 
 	let closed = $state<Record<string, boolean>>({});
@@ -169,7 +172,9 @@
 		try {
 			await onMove?.(move);
 		} catch (error) {
-			local = before;
+			// Back to what the app holds now, not to a snapshot: an earlier move may have been saved since.
+			synced = items;
+			local = items;
 			onMoveError?.(error, move);
 		}
 	}
@@ -256,10 +261,21 @@
 										<Sidebar.MenuSubItem>
 											<Sidebar.MenuSubButton isActive={active(sub)}>
 												{#snippet child({ props })}
-													<a {...props} href={sub.href} onclick={click}>
+													<svelte:element
+														this={sub.href ? "a" : "button"}
+														{...props}
+														href={sub.href}
+														type={sub.href ? undefined : "button"}
+														onclick={click}
+													>
 														{#if sub.icon}<sub.icon />{/if}
 														<span>{sub.label}</span>
-													</a>
+														{#if sub.count != null && sub.count > 0}
+															<span class="ms-auto text-xs text-sidebar-foreground/70 tabular-nums"
+																>{sub.count}</span
+															>
+														{/if}
+													</svelte:element>
 												{/snippet}
 											</Sidebar.MenuSubButton>
 										</Sidebar.MenuSubItem>
@@ -268,12 +284,18 @@
 							</Collapsible.Content>
 						</Collapsible.Root>
 					{:else}
-						<Sidebar.MenuButton isActive={active(item)}>
+						<Sidebar.MenuButton isActive={active(item)} tooltipContent={item.label}>
 							{#snippet child({ props })}
-								<a {...props} href={item.href} onclick={click}>
+								<svelte:element
+									this={item.href ? "a" : "button"}
+									{...props}
+									href={item.href}
+									type={item.href ? undefined : "button"}
+									onclick={click}
+								>
 									{#if item.icon}<item.icon />{/if}
 									<span>{item.label}</span>
-								</a>
+								</svelte:element>
 							{/snippet}
 						</Sidebar.MenuButton>
 						{#if item.count != null && item.count > 0}

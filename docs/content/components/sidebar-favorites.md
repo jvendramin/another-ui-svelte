@@ -95,4 +95,4 @@ Copy and paste the following code into your project.
 | `onMoveError`          | Called with the error when `onMove` throws.                                                                                  |
 | `label`, `class`       | The group label (default "Favorites") and a class for the group.                                                             |
 
-You own `items`: update it from `onMove`. Keyboard: focus a row, press Space to pick it up, the arrow keys to move it, Space to drop it and Escape to cancel (svelte-dnd-action's keyboard drag).
+You own `items`: update it from `onMove`. Rows without an `href` render as buttons. In the icon-only rail (`collapsible="icon"`) rows show a tooltip, but folders' children are hidden by the Sidebar, so use the default or offcanvas mode where folders matter. Keyboard: Tab to the row itself (the list item, which comes before its link), press Space to pick it up, the arrow keys to move it, Space to drop it and Escape to cancel (svelte-dnd-action's keyboard drag).
