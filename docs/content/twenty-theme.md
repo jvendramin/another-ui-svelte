@@ -43,7 +43,7 @@ Dark mode works as before. Add `dark` to the same element or an ancestor.
 
 ## Buttons and badges
 
-Buttons are 32 px with a small size of 24 px and a 4 px radius. Tags and status use the Badge `tone` prop (soft tint, readable ink). They never use the solid primary fill, which stays on buttons and on count badges.
+Buttons are 32 px with a small size of 24 px and a 4 px radius. Tags and status use the Badge `tone` prop (soft tint, readable ink). They never use the solid primary fill, which stays on buttons. The default badge is a soft blue chip and works for counts.
 
 ## What it sets
 

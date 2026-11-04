@@ -36,16 +36,13 @@
 						</div>
 					</div>
 					<div class="flex flex-col gap-2">
-						<p class="text-xs text-muted-foreground">Badges: tones for tags and status</p>
+						<p class="text-xs text-muted-foreground">Badges: tones for tags and status, default for counts</p>
 						<div class="flex flex-wrap items-center gap-2">
 							<Badge tone="blue">Customer</Badge>
 							<Badge tone="gray">Lead</Badge>
 							<Badge tone="green">Active</Badge>
 							<Badge tone="orange">Pending</Badge>
 							<Badge tone="red">Overdue</Badge>
-						</div>
-						<p class="text-xs text-muted-foreground">Solid badge, for counts only</p>
-						<div class="flex flex-wrap items-center gap-2">
 							<Badge>12</Badge>
 						</div>
 					</div>
