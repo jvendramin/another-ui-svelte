@@ -86,13 +86,13 @@ Copy and paste the following code into your project.
 | `labels`                     | `{ text, tone? }[]` as tone badges, after the people chips.                                                    |
 | `href`, `onclick`            | With `href` the row is a link, otherwise a button.                                                             |
 | `actions`                    | Snippet shown on hover and focus, beside the link rather than inside it. Not shown on touch, so give touch users another way to act. |
-| `highlight`                  | Search terms (`string[]`) marked in the names, subject and snippet with [Highlight](/docs/components/highlight). |
-| `maxChips`                   | People chips before the "+N" chip. Default 3.                                                                  |
+| `highlight`                  | Search terms (`string[]`) marked in the sender, the chips, subject and snippet with [Highlight](/docs/components/highlight). A chip shows the full name when a term matches only its rest ("Smith" for "Jane Smith"); people past `+N` are not shown, so they carry no mark. |
+| `maxChips`                   | People chips before the "+N" chip. Default 3; 0 hides them. Replaces `maxAvatars` (removed 4 Nov 2026).       |
 | `class`, `ref`, other props  | Passed to the row element.                                                                                     |
 
 ## Loading
 
-`ThreadRowSkeleton` draws the same columns while the list loads. It takes `chips` (chips to draw on the third row, default 2) and is hidden from screen readers. Put `aria-busy` on the list that holds the rows.
+`ThreadRowSkeleton` draws the same columns while the list loads. It takes `chips` (chips to draw on the third row, default 2; replaces `avatars` and `withLabels`, removed 4 Nov 2026) and is hidden from screen readers. Put `aria-busy` on the list that holds the rows.
 
 ```svelte
 <div aria-busy={loading}>

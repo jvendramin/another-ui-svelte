@@ -51,7 +51,7 @@
 		labels?: ThreadLabel[];
 		/** Search terms to mark in the names, subject and snippet. Case and accent insensitive. */
 		highlight?: string[];
-		/** People chips shown before the "+N" chip. Default 3. */
+		/** People chips shown before the "+N" chip. Default 3; 0 hides the people chips. */
 		maxChips?: number;
 		/** Makes the row a link. With only `onclick` it is a button. With neither, the row is not interactive. */
 		href?: string;
@@ -60,7 +60,7 @@
 		actions?: Snippet;
 	} = $props();
 
-	const max = $derived(Number.isFinite(maxChips) ? Math.max(1, Math.floor(maxChips)) : 3);
+	const max = $derived(Number.isFinite(maxChips) ? Math.max(0, Math.floor(maxChips)) : 3);
 	const latest = $derived(people[0]);
 	const shown = $derived(people.slice(0, max));
 	const extra = $derived(Math.max(0, people.length - shown.length));
@@ -74,8 +74,14 @@
 			.slice(0, 2)
 			.map((w) => w[0]?.toUpperCase())
 			.join("");
-	// The chip shows the first name only; a company or an address has no second word to drop.
-	const firstName = (name: string) => name.trim().split(/\s+/)[0] ?? name;
+	// A chip shows the first name, unless a search term matches only the rest of the name ("Smith" for "Jane Smith"): then the
+	// full name, so the mark is visible and the row says why it matched.
+	const fold = (s: string) => s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+	const chipName = (name: string) => {
+		const first = name.trim().split(/\s+/)[0] ?? name;
+		const hit = (t: string) => fold(t).length > 0 && fold(name).includes(fold(t));
+		return highlight.some((t) => hit(t) && !fold(first).includes(fold(t))) ? name : first;
+	};
 </script>
 
 <div
@@ -155,11 +161,13 @@
 			<div class="mt-1.5 flex flex-wrap gap-1" data-slot="thread-row-chips">
 				{#each shown as person, i (i)}
 					<Badge tone="gray" class="h-5 gap-1 ps-0.5 pe-1.5">
-						<Avatar.Root size="xs">
+						<Avatar.Root size="xs" aria-hidden="true">
 							{#if person.image}<Avatar.Image src={person.image} alt="" />{/if}
 							<Avatar.Fallback>{initials(person.name)}</Avatar.Fallback>
 						</Avatar.Root>
-						<span class="max-w-24 truncate"><Highlight text={firstName(person.name)} terms={highlight} /></span>
+						<span class="max-w-32 truncate" title={person.name}
+							><Highlight text={chipName(person.name)} terms={highlight} /></span
+						>
 					</Badge>
 				{/each}
 				{#if extra > 0}<Badge tone="gray" class="h-5">+{extra}</Badge>{/if}
