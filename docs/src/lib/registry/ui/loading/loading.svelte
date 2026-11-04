@@ -65,8 +65,14 @@
 	let retryPending = false;
 	const retry = () => {
 		retryPending = true;
-		props.onRetry?.();
+		try {
+			props.onRetry?.();
+		} catch (e) {
+			retryPending = false;
+			throw e;
+		}
 	};
+	const isThenable = (v: unknown) => typeof (v as PromiseLike<T> | null)?.then === "function";
 	// A `data` promise that rejects shows the error pane too, so watch for that as well as the `error` prop.
 	let rejected = $state.raw<unknown>(null);
 	$effect(() => {
@@ -87,6 +93,14 @@
 	let run = $state(0);
 	let wasErroring = false;
 	let leftAt = 0;
+	// A retry that worked leaves nothing to restore: forget the press, or a refetch failing minutes later would take focus.
+	$effect.pre(() => {
+		const settled =
+			!erroring &&
+			!props.loading &&
+			("data" in props ? props.data != null && !isThenable(props.data) : true);
+		if (settled || props.empty) untrack(() => (retryPending = false));
+	});
 	$effect.pre(() => {
 		const now = erroring;
 		untrack(() => {
@@ -94,9 +108,21 @@
 			if (comesBack && Date.now() - leftAt < EXIT_MS) run++;
 			if (comesBack && retryPending) {
 				retryPending = false;
-				// Only when focus was lost with the button: if the person has moved on (focus is somewhere real), leave it.
-				const lost = !document.activeElement || document.activeElement === document.body;
-				if (lost) tick().then(() => retryEl?.focus());
+				// Only when focus was lost with the button (on the body, or still on the old button that is on its way out):
+				// if the person has moved on and focus is somewhere real, leave it.
+				const active = document.activeElement;
+				const old = retryEl;
+				const lost = !active || active === document.body || !active.isConnected || active === old;
+				if (lost) {
+					const focusNew = () => {
+						if (retryEl && retryEl !== old) retryEl.focus();
+					};
+					tick().then(() => {
+						focusNew();
+						// The new pane can mount a frame later than this tick.
+						if (!retryEl || retryEl === old) requestAnimationFrame(focusNew);
+					});
+				}
 			}
 			if (!now && wasErroring) leftAt = Date.now();
 			wasErroring = now;
