@@ -55,18 +55,11 @@
 				/>
 			{/each}
 		{/snippet}
-		{#snippet detail({ narrow, back })}
+		{#snippet detail({ narrow })}
 			<div class="flex flex-col gap-2 p-4 text-sm">
 				<div class="flex items-center gap-2">
 					{#if narrow}
-						<Button
-							size="sm"
-							variant="ghost"
-							onclick={() => {
-								back();
-								openId = "";
-							}}>Back</Button
-						>
+						<Button size="sm" variant="ghost" onclick={() => (openId = "")}>Back</Button>
 					{:else}
 						<Button size="sm" variant="ghost" onclick={() => (listCollapsed = !listCollapsed)}>
 							{listCollapsed ? "Show list" : "Hide list"}

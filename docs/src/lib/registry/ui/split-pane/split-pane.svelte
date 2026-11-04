@@ -12,7 +12,7 @@
 		list,
 		detail,
 		empty,
-		showDetail = $bindable(false),
+		showDetail = false,
 		listSize = 35,
 		minListSize = 22,
 		maxListSize = 60,
@@ -27,19 +27,19 @@
 	}: Omit<WithElementRef<HTMLAttributes<HTMLDivElement>>, "children"> & {
 		/** The list pane. */
 		list: Snippet<[{ narrow: boolean }]>;
-		/** The detail pane. Receives `back`, which sets `showDetail` to false for a back button in the narrow layout. */
-		detail: Snippet<[{ narrow: boolean; back: () => void }]>;
+		/** The detail pane. Receives `narrow`, so you can show a back button that clears your own open state. */
+		detail: Snippet<[{ narrow: boolean }]>;
 		/** Shown in the detail pane in the wide layout while `showDetail` is false, such as "Select a thread". */
 		empty?: Snippet;
-		/** Whether an item is open. In the narrow layout it picks the detail over the list. Bindable. */
+		/** Whether an item is open. You own it. In the narrow layout it picks the detail over the list. */
 		showDetail?: boolean;
 		/** Width of the list as a percent of the whole. Default 35. */
 		listSize?: number;
 		minListSize?: number;
 		maxListSize?: number;
-		/** Let the list be dragged shut, or closed with `listCollapsed`. Wide layout only. */
+		/** Let the list be dragged shut, or closed with `listCollapsed`. Wide layout only. `listCollapsed` needs this. */
 		collapsible?: boolean;
-		/** Whether the list is collapsed. Bindable. */
+		/** Whether the list is collapsed. Bindable. Has no effect unless `collapsible` is set. */
 		listCollapsed?: boolean;
 		/** Width in px below which the panes stack into one column. Default 640. */
 		stackBelow?: number;
@@ -56,11 +56,31 @@
 
 	$effect(() => {
 		if (!listPane || narrow || !collapsible) return;
-		if (listCollapsed && !listPane.isCollapsed()) listPane.collapse();
-		else if (!listCollapsed && listPane.isCollapsed()) listPane.expand();
+		if (collapsedNow && !listPane.isCollapsed()) listPane.collapse();
+		else if (!collapsedNow && listPane.isCollapsed()) listPane.expand();
 	});
 
-	const back = () => (showDetail = false);
+	const collapsedNow = $derived(collapsible && listCollapsed);
+	const lo = $derived(Math.min(minListSize, maxListSize));
+	const hi = $derived(Math.max(minListSize, maxListSize));
+	const startSize = $derived(Math.min(hi, Math.max(lo, listSize)));
+
+	// In the stacked layout the list stays mounted (so its scroll position survives) and is hidden while a thread is open.
+	// Opening moves focus to the detail; closing puts it back on the control that opened it.
+	let detailEl = $state<HTMLElement | null>(null);
+	let opener: Element | null = null;
+	let wasOpen = false;
+	$effect(() => {
+		const open = narrow && showDetail;
+		if (open && !wasOpen) {
+			opener = document.activeElement;
+			queueMicrotask(() => detailEl?.focus());
+		} else if (!open && wasOpen && opener instanceof HTMLElement && opener.isConnected) {
+			const target = opener;
+			queueMicrotask(() => target.focus());
+		}
+		wasOpen = open;
+	});
 </script>
 
 <div
@@ -68,37 +88,54 @@
 	bind:clientWidth={width}
 	data-slot="split-pane"
 	data-layout={narrow ? "stacked" : "split"}
-	class={cn("flex h-full min-h-0 w-full", className)}
+	class={cn("flex h-full min-h-0 w-full", width === 0 && "invisible", className)}
 	{...restProps}
 >
 	{#if narrow}
 		<div
 			class="min-w-0 flex-1 overflow-auto"
 			role="region"
-			aria-label={showDetail ? detailLabel : listLabel}
+			aria-label={listLabel}
+			hidden={showDetail}
 		>
-			{#if showDetail}{@render detail({ narrow, back })}{:else}{@render list({ narrow })}{/if}
+			{@render list({ narrow })}
+		</div>
+		<div
+			bind:this={detailEl}
+			tabindex="-1"
+			class="min-w-0 flex-1 overflow-auto outline-none"
+			role="region"
+			aria-label={detailLabel}
+			hidden={!showDetail}
+		>
+			{@render detail({ narrow })}
 		</div>
 	{:else}
 		<Resizable.PaneGroup direction="horizontal" {autoSaveId}>
 			<Resizable.Pane
 				bind:this={listPane}
-				defaultSize={listSize}
-				minSize={minListSize}
-				maxSize={maxListSize}
+				defaultSize={startSize}
+				minSize={lo}
+				maxSize={hi}
 				{collapsible}
 				collapsedSize={0}
 				onCollapse={() => (listCollapsed = true)}
 				onExpand={() => (listCollapsed = false)}
 			>
-				<div class="h-full overflow-auto" role="region" aria-label={listLabel}>
+				<div
+					class="h-full overflow-auto"
+					role="region"
+					aria-label={listLabel}
+					inert={collapsedNow || undefined}
+					aria-hidden={collapsedNow || undefined}
+				>
 					{@render list({ narrow })}
 				</div>
 			</Resizable.Pane>
 			<Resizable.Handle withHandle aria-label="Resize {listLabel.toLowerCase()}" />
-			<Resizable.Pane defaultSize={100 - listSize}>
+			<Resizable.Pane defaultSize={100 - startSize}>
 				<div class="h-full overflow-auto" role="region" aria-label={detailLabel}>
-					{#if showDetail}{@render detail({ narrow, back })}{:else if empty}{@render empty()}{/if}
+					{#if showDetail}{@render detail({ narrow })}{:else if empty}{@render empty()}{/if}
 				</div>
 			</Resizable.Pane>
 		</Resizable.PaneGroup>

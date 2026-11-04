@@ -51,17 +51,19 @@ Copy and paste the following code into your project.
 
 ```svelte
 <script lang="ts">
+  import { Button } from "$lib/components/ui/button/index.js";
   import { SplitPane } from "$lib/components/ui/split-pane/index.js";
+
   let openId = $state("");
 </script>
 
 <div class="h-[600px]">
   <SplitPane showDetail={openId !== ""} autoSaveId="inbox-split">
     {#snippet list()}
-      <!-- thread rows -->
+      <!-- thread rows, each setting openId on click -->
     {/snippet}
-    {#snippet detail({ narrow, back })}
-      {#if narrow}<Button onclick={() => { back(); openId = ""; }}>Back</Button>{/if}
+    {#snippet detail({ narrow })}
+      {#if narrow}<Button onclick={() => (openId = "")}>Back</Button>{/if}
       <!-- the open thread -->
     {/snippet}
     {#snippet empty()}Select a thread{/snippet}
@@ -75,13 +77,13 @@ The pane fills its parent's height, so give the parent one.
 
 | Prop                                 | What it does                                                                                                         |
 | ------------------------------------ | -------------------------------------------------------------------------------------------------------------------- |
-| `list`, `detail`, `empty`            | Snippets. `detail` gets `{ narrow, back }`. `empty` shows in the wide detail pane while `showDetail` is false.      |
-| `showDetail`                         | Whether an item is open. In the stacked layout it picks the detail over the list. Bindable.                          |
+| `list`, `detail`, `empty`            | Snippets. `detail` gets `{ narrow }`. `empty` shows in the wide detail pane while `showDetail` is false.      |
+| `showDetail`                         | Whether an item is open. You own this state. In the stacked layout it picks the detail over the list.                |
 | `listSize`, `minListSize`, `maxListSize` | The list width as a percent of the whole. Defaults 35, 22 and 60.                                                |
-| `collapsible`, `listCollapsed`       | Let the list be dragged shut or closed from your own button. `listCollapsed` is bindable. Wide layout only.          |
+| `collapsible`, `listCollapsed`       | Let the list be dragged shut or closed from your own button. `listCollapsed` is bindable and needs `collapsible`. Wide layout only. A collapsed list is inert and hidden from screen readers. |
 | `stackBelow`                         | Width in px below which the panes stack. Default 640. Measured on the pane itself, not the window.                   |
 | `autoSaveId`                         | Saves the dragged width in localStorage under this id.                                                               |
 | `listLabel`, `detailLabel`           | Names of the two regions for screen readers.                                                                         |
 | `class`, `ref`, ...                  | Passed to the root element.                                                                                          |
 
-In the stacked layout the handle and `collapsible` do nothing, and your detail snippet needs its own back button that calls `back`.
+In the stacked layout the handle and `collapsible` do nothing. Your detail snippet needs its own back button that clears your open state. The list stays mounted while the detail shows, so its scroll position survives, and focus moves to the detail on open and back to the row on close.
