@@ -2247,5 +2247,13 @@
 		"type": "registry:font",
 		"registryDependencies": [],
 		"relativeUrl": "font-heading-instrument-serif.json"
+	},
+	{
+		"name": "ledger-tokens",
+		"title": "Ledger tokens",
+		"type": "registry:style",
+		"description": "The Ledger design tokens (colors, radius, chip tones, field border and shadow) written into :root and .dark. Re-add to update them.",
+		"registryDependencies": [],
+		"relativeUrl": "ledger-tokens.json"
 	}
 ]

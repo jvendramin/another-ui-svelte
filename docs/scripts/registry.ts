@@ -36,6 +36,7 @@ export async function buildRegistry(): Promise<RegistryItems> {
 			crawlHooks(paths.hooks),
 			crawlLib(paths.lib),
 			assembleFonts(),
+			assembleLedgerTokens(registryRootPath),
 		])
 	).flat();
 }
@@ -212,6 +213,46 @@ async function assembleFonts(): Promise<RegistryItems> {
 	}
 
 	return items;
+}
+
+// The Ledger design tokens ship as a registry item, so an app installs them with `shadcn-svelte add ledger-tokens`
+// (the CLI writes them into :root and .dark in the app's CSS) and a later token fix arrives with a re-add. The single
+// source stays styles/ledger-tokens.css, which the docs site also imports; this reads it so the two cannot drift.
+async function assembleLedgerTokens(registryRootPath: string): Promise<RegistryItems> {
+	const cssPath = path.resolve(registryRootPath, "styles", "ledger-tokens.css");
+	const css = fs.readFileSync(cssPath, "utf8");
+
+	const readBlock = (selectorStart: string): Record<string, string> => {
+		const start = css.indexOf(selectorStart);
+		if (start === -1) throw new Error(`ledger-tokens.css: block "${selectorStart}" not found`);
+		const open = css.indexOf("{", start);
+		const close = css.indexOf("\n}", open);
+		const vars: Record<string, string> = {};
+		for (const line of css.slice(open + 1, close).split("\n")) {
+			const match = line.match(/^\s*--([a-z0-9-]+):\s*(.+?);\s*$/);
+			if (match) vars[match[1]!] = match[2]!;
+		}
+		return vars;
+	};
+
+	const light = readBlock("\n.style-ledger {");
+	const dark = readBlock("\n.dark .style-ledger");
+	if (!Object.keys(light).length || !Object.keys(dark).length) {
+		throw new Error("ledger-tokens.css: no tokens parsed");
+	}
+
+	return [
+		{
+			name: "ledger-tokens",
+			type: "registry:style",
+			title: "Ledger tokens",
+			description:
+				"The Ledger design tokens (colors, radius, chip tones, field border and shadow) written into :root and .dark. Re-add to update them.",
+			cssVars: { light, dark },
+			files: [],
+			registryDependencies: [],
+		},
+	];
 }
 
 async function crawlHooks(rootPath: string): Promise<RegistryItems> {
