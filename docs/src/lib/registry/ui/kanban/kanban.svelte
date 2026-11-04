@@ -66,6 +66,7 @@
 		card,
 		onMove,
 		onCardClick,
+		onMoveError,
 		onCreate,
 		createLabel = "Add",
 		createPlaceholder = "Title",
@@ -78,8 +79,10 @@
 		getColumn: (item: TItem) => string;
 		/** What a card shows. Put a link or a button in it to give keyboard users a way to open the record. */
 		card: Snippet<[{ item: TItem }]>;
-		/** Called when a card is dropped in a new place. Update `items` (see applyKanbanMove). Throw to reject the move. */
+		/** Called when a card is dropped in a new place. Update `items` (see applyKanbanMove). Throw to reject the move (see onMoveError). */
 		onMove?: (move: KanbanMove) => void | Promise<void>;
+		/** Called when onMove throws, after the cards snapped back. Show the user a message here. */
+		onMoveError?: (error: unknown, move: KanbanMove) => void;
 		/** Called when a card is clicked (not dragged). */
 		onCardClick?: (item: TItem) => void;
 		/** Shows an Add row at the bottom of each column. Called with the column id and the typed text. */
@@ -96,20 +99,22 @@
 	});
 
 	// The columns as they look right now, including during a drag. Reset from the props whenever they change.
-	let local = $state<Record<string, TItem[]>>({});
-	$effect(() => {
-		local = grouped;
-	});
+	// A derived value you can write to: it holds the cards on the first render (also on the server) and resets when the props change.
+	let local = $derived(grouped);
+
+	// Boards on the same page do not accept each other's cards.
+	const boardId = $props.id();
+	const dndType = `kanban-${boardId}`;
 
 	let dragging = false;
 
 	function consider(columnId: string, event: CustomEvent<DndEvent<TItem>>) {
 		dragging = true;
-		local[columnId] = event.detail.items;
+		local = { ...local, [columnId]: event.detail.items };
 	}
 
 	async function finalize(columnId: string, event: CustomEvent<DndEvent<TItem>>) {
-		local[columnId] = event.detail.items;
+		local = { ...local, [columnId]: event.detail.items };
 		setTimeout(() => (dragging = false), 0);
 		const { id, trigger } = event.detail.info;
 		// Only the column the card lands in reports the move; the column it left reports "dropped into another".
@@ -123,13 +128,16 @@
 		if (from === to && order.join() === grouped[to]?.map((i) => String(i.id)).join()) return;
 		try {
 			await onMove?.({ id: String(id), from, to, index, order });
-		} catch {
-			// Rejected: show the cards where they were.
+		} catch (error) {
+			// Rejected: show the cards where they were, and tell the app so it can show a message.
 			local = grouped;
+			onMoveError?.(error, { id: String(id), from, to, index, order });
 		}
 	}
 
-	function click(item: TItem) {
+	function click(item: TItem, event: MouseEvent) {
+		// A click on a link or button inside the card belongs to that control.
+		if ((event.target as Element).closest("a,button,input,textarea,select,[role=button]")) return;
 		if (!dragging) onCardClick?.(item);
 	}
 
@@ -137,6 +145,7 @@
 	let adding = $state<string | null>(null);
 	let draft = $state("");
 	let busy = $state(false);
+	let createFailed = $state(false);
 	let addInput = $state<HTMLInputElement | null>(null);
 
 	async function startAdd(columnId: string) {
@@ -150,9 +159,13 @@
 		const value = draft.trim();
 		if (!value || busy) return;
 		busy = true;
+		createFailed = false;
 		try {
 			await onCreate?.(columnId, value);
 			draft = "";
+		} catch {
+			// Keep the text so it can be sent again, and mark the input.
+			createFailed = true;
 		} finally {
 			busy = false;
 		}
@@ -170,7 +183,7 @@
 		<section
 			data-slot="kanban-column"
 			data-column={column.id}
-			aria-label="{column.title}, {cards.length} cards"
+			aria-label="{column.title}, {cards.length === 1 ? '1 card' : `${cards.length} cards`}"
 			class="flex w-72 shrink-0 snap-start flex-col rounded-lg bg-muted/50"
 		>
 			<header class="flex items-center gap-2 px-3 pt-3 pb-1">
@@ -183,7 +196,8 @@
 				use:dndzone={{
 					items: cards,
 					flipDurationMs: 150,
-					type: "kanban-card",
+					type: dndType,
+					delayTouchStart: true,
 					dropTargetStyle: {
 						outline: "2px solid var(--ring)",
 						"outline-offset": "-2px",
@@ -200,7 +214,7 @@
 						animate:flip={{ duration: 150 }}
 						class="cursor-grab rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-ring active:cursor-grabbing"
 						role="group"
-						onclick={() => click(item)}
+						onclick={(e) => click(item, e)}
 					>
 						<Card.Root size="sm" class="gap-1 p-2 text-[13px] shadow-xs">
 							{@render card({ item })}
@@ -217,6 +231,7 @@
 							aria-label="{createLabel} to {column.title}"
 							placeholder={createPlaceholder}
 							readonly={busy}
+							aria-invalid={createFailed || undefined}
 							class="h-7"
 							onkeydown={(e: KeyboardEvent) => {
 								if (e.key === "Enter") {
