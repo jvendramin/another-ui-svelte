@@ -87,6 +87,8 @@
 	{...restProps}
 >
 	{#if hasLink}
+		<!-- svelte-ignore a11y_no_static_element_interactions -->
+		<!-- The element is always a real link or button, which the checker cannot see through the dynamic tag. -->
 		<svelte:element
 			this={href ? "a" : "button"}
 			{href}

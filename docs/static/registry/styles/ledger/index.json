@@ -450,6 +450,12 @@
 		"relativeUrl": "skeleton.json"
 	},
 	{
+		"name": "skip-link",
+		"type": "registry:ui",
+		"registryDependencies": [],
+		"relativeUrl": "skip-link.json"
+	},
+	{
 		"name": "slider",
 		"type": "registry:ui",
 		"registryDependencies": [],
