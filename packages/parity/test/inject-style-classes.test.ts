@@ -115,6 +115,22 @@ describe("injectStyleClasses", () => {
 		expect(output).toContain("size-4");
 	});
 
+	it("leaves quoted strings without a cn-* token exactly as written", () => {
+		const source = `const SPACE = " ";\nconst key = event.key === " ";\nconst list = labels.join(", ");\nconst pad = "  a  ";`;
+		expect(injectStyleClasses(source, styleMap)).toBe(source);
+	});
+
+	it("still tidies the spaces of a class string that held a token", () => {
+		expect(injectStyleClasses('<div class="cn-attachment   flex  ">x</div>', styleMap)).toBe(
+			'<div class="w-fit rounded-xl flex">x</div>'
+		);
+	});
+
+	it("keeps attribute spacing when a comment holds an odd number of quotes", () => {
+		const source = '<!-- turn ", " into "," -->\n<div data-slot="x" role="group" class="cn-progress">a</div>';
+		expect(injectStyleClasses(source, styleMap)).toContain('data-slot="x" role="group"');
+	});
+
 	it("does not rewrite interpolations inside non-class quoted strings", () => {
 		const input = `style="transform: translateX(-{100 - (100 * (value ?? 0)) / (max ?? 1)}%)"`;
 		expect(injectStyleClasses(input, styleMap)).toBe(input);

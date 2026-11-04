@@ -182,6 +182,9 @@ function prepareStyleMap(styleMap: Record<string, string>): PreparedStyleMap {
  *
  * `parity-ignore` comments are removed so they never ship in registry JSON.
  */
+// A private marker (NUL never appears in source) that tags the quoted strings to tidy.
+const TIDY_MARK = "\u0000";
+
 export function injectStyleClasses(content: string, styleMap: Record<string, string>): string {
 	content = stripParityIgnoreComments(content);
 	const { entries, valuesContainTokens } = prepareStyleMap(styleMap);
@@ -189,6 +192,12 @@ export function injectStyleClasses(content: string, styleMap: Record<string, str
 	// `cn-[\w-]+` is greedy, so each match is a whole token: exactly what `tokenRegex`
 	// (bounded by non-word, non-hyphen characters) can match.
 	const presentTokens = new Set(content.match(/cn-[\w-]+/g));
+
+	// Only a double-quoted string that held a `cn-*` token needs its spaces tidied after the token is replaced or removed.
+	// Mark those strings now, so the tidy-up below leaves every other string (", " in a join, " " for the space key) alone.
+	content = content.replace(/(")([^"\\]*)(")/g, (match, open: string, body: string, close: string) =>
+		/cn-[\w-]+/.test(body) ? `${open}${TIDY_MARK}${body}${close}` : match
+	);
 
 	for (const entry of entries) {
 		if (!valuesContainTokens && !presentTokens.has(entry.className)) continue;
@@ -202,9 +211,12 @@ export function injectStyleClasses(content: string, styleMap: Record<string, str
 
 	content = content.replace(
 		/(")([^"\\]*)(")/g,
-		(_match, open: string, body: string, close: string) =>
-			`${open}${body.replace(/ {2,}/g, " ").trim()}${close}`
+		(match, open: string, body: string, close: string) =>
+			body.startsWith(TIDY_MARK)
+				? `${open}${body.slice(TIDY_MARK.length).replace(/ {2,}/g, " ").trim()}${close}`
+				: match
 	);
+	content = content.replaceAll(TIDY_MARK, "");
 
 	content = content.replace(/cn\(\s*""\s*,\s*/g, "cn(");
 
