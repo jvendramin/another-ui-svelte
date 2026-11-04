@@ -59,7 +59,8 @@
 	// The width is measured once on mount, before the first paint of a client render, and then follows the element.
 	let width = $state(0);
 	const narrow = $derived(width > 0 && width < stackBelow);
-	const collapsedNow = $derived(collapsible && listCollapsed);
+	// Collapsing is a wide layout feature; in the stacked layout the list is always usable.
+	const collapsedNow = $derived(!narrow && collapsible && listCollapsed);
 
 	let pct = $state(untrack(() => listSize));
 	let dragging = $state(false);
@@ -120,8 +121,14 @@
 	function onKeyDown(event: KeyboardEvent) {
 		const step = event.shiftKey ? 10 : 2;
 		let next: number | null = null;
-		if (event.key === "ArrowLeft") next = pct - step;
-		else if (event.key === "ArrowRight") next = pct + step;
+		if (event.key === "ArrowLeft") {
+			// Left never opens a collapsed list; Right and Enter do.
+			if (collapsedNow) {
+				event.preventDefault();
+				return;
+			}
+			next = pct - step;
+		} else if (event.key === "ArrowRight") next = pct + step;
 		else if (event.key === "Home") next = lo;
 		else if (event.key === "End") next = hi;
 		else if (event.key === "Enter" && collapsible) {
@@ -151,8 +158,20 @@
 			const target =
 				opener instanceof HTMLElement && opener.isConnected
 					? opener
-					: listEl?.querySelector<HTMLElement>("[aria-current='true'], [data-selected]");
+					: (listEl?.querySelector<HTMLElement>("[aria-current='true'], [data-selected]") ??
+						listEl);
 			queueMicrotask(() => target?.focus());
+		}
+	});
+
+	// If the layout stacks mid-drag or with the handle focused, the handle unmounts: end the drag and keep focus in the pane.
+	let handleFocused = false;
+	$effect(() => {
+		if (!narrow) return;
+		dragging = false;
+		if (handleFocused) {
+			handleFocused = false;
+			queueMicrotask(() => listEl?.focus());
 		}
 	});
 
@@ -167,7 +186,7 @@
 	bind:clientWidth={width}
 	data-slot="split-pane"
 	data-layout={narrow ? "stacked" : "split"}
-	class={cn("flex h-full min-h-0 w-full", className)}
+	class={cn("flex h-full min-h-0 w-full", dragging && "select-none", className)}
 	{...restProps}
 >
 	<div
@@ -175,10 +194,11 @@
 		data-slot="split-pane-list"
 		role="region"
 		aria-label={listLabel}
+		tabindex="-1"
 		hidden={narrow && showDetail}
 		inert={collapsedNow || undefined}
 		aria-hidden={collapsedNow || undefined}
-		class={cn("min-w-0 overflow-auto", narrow ? "flex-1" : "shrink-0", dragging && "select-none")}
+		class={cn("min-w-0 overflow-auto outline-none", narrow ? "flex-1" : "shrink-0")}
 		style={narrow ? undefined : `width: ${collapsedNow ? 0 : pct}%`}
 	>
 		{@render list({ narrow })}
@@ -190,7 +210,7 @@
 			role="separator"
 			aria-orientation="vertical"
 			aria-label={handleLabel}
-			aria-valuemin={Math.round(lo)}
+			aria-valuemin={collapsible ? 0 : Math.round(lo)}
 			aria-valuemax={Math.round(hi)}
 			aria-valuenow={collapsedNow ? 0 : Math.round(pct)}
 			tabindex="0"
@@ -201,6 +221,9 @@
 			onpointerup={onPointerUp}
 			onpointercancel={onPointerUp}
 			onkeydown={onKeyDown}
+			onfocus={() => (handleFocused = true)}
+			onblur={() => (handleFocused = false)}
+			onlostpointercapture={onPointerUp}
 		></div>
 	{/if}
 	<div
