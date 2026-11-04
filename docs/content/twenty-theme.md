@@ -27,7 +27,8 @@ Colors, radii, spacing, type sizes, the side panel width and the table geometry 
 The CLI writes the file to `ui/twenty-theme.css` (a single file item has no folder). Import it once, after your Ledger styles:
 
 ```css
-@import "$lib/components/ui/twenty-theme.css";
+/* in src/app.css, after the Ledger styles; the path is relative to this file */
+@import "./lib/components/ui/twenty-theme.css";
 ```
 
 ## Usage

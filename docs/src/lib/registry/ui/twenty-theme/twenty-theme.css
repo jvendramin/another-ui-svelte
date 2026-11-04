@@ -140,7 +140,7 @@
   }
 }
 
-/* A .light element inside a dark page also needs the light chip tones, which Ledger redefines under .dark. */
+/* A .light element inside a dark page also needs the light chip tones, which Ledger redefines under .dark. These values are the light block of ledger-tokens.css; keep them in sync when that block changes. */
 .dark .theme-twenty.light.style-ledger, .dark .theme-twenty .light.style-ledger {
   --ledger-chip-gray-bg: #f4f4f4;
   --ledger-chip-gray-ink: #555555;
@@ -166,29 +166,30 @@
  * Button geometry (Twenty): 32px, small 24px, 4px radius. Badges keep the Ledger badge and its tone prop (chip tones), so a tag never
  * wears the solid primary fill: use <Badge tone="blue"> for tags and keep the solid default badge for counts.
  *
- * The rules hook on what a Button renders: data-size when a build adds it, and the utility classes the component carries otherwise
- * (h-7, h-6, size-7). :not(#_) lifts them above the Ledger rules, which use :not(#_) themselves.
+ * The rules hook on what a Button carries: data-size when a build adds it, the cn-button-size-* classes in the source, and the
+ * utilities they expand to in a built registry (h-7, h-6, size-7, size-6). Other sizes (xs, lg, icon-xs, icon-lg) are left to Ledger.
+ * :not(#_) lifts the rules above the Ledger rules, which use :not(#_) themselves.
  */
 .theme-twenty :is([data-slot="button"], [class*="group/button"]):not(.rounded-full):not(#_) {
   border-radius: var(--twenty-radius-sm);
 }
-.theme-twenty :is([data-slot="button"], [class*="group/button"]):is([data-size="default"], .h-7, :not([data-size], [class*="h-"])):not(#_) {
+.theme-twenty :is([data-slot="button"], [class*="group/button"]):is([data-size="default"], .cn-button-size-default, .h-7):not(#_) {
   height: 2rem;
   min-height: 2rem;
   padding-inline: 0.75rem;
 }
-.theme-twenty :is([data-slot="button"], [class*="group/button"]):is([data-size="sm"], .h-6):not(#_) {
+.theme-twenty :is([data-slot="button"], [class*="group/button"]):is([data-size="sm"], .cn-button-size-sm, .h-6):not(#_) {
   height: 1.5rem;
   min-height: 1.5rem;
   padding-inline: 0.5rem;
 }
-.theme-twenty :is([data-slot="button"], [class*="group/button"]):is([data-size="icon"], .size-7):not(#_) {
+.theme-twenty :is([data-slot="button"], [class*="group/button"]):is([data-size="icon"], .cn-button-size-icon, .size-7):not(#_) {
   width: 2rem;
   height: 2rem;
   min-height: 2rem;
   padding: 0;
 }
-.theme-twenty :is([data-slot="button"], [class*="group/button"]):is([data-size="icon-sm"], .size-6):not(#_) {
+.theme-twenty :is([data-slot="button"], [class*="group/button"]):is([data-size="icon-sm"], .cn-button-size-icon-sm, .size-6):not(#_) {
   width: 1.5rem;
   height: 1.5rem;
   min-height: 1.5rem;

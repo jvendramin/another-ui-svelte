@@ -11,11 +11,6 @@
 				outline: "cn-badge-variant-outline",
 				ghost: "cn-badge-variant-ghost",
 				link: "cn-badge-variant-link",
-				success: "cn-badge-variant-success",
-				warning: "cn-badge-variant-warning",
-				info: "cn-badge-variant-info",
-				orange: "cn-badge-variant-orange",
-				violet: "cn-badge-variant-violet",
 				// Picked automatically when a tone is set, so the solid default fill never sits under a tone.
 				tone: "",
 			},
