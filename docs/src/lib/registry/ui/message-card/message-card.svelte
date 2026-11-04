@@ -80,7 +80,7 @@
 	<Collapsible.Root bind:open>
 		<div class="flex items-start gap-3 p-3">
 			<Collapsible.Trigger
-				class="flex min-w-0 flex-1 items-start gap-3 rounded-md text-start outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
+				class="flex min-w-0 flex-1 items-start gap-3 rounded-md text-start outline-none hover:bg-muted/40 focus-visible:ring-[3px] focus-visible:ring-ring/50"
 			>
 				<Avatar.Root size="lg">
 					{#if avatar}<Avatar.Image src={avatar} alt="" />{/if}
@@ -90,7 +90,7 @@
 					<span class="flex items-baseline gap-2">
 						<span class={cn("truncate", unread ? "font-semibold" : "font-medium")}>{from}</span>
 						{#if fromAddress}
-							<span class="hidden truncate text-xs text-muted-foreground @md:inline"
+							<span class="sr-only truncate text-xs text-muted-foreground @md:not-sr-only"
 								>{fromAddress}</span
 							>
 						{/if}
@@ -110,7 +110,7 @@
 			{/if}
 		</div>
 		<Collapsible.Content>
-			<div class="px-3 ps-[3.75rem] pb-3">
+			<div class="px-3 ps-16 pb-3">
 				<div class="min-w-0 break-words">{@render children?.()}</div>
 				{#if quoted}
 					<Button
@@ -132,11 +132,13 @@
 						/>
 						<span class="sr-only">{quotedLabel}</span>
 					</Button>
-					{#if showQuoted}
-						<div id="{bodyId}-quoted" class="mt-2 border-s-2 ps-3 text-muted-foreground">
-							{@render quoted()}
-						</div>
-					{/if}
+					<div
+						id="{bodyId}-quoted"
+						hidden={!showQuoted}
+						class="mt-2 border-s-2 ps-3 text-muted-foreground"
+					>
+						{@render quoted()}
+					</div>
 				{/if}
 				{#if footer}<div class="mt-3 border-t pt-3">{@render footer()}</div>{/if}
 			</div>
