@@ -67,7 +67,8 @@
 			>
 		{/each}
 		<Toggle size="sm" variant="outline" bind:pressed={failFast}>Server down</Toggle>
-		<Toggle size="sm" variant="outline" bind:pressed={slow}>Slow server</Toggle>
+		<Toggle size="sm" variant="outline" bind:pressed={slow} disabled={!failFast}>Slow server</Toggle
+		>
 	</div>
 	<div class="overflow-hidden rounded-md border">
 		<Loading

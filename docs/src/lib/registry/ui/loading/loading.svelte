@@ -39,7 +39,7 @@
 
 <script lang="ts" generics="T">
 	import { Skeleton } from "skullet/svelte";
-	import { tick, untrack } from "svelte";
+	import { untrack } from "svelte";
 	import * as Alert from "$lib/registry/ui/alert/index.js";
 	import * as Empty from "$lib/registry/ui/empty/index.js";
 	import { Button } from "$lib/registry/ui/button/index.js";
@@ -59,28 +59,39 @@
 	// TODO: drop the key once Skullet fixes this (https://github.com/lochie/skullet/issues/13, seen in skullet 0.0.3).
 	// EXIT_MS is several times Skullet's exit fade, long enough to cover a pane still on its way out.
 	const EXIT_MS = 1500;
+	// Pressing Try again removes the button that had focus (the error pane leaves for the skeleton). When the error comes back,
+	// however long the retry took, focus goes to the new button, as long as focus was lost with the old one. The press is
+	// forgotten once the retry worked, or after PRESS_MS, so a refetch failing later never takes focus.
+	const PRESS_MS = 60_000;
 	let retryEl = $state<HTMLElement | null>(null);
-	// Set when Try again is pressed, cleared when the error pane comes back. Pressing it removes the button that had focus (the
-	// error pane leaves for the skeleton), so when the error returns, however long the retry took, focus goes to its new button.
-	let retryPending = false;
+	let wantFocus = $state(false);
+	let oldRetryEl: HTMLElement | null = null;
+	let pending = false;
+	let pressedAt = 0;
+	let sawLoading = false;
 	const retry = () => {
-		retryPending = true;
+		pending = true;
+		pressedAt = Date.now();
+		sawLoading = false;
 		try {
 			props.onRetry?.();
 		} catch (e) {
-			retryPending = false;
+			pending = false;
 			throw e;
 		}
 	};
-	const isThenable = (v: unknown) => typeof (v as PromiseLike<T> | null)?.then === "function";
+	const isThenable = (v: unknown): v is PromiseLike<T> =>
+		typeof (v as PromiseLike<T> | null)?.then === "function";
 	// A `data` promise that rejects shows the error pane too, so watch for that as well as the `error` prop.
 	let rejected = $state.raw<unknown>(null);
 	$effect(() => {
 		const source = props.data;
-		if (typeof (source as PromiseLike<T> | null)?.then !== "function") return;
+		if (!isThenable(source)) return;
 		let live = true;
-		(source as PromiseLike<T>).then(
-			() => {},
+		source.then(
+			() => {
+				if (live && props.data === source) pending = false;
+			},
 			() => {
 				if (live && props.data === source) rejected = source;
 			}
@@ -90,43 +101,41 @@
 	const erroring = $derived(
 		!props.loading && (!!props.error || (rejected !== null && rejected === props.data))
 	);
+	const busy = $derived(!!props.loading || ("data" in props && props.data == null));
 	let run = $state(0);
 	let wasErroring = false;
 	let leftAt = 0;
-	// A retry that worked leaves nothing to restore: forget the press, or a refetch failing minutes later would take focus.
-	$effect.pre(() => {
-		const settled =
-			!erroring &&
-			!props.loading &&
-			("data" in props ? props.data != null && !isThenable(props.data) : true);
-		if (settled || props.empty) untrack(() => (retryPending = false));
-	});
 	$effect.pre(() => {
 		const now = erroring;
+		const loadingNow = busy;
+		const emptyNow = !!props.empty;
 		untrack(() => {
+			if (pending && loadingNow) sawLoading = true;
+			// The retry worked (content or the empty state after the skeleton): nothing to restore.
+			if (pending && sawLoading && !now && !loadingNow && (emptyNow || !isThenable(props.data)))
+				pending = false;
 			const comesBack = now && !wasErroring;
 			if (comesBack && Date.now() - leftAt < EXIT_MS) run++;
-			if (comesBack && retryPending) {
-				retryPending = false;
-				// Only when focus was lost with the button (on the body, or still on the old button that is on its way out):
-				// if the person has moved on and focus is somewhere real, leave it.
-				const active = document.activeElement;
-				const old = retryEl;
-				const lost = !active || active === document.body || !active.isConnected || active === old;
-				if (lost) {
-					const focusNew = () => {
-						if (retryEl && retryEl !== old) retryEl.focus();
-					};
-					tick().then(() => {
-						focusNew();
-						// The new pane can mount a frame later than this tick.
-						if (!retryEl || retryEl === old) requestAnimationFrame(focusNew);
-					});
+			if (comesBack && pending) {
+				pending = false;
+				if (Date.now() - pressedAt < PRESS_MS) {
+					oldRetryEl = retryEl;
+					wantFocus = true;
 				}
 			}
+			if (!now) wantFocus = false;
 			if (!now && wasErroring) leftAt = Date.now();
 			wasErroring = now;
 		});
+	});
+	// Focus the new Try again button once it is there, however late Skullet mounts it.
+	$effect(() => {
+		if (!wantFocus || !retryEl || retryEl === oldRetryEl) return;
+		const active = document.activeElement;
+		const lost =
+			!active || active === document.body || !active.isConnected || active === oldRetryEl;
+		if (lost) retryEl.focus();
+		wantFocus = false;
 	});
 
 	const message = (error: unknown) =>
