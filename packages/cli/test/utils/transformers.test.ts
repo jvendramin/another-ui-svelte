@@ -309,7 +309,7 @@ describe("transformIcons", () => {
 	import CaretDownIcon from 'phosphor-svelte/lib/CaretDown';
 </script>
 
-<CaretDownIcon class="cn-accordion-trigger-icon size-4" />
+<CaretDownIcon weight="bold" class="cn-accordion-trigger-icon size-4" />
 `.trim()
 		);
 		expect(result.devDependencies).toEqual(["phosphor-svelte"]);
@@ -330,8 +330,8 @@ describe("transformIcons", () => {
 </script>
 
 <div>
-	<CaretDownIcon class="cn-accordion-trigger-icon group-aria-expanded:hidden" />
-	<CaretUpIcon class="cn-accordion-trigger-icon hidden group-aria-expanded:inline" />
+	<CaretDownIcon weight="bold" class="cn-accordion-trigger-icon group-aria-expanded:hidden" />
+	<CaretUpIcon weight="bold" class="cn-accordion-trigger-icon hidden group-aria-expanded:inline" />
 </div>
 `.trim()
 		);
@@ -353,7 +353,7 @@ describe("transformIcons", () => {
 	let { ...restProps } = $props();
 </script>
 
-<CaretDownIcon class="cn-accordion-trigger-icon" data-slot="accordion-trigger-icon" {...restProps} />
+<CaretDownIcon weight="bold" class="cn-accordion-trigger-icon" data-slot="accordion-trigger-icon" {...restProps} />
 `.trim()
 		);
 		expect(result.devDependencies).toEqual(["phosphor-svelte"]);

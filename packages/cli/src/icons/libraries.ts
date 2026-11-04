@@ -53,7 +53,17 @@ export const iconLibraries = {
 		packages: ["phosphor-svelte"],
 		import: (icon) =>
 			`import ${icon.name} from 'phosphor-svelte/lib/${toPhosphorName(icon.name)}';`,
-		usage: (icon, restProps) => `<${icon.name} ${restProps} />`,
+		// Duotone by default, bold for arrows, carets and the other thin glyphs (see phosphorWeight). A weight the
+		// component already sets wins.
+		usage: (icon, restProps) =>
+			[
+				`<${icon.name}`,
+				/(^|\s)weight\s*=/.test(restProps) ? "" : `weight="${phosphorWeight(icon.name)}"`,
+				restProps.trim(),
+				"/>",
+			]
+				.filter(Boolean)
+				.join(" "),
 		export: (icon) =>
 			`export { default as ${icon.name} } from 'phosphor-svelte/lib/${toPhosphorName(icon.name)}';`,
 	},
@@ -75,6 +85,16 @@ function toLucideKebab(name: string): string {
 
 function toTablerKebab(name: string): string {
 	return pascalToKebab(name.startsWith("Icon") ? name.slice(4) : name);
+}
+
+// The Another UI icon rule: Phosphor duotone for form and field icons, bold for the thin glyphs, where a duotone fill
+// reads as a smudge: arrows, carets, plus, check, X, minus, dots and text format. The circle and square variants
+// (CheckCircle, XSquare, ArrowSquareOut) are filled shapes and stay duotone.
+const PHOSPHOR_BOLD =
+	/^(Arrow(?!Circle|Square)|Caret|Plus(?!Circle|Square)|Check(?!Circle|Square)|X(?!Circle|Square)|Minus(?!Circle|Square)|Dots|Text(B|Italic|Underline|Strikethrough|Aa|T|Align|H))/;
+
+export function phosphorWeight(name: string): "bold" | "duotone" {
+	return PHOSPHOR_BOLD.test(toPhosphorName(name)) ? "bold" : "duotone";
 }
 
 function toPhosphorName(name: string): string {
