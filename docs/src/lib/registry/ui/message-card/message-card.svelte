@@ -69,6 +69,9 @@
 			.map((w) => w[0]?.toUpperCase())
 			.join("")
 	);
+	const attachmentCount = $derived(
+		Number.isFinite(attachments) ? Math.max(0, Math.floor(attachments as number)) : 0
+	);
 	const bodyId = $props.id();
 </script>
 
@@ -97,23 +100,25 @@
 								>{fromAddress}</span
 							>
 						{/if}
-						{#if time || attachments}
+						{#if time || attachmentCount > 0}
 							<span
-								class="ms-auto flex shrink-0 items-center gap-2 text-xs text-muted-foreground tabular-nums"
+								class="ms-auto flex shrink-0 items-baseline gap-2 text-xs text-muted-foreground tabular-nums"
 							>
-								{#if attachments}
-									<span class="inline-flex items-center gap-0.5">
+								{#if attachmentCount > 0}
+									<span class="inline-flex items-baseline gap-0.5">
 										<IconPlaceholder
 											lucide="PaperclipIcon"
 											tabler="IconPaperclip"
 											hugeicons="AttachmentIcon"
 											phosphor="PaperclipIcon"
 											remixicon="RiAttachmentLine"
-											class="size-3.5"
+											class="size-3.5 self-center"
 										/>
-										{#if attachments > 1}<span aria-hidden="true">{attachments}</span>{/if}
+										{#if attachmentCount > 1}<span aria-hidden="true">{attachmentCount}</span>{/if}
 										<span class="sr-only"
-											>{attachments === 1 ? "1 attachment" : `${attachments} attachments`}</span
+											>{attachmentCount === 1
+												? "1 attachment"
+												: `${attachmentCount} attachments`}</span
 										>
 									</span>
 								{/if}
