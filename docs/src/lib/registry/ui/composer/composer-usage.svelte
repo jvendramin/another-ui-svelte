@@ -36,7 +36,6 @@
 		class={cn("h-1 w-12", low && "[&>[data-slot=progress-indicator]]:bg-destructive")}
 	/>
 	<span class={cn("tabular-nums", low && "text-destructive")}>
-		{left.toLocaleString()}<span class="hidden sm:inline"> of {total.toLocaleString()}</span>
-		{label}
+		{left.toLocaleString()}<span class="hidden sm:inline">{" of "}{total.toLocaleString()}</span>{" "}{label}
 	</span>
 </div>
