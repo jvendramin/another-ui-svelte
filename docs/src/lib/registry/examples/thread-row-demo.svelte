@@ -1,6 +1,10 @@
 <script lang="ts">
 	import { Button } from "$lib/registry/ui/button/index.js";
-	import { ThreadRow, type ThreadLabel, type ThreadPerson } from "$lib/registry/ui/thread-row/index.js";
+	import {
+		ThreadRow,
+		type ThreadLabel,
+		type ThreadPerson,
+	} from "$lib/registry/ui/thread-row/index.js";
 
 	type Thread = {
 		id: string;
@@ -16,7 +20,12 @@
 	let threads = $state<Thread[]>([
 		{
 			id: "1",
-			people: [{ name: "Priya Shah" }, { name: "Alex Moreau" }, { name: "Sam Okafor" }, { name: "Lee Park" }],
+			people: [
+				{ name: "Priya Shah" },
+				{ name: "Alex Moreau" },
+				{ name: "Sam Okafor" },
+				{ name: "Lee Park" },
+			],
 			subject: "Signage quote for the Chilliwack store",
 			snippet: "Attached is the revised quote with the lit sign option priced separately.",
 			time: "2:14 PM",
@@ -64,7 +73,10 @@
 				<Button
 					size="sm"
 					variant="ghost"
-					onclick={() => (threads = threads.filter((t) => t.id !== thread.id))}>Archive</Button
+					onclick={() => {
+						threads = threads.filter((t) => t.id !== thread.id);
+						if (selected === thread.id) selected = threads[0]?.id ?? "";
+					}}>Archive</Button
 				>
 			{/snippet}
 		</ThreadRow>

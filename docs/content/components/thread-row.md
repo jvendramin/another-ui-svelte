@@ -80,4 +80,6 @@ Copy and paste the following code into your project.
 | `count`                      | Message count, shown above 1.                                                                                  |
 | `labels`                     | `{ text, tone? }[]` as tone badges.                                                                            |
 | `href`, `onclick`            | With `href` the row is a link, otherwise a button.                                                             |
-| `actions`                    | Snippet shown on hover and focus, beside the link rather than inside it.                                       |
+| `actions`                    | Snippet shown on hover and focus, beside the link rather than inside it. Not shown on touch, so give touch users another way to act. |
+| `maxAvatars`                 | Avatars before the "+N" count. Default 2.                                                                      |
+| `class`, `ref`, other props  | Passed to the row element.                                                                                     |
