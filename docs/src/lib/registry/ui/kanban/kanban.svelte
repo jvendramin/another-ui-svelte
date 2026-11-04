@@ -141,28 +141,28 @@
 		if (!dragging) onCardClick?.(item);
 	}
 
-	// Inline add, one column at a time.
+	// Inline add, one column at a time. Each column keeps its own draft, so typing in one column and
+	// clicking Add in another does not lose the text.
 	let adding = $state<string | null>(null);
-	let draft = $state("");
+	let drafts = $state<Record<string, string>>({});
 	let busy = $state(false);
 	let createFailed = $state(false);
 	let addInput = $state<HTMLInputElement | null>(null);
 
 	async function startAdd(columnId: string) {
 		adding = columnId;
-		draft = "";
 		await tick();
 		addInput?.focus();
 	}
 
 	async function submit(columnId: string) {
-		const value = draft.trim();
+		const value = (drafts[columnId] ?? "").trim();
 		if (!value || busy) return;
 		busy = true;
 		createFailed = false;
 		try {
 			await onCreate?.(columnId, value);
-			draft = "";
+			drafts[columnId] = "";
 		} catch {
 			// Keep the text so it can be sent again, and mark the input.
 			createFailed = true;
@@ -227,7 +227,7 @@
 					{#if adding === column.id}
 						<Input
 							bind:ref={addInput}
-							bind:value={draft}
+							bind:value={() => drafts[column.id] ?? "", (v) => (drafts[column.id] = v)}
 							aria-label="{createLabel} to {column.title}"
 							placeholder={createPlaceholder}
 							readonly={busy}
@@ -237,10 +237,13 @@
 								if (e.key === "Enter") {
 									e.preventDefault();
 									submit(column.id);
-								} else if (e.key === "Escape") adding = null;
+								} else if (e.key === "Escape") {
+									drafts[column.id] = "";
+									adding = null;
+								}
 							}}
 							onblur={() => {
-								if (!draft.trim()) adding = null;
+								if (!(drafts[column.id] ?? "").trim()) adding = null;
 							}}
 						/>
 					{:else}
