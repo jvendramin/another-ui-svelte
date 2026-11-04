@@ -16,7 +16,7 @@
 
 	// One row of an inbox list: the people on the thread as an avatar group, the sender names, subject, a snippet of the
 	// last message, the time, an unread dot and labels. `actions` shows on hover and keyboard focus, beside the row's link,
-	// so it never nests a button inside the link. Composed from Avatar, Badge and StatusDot.
+	// so it never nests a button inside the link. Composed from Avatar, Badge, Highlight and StatusDot.
 	let {
 		ref = $bindable(null),
 		people,
@@ -35,7 +35,7 @@
 		class: className,
 		...restProps
 	}: WithElementRef<Omit<HTMLAttributes<HTMLDivElement>, "onclick" | "children">> & {
-		/** Who is on the thread, newest first. The first name leads the row. */
+		/** Who is on the thread, newest first. All names show in the row, joined and truncated; the avatars show the first `maxAvatars`. */
 		people: ThreadPerson[];
 		subject: string;
 		snippet?: string;
@@ -58,7 +58,7 @@
 		actions?: Snippet;
 	} = $props();
 
-	const max = $derived(Math.max(1, Math.floor(maxAvatars)));
+	const max = $derived(Number.isFinite(maxAvatars) ? Math.max(1, Math.floor(maxAvatars)) : 2);
 	const shown = $derived(people.slice(0, max));
 	const extra = $derived(Math.max(0, people.length - shown.length));
 	const sender = $derived(people.map((p) => p.name).join(", "));

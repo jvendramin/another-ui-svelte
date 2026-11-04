@@ -92,13 +92,13 @@ Copy and paste the following code into your project.
 
 ## Loading
 
-`ThreadRowSkeleton` draws the same columns while the list loads. It takes `avatars` (circles to draw, default 2) and `labels` (a chip under the snippet), and is hidden from screen readers. Put `aria-busy` on the list that holds the rows.
+`ThreadRowSkeleton` draws the same columns while the list loads. It takes `avatars` (circles to draw, default 2) and `withLabels` (a chip under the snippet), and is hidden from screen readers. Put `aria-busy` on the list that holds the rows.
 
 ```svelte
 <div aria-busy={loading}>
   {#if loading}
     <ThreadRowSkeleton />
-    <ThreadRowSkeleton avatars={1} labels />
+    <ThreadRowSkeleton avatars={1} withLabels />
   {:else}
     ...
   {/if}

@@ -8,17 +8,17 @@
 	let {
 		ref = $bindable(null),
 		avatars = 2,
-		labels = false,
+		withLabels = false,
 		class: className,
 		...restProps
 	}: WithElementRef<HTMLAttributes<HTMLDivElement>> & {
 		/** How many avatar circles to draw. Default 2, the same as ThreadRow's default. */
 		avatars?: number;
 		/** Draw a label chip under the snippet. */
-		labels?: boolean;
+		withLabels?: boolean;
 	} = $props();
 
-	const count = $derived(Math.max(1, Math.floor(avatars)));
+	const count = $derived(Number.isFinite(avatars) ? Math.max(1, Math.floor(avatars)) : 2);
 	const width = $derived(`${count * 1.5 - (count - 1) * 0.25}rem`);
 </script>
 
@@ -36,12 +36,15 @@
 		{/each}
 	</div>
 	<div class="min-w-0 flex-1">
-		<div class="flex items-center gap-2">
+		<!-- Each line is as tall as a text-sm line (h-5) so the row is as tall as a loaded ThreadRow. -->
+		<div class="flex h-5 items-center gap-2">
 			<Skeleton class="h-3.5 w-28 rounded" />
 			<Skeleton class="ms-auto h-3 w-10 rounded" />
 		</div>
-		<Skeleton class="mt-1.5 h-3.5 w-3/4 rounded" />
-		<Skeleton class="mt-1.5 h-3.5 w-full rounded" />
-		{#if labels}<Skeleton class="mt-2 h-4 w-14 rounded-full" />{/if}
+		<div class="flex h-5 items-center"><Skeleton class="h-3.5 w-3/4 rounded" /></div>
+		<div class="flex h-5 items-center"><Skeleton class="h-3.5 w-full rounded" /></div>
+		{#if withLabels}
+			<div class="mt-1 flex h-[18px] items-center"><Skeleton class="h-3.5 w-14 rounded-full" /></div>
+		{/if}
 	</div>
 </div>

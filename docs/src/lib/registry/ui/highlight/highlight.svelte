@@ -25,7 +25,7 @@
 			let at = folded.indexOf(needle);
 			while (at !== -1) {
 				ranges.push([at, at + needle.length]);
-				at = folded.indexOf(needle, at + needle.length);
+				at = folded.indexOf(needle, at + 1);
 			}
 		}
 		if (ranges.length === 0) return [{ text, match: false }];
@@ -42,7 +42,9 @@
 			const start = origin[from];
 			// End just after the source character that holds the last matched folded character.
 			const lastChar = origin[to - 1];
-			const end = lastChar + (String.fromCodePoint(text.codePointAt(lastChar) ?? 0).length || 1);
+			let end = lastChar + (String.fromCodePoint(text.codePointAt(lastChar) ?? 0).length || 1);
+			// Keep accents stored as separate characters (e + U+0301) inside the match.
+			while (end < text.length && /\p{M}/u.test(text.slice(end, end + 1))) end++;
 			if (start > cursor) segments.push({ text: text.slice(cursor, start), match: false });
 			segments.push({ text: text.slice(start, end), match: true });
 			cursor = end;
@@ -53,7 +55,7 @@
 </script>
 
 <script lang="ts">
-	import { cn, type WithElementRef } from "$lib/utils.js";
+	import type { WithElementRef } from "$lib/utils.js";
 	import type { HTMLAttributes } from "svelte/elements";
 
 	// Text with the search terms marked. It renders text nodes and <mark> elements, never HTML, so it is safe for text
@@ -76,8 +78,7 @@
 <span bind:this={ref} data-slot="highlight" class={className} {...restProps}
 	>{#each segments as segment, i (i)}{#if segment.match}<mark
 				data-slot="highlight-mark"
-				class={cn(
-					"rounded-sm bg-[var(--ledger-chip-yellow-bg)] px-0.5 text-[var(--ledger-chip-yellow-ink)] [font:inherit]"
-				)}>{segment.text}</mark
+				class="rounded-sm bg-[var(--ledger-chip-yellow-bg)] text-[var(--ledger-chip-yellow-ink)] [font:inherit]"
+				>{segment.text}</mark
 			>{:else}{segment.text}{/if}{/each}</span
 >
