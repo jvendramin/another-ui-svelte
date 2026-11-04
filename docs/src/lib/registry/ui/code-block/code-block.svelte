@@ -1,5 +1,5 @@
 <script lang="ts" module>
-	import { tv, type VariantProps } from "tailwind-variants";
+	import { tv, type VariantProps } from "tailwind-variants/lite";
 
 	export const codeBlockVariants = tv({
 		base: "cn-code-block group/code-block relative flex w-full min-w-0 flex-col overflow-hidden",

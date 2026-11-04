@@ -1,5 +1,5 @@
 <script lang="ts" module>
-	import { tv, type VariantProps } from "tailwind-variants";
+	import { tv, type VariantProps } from "tailwind-variants/lite";
 	export const inputGroupAddonVariants = tv({
 		base: "cn-input-group-addon flex cursor-text items-center justify-center select-none",
 		variants: {
