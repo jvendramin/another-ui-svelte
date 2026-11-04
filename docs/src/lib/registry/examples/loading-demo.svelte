@@ -48,6 +48,7 @@
 	let mode = $state<"loading" | "loaded" | "empty" | "error">("loading");
 	const modes = ["loading", "loaded", "empty", "error"] as const;
 	let failFast = $state(true);
+	let slow = $state(false);
 	let retryTimer: ReturnType<typeof setTimeout> | undefined;
 	onDestroy(() => clearTimeout(retryTimer));
 </script>
@@ -66,6 +67,8 @@
 			>
 		{/each}
 		<Toggle size="sm" variant="outline" bind:pressed={failFast}>Server down</Toggle>
+		<Toggle size="sm" variant="outline" bind:pressed={slow} disabled={!failFast}>Slow server</Toggle
+		>
 	</div>
 	<div class="overflow-hidden rounded-md border">
 		<Loading
@@ -80,10 +83,13 @@
 			errorTitle="Could not load threads"
 			onRetry={() => {
 				mode = "loading";
-				// A retry against a server that is plainly down answers at once: error, skeleton, error within milliseconds.
+				// A retry against a server that is down fails again: at once (error, skeleton, error within milliseconds) or, with Slow server, after 3 s.
 				clearTimeout(retryTimer);
 				if (failFast)
-					retryTimer = setTimeout(() => (mode === "loading" ? (mode = "error") : null), 30);
+					retryTimer = setTimeout(
+						() => (mode === "loading" ? (mode = "error") : null),
+						slow ? 3000 : 30
+					);
 			}}
 		>
 			{#snippet children(rows)}

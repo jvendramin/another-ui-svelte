@@ -39,7 +39,7 @@
 
 <script lang="ts" generics="T">
 	import { Skeleton } from "skullet/svelte";
-	import { tick, untrack } from "svelte";
+	import { untrack } from "svelte";
 	import * as Alert from "$lib/registry/ui/alert/index.js";
 	import * as Empty from "$lib/registry/ui/empty/index.js";
 	import { Button } from "$lib/registry/ui/button/index.js";
@@ -56,46 +56,86 @@
 	// and the error comes straight back, Svelte resumes that same exiting pane and it stays at opacity 0 with pointer events off:
 	// a blank list whose Try again button cannot be seen or clicked. So an error that returns within EXIT_MS of leaving gets a
 	// fresh Skeleton. Any other error keeps the one it has, and with it the skeleton to error cross-fade.
-	// TODO: drop the key once Skullet fixes the resume (upstream issue draft in crew state, loading-fix-1104).
+	// TODO: drop the key once Skullet fixes this (https://github.com/lochie/skullet/issues/13, seen in skullet 0.0.3).
 	// EXIT_MS is several times Skullet's exit fade, long enough to cover a pane still on its way out.
 	const EXIT_MS = 1500;
+	// Pressing Try again removes the button that had focus (the error pane leaves for the skeleton). When the error comes back,
+	// however long the retry took, focus goes to the new button, as long as focus was lost with the old one. The press is
+	// forgotten once the retry worked, or after PRESS_MS, so a refetch failing later never takes focus.
+	const PRESS_MS = 60_000;
 	let retryEl = $state<HTMLElement | null>(null);
-	// When Try again was last pressed: the old button is gone (and focus with it) by the time the error returns.
+	let wantFocus = $state(false);
+	let oldRetryEl: HTMLElement | null = null;
+	let pending = false;
 	let pressedAt = 0;
+	let sawLoading = false;
 	const retry = () => {
+		pending = true;
 		pressedAt = Date.now();
-		props.onRetry?.();
+		sawLoading = false;
+		try {
+			props.onRetry?.();
+		} catch (e) {
+			pending = false;
+			throw e;
+		}
 	};
+	const isThenable = (v: unknown): v is PromiseLike<T> =>
+		typeof (v as PromiseLike<T> | null)?.then === "function";
 	// A `data` promise that rejects shows the error pane too, so watch for that as well as the `error` prop.
 	let rejected = $state.raw<unknown>(null);
 	$effect(() => {
 		const source = props.data;
-		if (typeof (source as PromiseLike<T> | null)?.then !== "function") return;
-		(source as PromiseLike<T>).then(
-			() => {},
+		if (!isThenable(source)) return;
+		let live = true;
+		source.then(
 			() => {
-				if (props.data === source) rejected = source;
+				if (live && props.data === source) pending = false;
+			},
+			() => {
+				if (live && props.data === source) rejected = source;
 			}
 		);
+		return () => (live = false);
 	});
 	const erroring = $derived(
 		!props.loading && (!!props.error || (rejected !== null && rejected === props.data))
 	);
+	const busy = $derived(!!props.loading || ("data" in props && props.data == null));
 	let run = $state(0);
 	let wasErroring = false;
 	let leftAt = 0;
 	$effect.pre(() => {
 		const now = erroring;
+		const loadingNow = busy;
+		const emptyNow = !!props.empty;
 		untrack(() => {
-			if (now && !wasErroring && Date.now() - leftAt < EXIT_MS) {
-				// The button that was pressed goes with the old Skeleton: put focus on its replacement.
-				const pressed = Date.now() - pressedAt < EXIT_MS * 2;
-				run++;
-				if (pressed) tick().then(() => retryEl?.focus());
+			if (pending && loadingNow) sawLoading = true;
+			// The retry worked (content or the empty state after the skeleton): nothing to restore.
+			if (pending && sawLoading && !now && !loadingNow && (emptyNow || !isThenable(props.data)))
+				pending = false;
+			const comesBack = now && !wasErroring;
+			if (comesBack && Date.now() - leftAt < EXIT_MS) run++;
+			if (comesBack && pending) {
+				pending = false;
+				if (Date.now() - pressedAt < PRESS_MS) {
+					oldRetryEl = retryEl;
+					wantFocus = true;
+				}
 			}
+			if (!now) wantFocus = false;
 			if (!now && wasErroring) leftAt = Date.now();
 			wasErroring = now;
 		});
+	});
+	// Focus the new Try again button once it is there, however late Skullet mounts it.
+	$effect(() => {
+		if (!wantFocus || !retryEl || retryEl === oldRetryEl) return;
+		const active = document.activeElement;
+		const lost =
+			!active || active === document.body || !active.isConnected || active === oldRetryEl;
+		if (lost) retryEl.focus();
+		wantFocus = false;
 	});
 
 	const message = (error: unknown) =>
