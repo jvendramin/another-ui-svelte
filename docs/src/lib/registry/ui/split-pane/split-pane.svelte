@@ -69,17 +69,20 @@
 	// Opening moves focus to the detail; closing puts it back on the control that opened it.
 	let detailEl = $state<HTMLElement | null>(null);
 	let opener: Element | null = null;
-	let wasOpen = false;
+	// Starts at the first value, so a pane that mounts with a thread already open does not steal focus.
+	let lastShowDetail = showDetail;
 	$effect(() => {
-		const open = narrow && showDetail;
-		if (open && !wasOpen) {
+		const open = showDetail;
+		if (open === lastShowDetail) return;
+		lastShowDetail = open;
+		if (!narrow) return;
+		if (open) {
 			opener = document.activeElement;
 			queueMicrotask(() => detailEl?.focus());
-		} else if (!open && wasOpen && opener instanceof HTMLElement && opener.isConnected) {
+		} else if (opener instanceof HTMLElement && opener.isConnected) {
 			const target = opener;
 			queueMicrotask(() => target.focus());
 		}
-		wasOpen = open;
 	});
 </script>
 
@@ -108,7 +111,7 @@
 			aria-label={detailLabel}
 			hidden={!showDetail}
 		>
-			{@render detail({ narrow })}
+			{#if showDetail}{@render detail({ narrow })}{/if}
 		</div>
 	{:else}
 		<Resizable.PaneGroup direction="horizontal" {autoSaveId}>
