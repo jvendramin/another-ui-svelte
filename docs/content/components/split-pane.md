@@ -23,7 +23,7 @@ component: true
 
 ## Source
 
-Composed from [Resizable](/docs/components/resizable) (Paneforge), the same split the shadcn `mail` example uses for its list and thread.
+The same list-and-thread split the shadcn `mail` example uses, with its own drag handle and no extra packages. The list and the detail are rendered once and stay mounted in both layouts, so resizing across the stack breakpoint keeps the list's scroll position and search focus.
 
 ## Installation
 
@@ -71,7 +71,7 @@ Copy and paste the following code into your project.
 </div>
 ```
 
-The pane fills its parent's height, so give the parent one.
+The pane fills its parent's height, so give the parent one. The empty snippet sits in a flex column, so `class="flex-1"` or `m-auto` centres it.
 
 ## Props
 
@@ -86,4 +86,4 @@ The pane fills its parent's height, so give the parent one.
 | `listLabel`, `detailLabel`, `handleLabel` | Names of the two regions and the drag handle for screen readers.                                                                         |
 | `class`, `ref`, ...                  | Passed to the root element.                                                                                          |
 
-In the stacked layout the handle and `collapsible` do nothing. Your detail snippet needs its own back button that clears your open state. The list stays mounted while the detail shows, so its scroll position survives, and focus moves to the detail on open and back to the row on close.
+In the stacked layout the handle and `collapsible` do nothing. The width is measured when the component mounts, so on a server render the first paint is the wide layout; use it in a client rendered app area. Your detail snippet needs its own back button that clears your open state. The list stays mounted while the detail shows, so its scroll position survives, and focus moves to the detail on open and back to the row on close.
