@@ -454,6 +454,15 @@
 		"relativeUrl": "sidebar.json"
 	},
 	{
+		"name": "sidebar-favorites",
+		"type": "registry:ui",
+		"registryDependencies": [
+			"collapsible",
+			"sidebar"
+		],
+		"relativeUrl": "sidebar-favorites.json"
+	},
+	{
 		"name": "skeleton",
 		"type": "registry:ui",
 		"registryDependencies": [],
