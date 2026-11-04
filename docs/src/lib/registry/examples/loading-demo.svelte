@@ -45,6 +45,7 @@
 
 	let mode = $state<"loading" | "loaded" | "empty" | "error">("loading");
 	const modes = ["loading", "loaded", "empty", "error"] as const;
+	let failFast = $state(true);
 </script>
 
 <div class="flex w-full max-w-xl flex-col gap-3">
@@ -69,7 +70,11 @@
 			emptyDescription="New mail shows up here."
 			error={mode === "error" ? new Error("The mail server did not answer.") : undefined}
 			errorTitle="Could not load threads"
-			onRetry={() => (mode = "loading")}
+			onRetry={() => {
+				mode = "loading";
+				// A retry against a server that is plainly down answers at once: error, skeleton, error within milliseconds.
+				if (failFast) setTimeout(() => (mode = "error"), 30);
+			}}
 		>
 			{#snippet children(rows)}
 				{#each rows as thread (thread.id)}

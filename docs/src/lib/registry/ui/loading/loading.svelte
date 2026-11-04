@@ -39,6 +39,7 @@
 
 <script lang="ts" generics="T">
 	import { Skeleton } from "skullet/svelte";
+	import { untrack } from "svelte";
 	import * as Alert from "$lib/registry/ui/alert/index.js";
 	import * as Empty from "$lib/registry/ui/empty/index.js";
 	import { Button } from "$lib/registry/ui/button/index.js";
@@ -51,53 +52,69 @@
 	// Skullet is "data driven" when `data` is passed at all, even as undefined, so only pass it when the caller did.
 	const driven = $derived("data" in props ? { data: props.data } : {});
 
+	// Skullet swaps its panes with Svelte transitions. When the error pane is on its way out (a retry swapped in the skeleton)
+	// and the error comes straight back, Svelte resumes that same exiting pane and it stays at opacity 0 with pointer events off:
+	// a blank list whose Try again button cannot be seen or clicked. Each new run of the error gets its own Skeleton instead.
+	const erroring = $derived(!props.loading && !!props.error);
+	let run = $state(0);
+	let wasErroring = false;
+	$effect.pre(() => {
+		const now = erroring;
+		untrack(() => {
+			if (now && !wasErroring) run++;
+			wasErroring = now;
+		});
+	});
+
 	const message = (error: unknown) =>
 		error instanceof Error ? error.message : typeof error === "string" ? error : "";
 </script>
 
-<Skeleton
-	{...driven}
-	sample={props.sample}
-	loading={props.loading}
-	id={props.id}
-	label={props.label ?? "Loading"}
-	empty={props.empty}
-	error={props.error}
-	onreveal={props.onreveal}
-	skeleton={props.skeleton}
-	class={props.class}
-	style={props.style}
->
-	{#snippet children(value: T)}
-		{@render props.children?.(value)}
-	{/snippet}
-	{#snippet emptyMessage()}
-		{#if props.emptyMessage}
-			{@render props.emptyMessage()}
-		{:else}
-			<Empty.Root>
-				<Empty.Header>
-					<Empty.Title>{props.emptyTitle ?? "Nothing here yet"}</Empty.Title>
-					{#if props.emptyDescription}
-						<Empty.Description>{props.emptyDescription}</Empty.Description>
+{#key run}
+	<Skeleton
+		{...driven}
+		sample={props.sample}
+		loading={props.loading}
+		id={props.id}
+		label={props.label ?? "Loading"}
+		empty={props.empty}
+		error={props.error}
+		onreveal={props.onreveal}
+		skeleton={props.skeleton}
+		class={props.class}
+		style={props.style}
+	>
+		{#snippet children(value: T)}
+			{@render props.children?.(value)}
+		{/snippet}
+		{#snippet emptyMessage()}
+			{#if props.emptyMessage}
+				{@render props.emptyMessage()}
+			{:else}
+				<Empty.Root>
+					<Empty.Header>
+						<Empty.Title>{props.emptyTitle ?? "Nothing here yet"}</Empty.Title>
+						{#if props.emptyDescription}
+							<Empty.Description>{props.emptyDescription}</Empty.Description>
+						{/if}
+					</Empty.Header>
+				</Empty.Root>
+			{/if}
+		{/snippet}
+		{#snippet errorMessage(error: unknown)}
+			{#if props.errorMessage}
+				{@render props.errorMessage(error)}
+			{:else}
+				<Alert.Root variant="destructive">
+					<Alert.Title>{props.errorTitle ?? "Could not load"}</Alert.Title>
+					{#if message(error)}<Alert.Description>{message(error)}</Alert.Description>{/if}
+					{#if props.onRetry}
+						<Button type="button" size="sm" variant="outline" class="mt-2" onclick={props.onRetry}>
+							{props.retryLabel ?? "Try again"}
+						</Button>
 					{/if}
-				</Empty.Header>
-			</Empty.Root>
-		{/if}
-	{/snippet}
-	{#snippet errorMessage(error: unknown)}
-		{#if props.errorMessage}
-			{@render props.errorMessage(error)}
-		{:else}
-			<Alert.Root variant="destructive">
-				<Alert.Title>{props.errorTitle ?? "Could not load"}</Alert.Title>
-				{#if message(error)}<Alert.Description>{message(error)}</Alert.Description>{/if}
-				{#if props.onRetry}
-					<Button type="button" size="sm" variant="outline" class="mt-2" onclick={props.onRetry}>
-						{props.retryLabel ?? "Try again"}
-					</Button>
-				{/if}
-			</Alert.Root>
-		{/if}
-	{/snippet}
-</Skeleton>
+				</Alert.Root>
+			{/if}
+		{/snippet}
+	</Skeleton>
+{/key}
