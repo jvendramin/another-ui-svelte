@@ -171,6 +171,17 @@
 		"relativeUrl": "field.json"
 	},
 	{
+		"name": "filter-chips",
+		"type": "registry:ui",
+		"registryDependencies": [
+			"command",
+			"popover",
+			"button",
+			"badge"
+		],
+		"relativeUrl": "filter-chips.json"
+	},
+	{
 		"name": "form",
 		"type": "registry:ui",
 		"registryDependencies": [
