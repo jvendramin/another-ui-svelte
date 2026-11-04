@@ -142,6 +142,47 @@
 		return null;
 	}
 
+	// The list after the move, built from the app's current items, so an update the app made since the drag began is kept.
+	function applyMove(
+		base: FavoriteItem[],
+		id: string,
+		folder: string | null,
+		index: number
+	): FavoriteItem[] | null {
+		let moved: FavoriteItem | undefined;
+		const without = base
+			.filter((item) => {
+				if (item.id === id) {
+					moved = item;
+					return false;
+				}
+				return true;
+			})
+			.map((item) => {
+				if (!item.children) return item;
+				const kept = item.children.filter((child) => {
+					if (child.id === id) {
+						moved = child;
+						return false;
+					}
+					return true;
+				});
+				return kept.length === item.children.length ? item : { ...item, children: kept };
+			});
+		if (!moved) return null;
+		const place = (list: FavoriteItem[]) => {
+			const at = Math.max(0, Math.min(index, list.length));
+			return [...list.slice(0, at), moved!, ...list.slice(at)];
+		};
+		if (folder === null) return flatten(place(without));
+		if (!without.some((item) => item.id === folder)) return null;
+		return flatten(
+			without.map((item) =>
+				item.id === folder ? { ...item, children: place(item.children ?? []) } : item
+			)
+		);
+	}
+
 	function consider(folderId: string | null, event: CustomEvent<DndEvent<FavoriteItem>>) {
 		dragging = true;
 		setList(folderId, event.detail.items);
@@ -161,13 +202,18 @@
 		const from = find(before, String(id));
 		if (!to) return;
 		if (from && from.folder === to.folder && from.order.join() === to.order.join()) return;
+		const fresh = applyMove(items, String(id), to.folder, to.index);
+		if (fresh) {
+			synced = items;
+			local = fresh;
+		}
 		const move: FavoriteMove = {
 			id: String(id),
 			from: from?.folder ?? null,
 			to: to.folder,
 			index: to.index,
 			order: to.order,
-			items: $state.snapshot(local) as FavoriteItem[],
+			items: $state.snapshot(fresh ?? local) as FavoriteItem[],
 		};
 		try {
 			await onMove?.(move);
@@ -239,13 +285,21 @@
 											remixicon="RiFolderLine"
 										/>
 										<span>{item.label}</span>
+										{#if item.count != null && item.count > 0}
+											<span class="ms-auto text-xs text-sidebar-foreground/70 tabular-nums"
+												>{item.count}</span
+											>
+										{/if}
 										<IconPlaceholder
 											lucide="ChevronRightIcon"
 											tabler="IconChevronRight"
 											hugeicons="ArrowRight01Icon"
 											phosphor="CaretRightIcon"
 											remixicon="RiArrowRightSLine"
-											class="ms-auto transition-transform group-data-[state=open]/folder:rotate-90"
+											class={cn(
+												"transition-transform group-data-[state=open]/folder:rotate-90",
+												item.count ? "" : "ms-auto"
+											)}
 										/>
 									</Sidebar.MenuButton>
 								{/snippet}

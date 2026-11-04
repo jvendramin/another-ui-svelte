@@ -60,6 +60,9 @@ Copy and paste the following code into your project.
 
 ```svelte
 <script lang="ts">
+  import { page } from "$app/state";
+  import BuildingIcon from "@lucide/svelte/icons/building-2";
+  import UserIcon from "@lucide/svelte/icons/user";
   import * as Sidebar from "$lib/components/ui/sidebar/index.js";
   import {
     SidebarFavorites,
@@ -75,7 +78,7 @@ Copy and paste the following code into your project.
   ]);
 
   async function onMove(move: FavoriteMove) {
-    await saveFavorites(move.items); // throw to put the rows back
+    await saveFavorites(move.items); // throw to put the rows back. Saves are not queued: finish one before the next.
     items = move.items;
   }
 </script>
@@ -91,7 +94,7 @@ Copy and paste the following code into your project.
 | ---------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
 | `items`                | `{ id, label, href?, icon?, count?, children? }[]`. `icon` is a component. `children` makes the row a folder.                |
 | `activeHref`           | The row whose `href` equals this is marked active.                                                                           |
-| `onMove`               | Called when a row lands somewhere new, with `{ id, from, to, index, order, items }`. `items` is the whole list after the move. Throw to reject; the rows snap back. |
+| `onMove`               | Called when a row lands somewhere new, with `{ id, from, to, index, order, items }`. `items` is your current `items` with the move applied, so changes you made during the drag are kept. Throw to reject; the rows snap back. |
 | `onMoveError`          | Called with the error when `onMove` throws.                                                                                  |
 | `label`, `class`       | The group label (default "Favorites") and a class for the group.                                                             |
 
