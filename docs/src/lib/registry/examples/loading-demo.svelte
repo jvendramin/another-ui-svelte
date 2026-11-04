@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { onDestroy } from "svelte";
 	import { Button } from "$lib/registry/ui/button/index.js";
 	import { Loading } from "$lib/registry/ui/loading/index.js";
 	import { ThreadRow, type ThreadPerson } from "$lib/registry/ui/thread-row/index.js";
@@ -46,6 +47,8 @@
 	let mode = $state<"loading" | "loaded" | "empty" | "error">("loading");
 	const modes = ["loading", "loaded", "empty", "error"] as const;
 	let failFast = $state(true);
+	let retryTimer: ReturnType<typeof setTimeout> | undefined;
+	onDestroy(() => clearTimeout(retryTimer));
 </script>
 
 <div class="flex w-full max-w-xl flex-col gap-3">
@@ -58,6 +61,12 @@
 				onclick={() => (mode = m)}>{m}</Button
 			>
 		{/each}
+		<Button
+			size="sm"
+			variant={failFast ? "secondary" : "outline"}
+			aria-pressed={failFast}
+			onclick={() => (failFast = !failFast)}>Server down</Button
+		>
 	</div>
 	<div class="overflow-hidden rounded-md border">
 		<Loading
@@ -73,7 +82,9 @@
 			onRetry={() => {
 				mode = "loading";
 				// A retry against a server that is plainly down answers at once: error, skeleton, error within milliseconds.
-				if (failFast) setTimeout(() => (mode = "error"), 30);
+				clearTimeout(retryTimer);
+				if (failFast)
+					retryTimer = setTimeout(() => (mode === "loading" ? (mode = "error") : null), 30);
 			}}
 		>
 			{#snippet children(rows)}

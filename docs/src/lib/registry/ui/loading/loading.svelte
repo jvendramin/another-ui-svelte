@@ -54,14 +54,32 @@
 
 	// Skullet swaps its panes with Svelte transitions. When the error pane is on its way out (a retry swapped in the skeleton)
 	// and the error comes straight back, Svelte resumes that same exiting pane and it stays at opacity 0 with pointer events off:
-	// a blank list whose Try again button cannot be seen or clicked. Each new run of the error gets its own Skeleton instead.
-	const erroring = $derived(!props.loading && !!props.error);
+	// a blank list whose Try again button cannot be seen or clicked. So an error that returns within EXIT_MS of leaving gets a
+	// fresh Skeleton. Any other error keeps the one it has, and with it the skeleton to error cross-fade.
+	const EXIT_MS = 1500;
+	// A `data` promise that rejects shows the error pane too, so watch for that as well as the `error` prop.
+	let rejected = $state.raw<unknown>(null);
+	$effect(() => {
+		const source = props.data;
+		if (typeof (source as PromiseLike<T> | null)?.then !== "function") return;
+		(source as PromiseLike<T>).then(
+			() => {},
+			() => {
+				if (props.data === source) rejected = source;
+			}
+		);
+	});
+	const erroring = $derived(
+		!props.loading && (!!props.error || (rejected !== null && rejected === props.data))
+	);
 	let run = $state(0);
 	let wasErroring = false;
+	let leftAt = 0;
 	$effect.pre(() => {
 		const now = erroring;
 		untrack(() => {
-			if (now && !wasErroring) run++;
+			if (now && !wasErroring && Date.now() - leftAt < EXIT_MS) run++;
+			if (!now && wasErroring) leftAt = Date.now();
 			wasErroring = now;
 		});
 	});
