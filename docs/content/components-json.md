@@ -153,7 +153,7 @@ You can also specify a path to your own custom Typescript config file if it has 
 
 ## iconLibrary
 
-The icon library the CLI writes into the components it installs. It defaults to `phosphor`, the icon library of Another UI Svelte, and the CLI adds `phosphor-svelte` when it installs a component that uses an icon.
+The icon library the CLI writes into the components it installs. It defaults to `phosphor`, the icon library of Another UI Svelte, and the CLI adds `phosphor-svelte` when it installs a component that uses an icon. A project that already uses `@lucide/svelte` and has no `iconLibrary` key keeps Lucide, and the CLI says so once. Set the key to choose.
 
 ```json title="components.json"
 {
@@ -173,7 +173,7 @@ The weight follows one rule. Form and field icons (a user, an envelope, a lock i
 <PlusIcon weight="bold" />
 ```
 
-The CLI exports the rule as `phosphorWeight(name)` from `shadcn-svelte/icons`, so a build script can use the same one. The circle and square variants (`CheckCircle`, `XSquare`) are filled shapes and stay duotone.
+The CLI exports the rule as `phosphorWeight(name)` from `shadcn-svelte/icons`, so a build script can use the same one. Any name containing `Circle` or `Square` (`CheckCircle`, `CaretCircleDown`, `ArrowSquareOut`) is a filled shape and stays duotone. `X`, `Check`, `Checks`, `CheckFat`, `Plus` and `Minus` match by exact name, so `XLogo` and `PlusMinus` stay duotone.
 
 ## Registry
 

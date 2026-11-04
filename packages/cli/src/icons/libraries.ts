@@ -58,7 +58,7 @@ export const iconLibraries = {
 		usage: (icon, restProps, options) =>
 			[
 				`<${icon.name}`,
-				(options?.hasWeight ?? /(^|\s)weight\s*=/.test(restProps))
+				(options?.hasWeight ?? /(^|\s)(weight\s*=|\{weight\})/.test(restProps))
 					? ""
 					: `weight="${phosphorWeight(icon.name)}"`,
 				restProps.trim(),
@@ -90,10 +90,11 @@ function toTablerKebab(name: string): string {
 }
 
 // The Another UI icon rule: Phosphor duotone for form and field icons, bold for the thin glyphs, where a duotone fill
-// reads as a smudge: arrows, carets, plus, check, X, minus, dots and text format. A name with Circle or Square in it
-// (CheckCircle, CaretCircleDown, DotsThreeCircle, ArrowSquareOut) is a filled shape and stays duotone.
+// reads as a smudge: arrows, carets, dots, text format, and the plain X, Check, Plus and Minus (exact names, so XLogo,
+// Checkerboard and PlusMinus are not caught). A name with Circle or Square anywhere in it (CheckCircle,
+// CaretCircleDown, DotsThreeCircle, ArrowSquareOut) is a filled shape and stays duotone.
 const PHOSPHOR_BOLD =
-	/^(Arrow|Caret|Plus|Check|X|Minus|Dots|Text(B|Italic|Underline|Strikethrough|Aa|T|Align|H))/;
+	/^(Arrow|Caret|Dots|Text(B|Italic|Underline|Strikethrough|Aa|T|Align|H)|(X|Check|Checks|CheckFat|Plus|Minus)$)/;
 
 export function phosphorWeight(name: string): "bold" | "duotone" {
 	const base = toPhosphorName(name);

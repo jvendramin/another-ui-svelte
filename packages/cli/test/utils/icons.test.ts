@@ -48,6 +48,23 @@ describe("phosphorWeight", () => {
 		}
 	});
 
+	it("does not make brand or unrelated glyphs bold because of a shared prefix", () => {
+		for (const name of [
+			"XLogoIcon",
+			"CheckerboardIcon",
+			"PlusMinusIcon",
+			"CheckSquareOffsetIcon",
+		]) {
+			expect(phosphorWeight(name), name).toBe("duotone");
+		}
+	});
+
+	it("keeps the plain check family bold", () => {
+		for (const name of ["CheckIcon", "ChecksIcon", "CheckFatIcon"]) {
+			expect(phosphorWeight(name), name).toBe("bold");
+		}
+	});
+
 	it("accepts a name without the Icon suffix", () => {
 		expect(phosphorWeight("Plus")).toBe("bold");
 		expect(phosphorWeight("User")).toBe("duotone");
@@ -67,6 +84,12 @@ describe("phosphor usage", () => {
 	it("keeps a weight the component already sets", () => {
 		expect(iconLibraries.phosphor.usage({ name: "UserIcon" }, 'weight="fill" class="size-4"')).toBe(
 			'<UserIcon weight="fill" class="size-4" />'
+		);
+	});
+
+	it("keeps a shorthand {weight} the caller passes", () => {
+		expect(iconLibraries.phosphor.usage({ name: "UserIcon" }, '{weight} class="size-4"')).toBe(
+			'<UserIcon {weight} class="size-4" />'
 		);
 	});
 });
