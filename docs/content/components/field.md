@@ -192,6 +192,21 @@ Stack `Field` components with `Field.Group`. Add `Field.Separator` to divide the
 
 </ComponentPreview>
 
+## Required
+
+Pass `required` to `Field.Label` or `Field.Legend` to show a red asterisk after the text. The asterisk is decoration (`aria-hidden`), so also set `required` on the control, which is what a screen reader announces. Do not write the asterisk by hand.
+
+<ComponentPreview name="field-required">
+
+<div></div>
+
+</ComponentPreview>
+
+```svelte
+<Field.Label for="name" required>Name</Field.Label>
+<Input id="name" required />
+```
+
 ## Validation and Errors
 
 - Add `data-invalid` to `Field.Field` to switch the entire block into an error state.
