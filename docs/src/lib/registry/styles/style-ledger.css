@@ -77,7 +77,7 @@
 
   /* MARK: Avatar */
   .cn-avatar {
-    @apply size-8 rounded-full after:rounded-full data-[size=lg]:size-10 data-[size=sm]:size-6;
+    @apply size-8 rounded-full after:rounded-full data-[size=lg]:size-10 data-[size=sm]:size-6 data-[size=xs]:size-4;
   }
 
   .cn-avatar-fallback {
