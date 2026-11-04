@@ -65,5 +65,8 @@ Put it first in the app layout, before the sidebar, and give the main landmark t
 | ---------- | ----------------------------------------------------------------------------------------------- |
 | `href`     | The main landmark's id as a hash. Default `#main`.                                              |
 | `children` | The link text. Default "Skip to content".                                                       |
+| `class`    | Merged with the defaults. The pill is `focus:fixed` top left; pass `focus:absolute` to keep it inside a positioned container, as the demo does. |
+| `ref`      | Bindable; the anchor element.                                                                    |
+| `onclick`  | Runs first. Call `preventDefault()` in it to stop the focus move.                                |
 
-On Enter the target itself gets focus (it is given `tabindex="-1"` if it has none), so the next Tab lands on the page's own first control instead of going back through the navigation. The behaviour follows the GOV.UK Design System skip link; the look is the Ledger focus pill.
+On Enter the target itself gets focus. A target with no `tabindex` is given `-1` for that focus only and loses it on blur, so later clicks inside the content do not focus the whole landmark. The next Tab lands on the page's own first control instead of going back through the navigation. The behaviour follows the GOV.UK Design System skip link; the look is the Ledger focus pill.

@@ -12,9 +12,10 @@
 		<Button variant="ghost" size="sm">Deals</Button>
 		<Button variant="ghost" size="sm">Settings</Button>
 	</nav>
-	<main id="skip-link-demo-main" tabindex="-1" class="rounded-[8px] border p-4 focus:outline-none">
+	<!-- A div stands in for the page's main landmark here; the docs page already has one. -->
+	<div id="skip-link-demo-main" class="rounded-[8px] border p-4 focus:outline-none">
 		<p class="font-medium">Main content</p>
 		<p class="text-muted-foreground">Tab once more and focus is on the first control here, not on the nav.</p>
 		<Button size="sm" class="mt-3">First control</Button>
-	</main>
+	</div>
 </div>

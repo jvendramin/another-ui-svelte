@@ -11,6 +11,7 @@
 		ref = $bindable(null),
 		href = "#main",
 		class: className,
+		onclick,
 		children,
 		...restProps
 	}: WithElementRef<HTMLAnchorAttributes> & {
@@ -19,13 +20,20 @@
 		children?: Snippet;
 	} = $props();
 
-	function skip(e: MouseEvent) {
+	function skip(e: MouseEvent & { currentTarget: EventTarget & HTMLAnchorElement }) {
+		onclick?.(e);
+		if (e.defaultPrevented) return;
 		const id = href.startsWith("#") ? href.slice(1) : "";
 		const target = id ? document.getElementById(id) : null;
 		if (!target) return;
 		e.preventDefault();
-		if (!target.hasAttribute("tabindex")) target.setAttribute("tabindex", "-1");
-		target.focus({ preventScroll: false });
+		// A target with no tabindex gets one for this focus only, and loses it on blur, so clicks inside main do not
+		// move focus to the whole landmark afterwards (the GOV.UK behaviour).
+		if (!target.hasAttribute("tabindex")) {
+			target.setAttribute("tabindex", "-1");
+			target.addEventListener("blur", () => target.removeAttribute("tabindex"), { once: true });
+		}
+		target.focus();
 	}
 </script>
 
