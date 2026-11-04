@@ -159,6 +159,7 @@
 		"zod": "^4.6.7"
 	},
 	"dependencies": {
+		"skullet": "0.0.3",
 		"svelte-dnd-action": "0.9.80"
 	}
 }
