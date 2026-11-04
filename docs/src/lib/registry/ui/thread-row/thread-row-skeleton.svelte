@@ -3,23 +3,19 @@
 	import { cn, type WithElementRef } from "$lib/utils.js";
 	import type { HTMLAttributes } from "svelte/elements";
 
-	// The loading twin of ThreadRow: the same columns (unread dot, avatars, text), so the list does not jump when rows load.
-	// It is hidden from screen readers; put aria-busy on the list that holds the rows.
+	// The loading twin of ThreadRow: the same columns (unread dot, one avatar, text, a chips row), so the list does not
+	// jump when rows load. It is hidden from screen readers; put aria-busy on the list that holds the rows.
 	let {
 		ref = $bindable(null),
-		avatars = 2,
-		withLabels = false,
+		chips = 2,
 		class: className,
 		...restProps
 	}: WithElementRef<HTMLAttributes<HTMLDivElement>> & {
-		/** How many avatar circles to draw. Default 2, the same as ThreadRow's default. */
-		avatars?: number;
-		/** Draw a label chip under the snippet. */
-		withLabels?: boolean;
+		/** How many chips to draw on the third row. Default 2. */
+		chips?: number;
 	} = $props();
 
-	const count = $derived(Number.isFinite(avatars) ? Math.max(1, Math.floor(avatars)) : 2);
-	const width = $derived(`${count * 1.5 - (count - 1) * 0.25}rem`);
+	const count = $derived(Number.isFinite(chips) ? Math.max(0, Math.floor(chips)) : 2);
 </script>
 
 <div
@@ -30,11 +26,7 @@
 	{...restProps}
 >
 	<div class="w-3 shrink-0"></div>
-	<div class="flex shrink-0 -space-x-1" style="width: {width}">
-		{#each { length: count } as _, i (i)}
-			<Skeleton class="size-6 rounded-full ring-2 ring-background" style="z-index: {count - i}" />
-		{/each}
-	</div>
+	<div class="w-6 shrink-0"><Skeleton class="size-6 rounded-full" /></div>
 	<div class="min-w-0 flex-1">
 		<!-- Each line is as tall as a text-sm line (h-5) so the row is as tall as a loaded ThreadRow. -->
 		<div class="flex h-5 items-center gap-2">
@@ -43,8 +35,12 @@
 		</div>
 		<div class="flex h-5 items-center"><Skeleton class="h-3.5 w-3/4 rounded" /></div>
 		<div class="flex h-5 items-center"><Skeleton class="h-3.5 w-full rounded" /></div>
-		{#if withLabels}
-			<div class="mt-1 flex h-[18px] items-center"><Skeleton class="h-3.5 w-14 rounded-full" /></div>
+		{#if count > 0}
+			<div class="mt-1.5 flex h-5 items-center gap-1">
+				{#each { length: count } as _, i (i)}
+					<Skeleton class="h-5 w-16 rounded-[4px]" />
+				{/each}
+			</div>
 		{/if}
 	</div>
 </div>

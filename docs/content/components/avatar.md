@@ -143,7 +143,7 @@ You can also use an icon inside `<Avatar.GroupCount>`.
 
 ## Sizes
 
-Use the `size` prop to change the size of the avatar.
+Use the `size` prop to change the size of the avatar: `xs` (16px, for a chip), `sm`, `default` or `lg`.
 
 <ComponentPreview name="avatar-size">
 

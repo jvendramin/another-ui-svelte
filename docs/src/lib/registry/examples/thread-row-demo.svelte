@@ -70,7 +70,7 @@
 	<div class="overflow-hidden rounded-md border" aria-busy={loading}>
 		{#if loading}
 			<ThreadRowSkeleton />
-			<ThreadRowSkeleton avatars={1} withLabels />
+			<ThreadRowSkeleton chips={3} />
 			<ThreadRowSkeleton />
 		{:else}
 			{#each threads as thread (thread.id)}
