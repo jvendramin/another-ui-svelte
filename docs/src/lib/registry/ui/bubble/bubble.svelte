@@ -1,5 +1,5 @@
 <script lang="ts" module>
-	import { tv, type VariantProps } from "tailwind-variants";
+	import { tv, type VariantProps } from "tailwind-variants/lite";
 
 	export const bubbleVariants = tv({
 		base: "cn-bubble group/bubble relative flex w-fit min-w-0 flex-col",

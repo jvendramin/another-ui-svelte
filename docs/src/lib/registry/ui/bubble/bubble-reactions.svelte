@@ -1,5 +1,5 @@
 <script lang="ts" module>
-	import { tv, type VariantProps } from "tailwind-variants";
+	import { tv, type VariantProps } from "tailwind-variants/lite";
 
 	export const bubbleReactionsVariants = tv({
 		base: "cn-bubble-reactions absolute z-10 flex w-fit items-center justify-center",

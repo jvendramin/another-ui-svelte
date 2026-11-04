@@ -1,5 +1,5 @@
 <script lang="ts" module>
-	import { tv, type VariantProps } from "tailwind-variants";
+	import { tv, type VariantProps } from "tailwind-variants/lite";
 
 	export const sidebarMenuButtonVariants = tv({
 		base: "cn-sidebar-menu-button peer/menu-button group/menu-button flex w-full items-center overflow-hidden outline-hidden disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 [&_svg]:size-4 [&_svg]:shrink-0 [&>span:last-child]:truncate",
@@ -83,25 +83,25 @@
 		{@render Button({})}
 	{:then Tooltip}
 		<Tooltip.Provider delayDuration={0}>
-		<Tooltip.Root>
-			<Tooltip.Trigger>
-				{#snippet child({ props })}
-					{@render Button({ props })}
-				{/snippet}
-			</Tooltip.Trigger>
-			<Tooltip.Content
-				side="right"
-				align="center"
-				hidden={sidebar.state !== "collapsed" || sidebar.isMobile}
-				{...tooltipContentProps}
-			>
-				{#if typeof tooltipContent === "string"}
-					{tooltipContent}
-				{:else if tooltipContent}
-					{@render tooltipContent()}
-				{/if}
-			</Tooltip.Content>
-		</Tooltip.Root>
+			<Tooltip.Root>
+				<Tooltip.Trigger>
+					{#snippet child({ props })}
+						{@render Button({ props })}
+					{/snippet}
+				</Tooltip.Trigger>
+				<Tooltip.Content
+					side="right"
+					align="center"
+					hidden={sidebar.state !== "collapsed" || sidebar.isMobile}
+					{...tooltipContentProps}
+				>
+					{#if typeof tooltipContent === "string"}
+						{tooltipContent}
+					{:else if tooltipContent}
+						{@render tooltipContent()}
+					{/if}
+				</Tooltip.Content>
+			</Tooltip.Root>
 		</Tooltip.Provider>
 	{/await}
 {/if}
