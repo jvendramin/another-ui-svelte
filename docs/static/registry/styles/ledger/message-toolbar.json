@@ -1,0 +1,22 @@
+{
+	"$schema": "https://shadcn-svelte.com/schema/registry-item.json",
+	"name": "message-toolbar",
+	"type": "registry:ui",
+	"registryDependencies": [
+		"button",
+		"code-block",
+		"tooltip"
+	],
+	"files": [
+		{
+			"content": "import Root from \"./message-toolbar.svelte\";\n\nexport {\n\tRoot,\n\t//\n\tRoot as MessageToolbar,\n};\n",
+			"type": "registry:file",
+			"target": "message-toolbar/index.ts"
+		},
+		{
+			"content": "<script lang=\"ts\">\n\timport IconPlaceholder from \"$lib/components/icon-placeholder/icon-placeholder.svelte\";\n\timport { Button } from \"$UI$/button/index.js\";\n\timport { CopyButton } from \"$UI$/code-block/index.js\";\n\timport * as Tooltip from \"$UI$/tooltip/index.js\";\n\timport { cn, type WithElementRef } from \"$UTILS$.js\";\n\timport type { HTMLAttributes } from \"svelte/elements\";\n\n\t// A dark pill of icon buttons that floats under a message bubble. It fades in when the message is hovered or has\n\t// focus inside it, and stays visible on touch screens, where there is no hover. Put it inside a relative container\n\t// with the `group/message` class (Message already has both) and position it with `class`, for example `right-0`\n\t// for a message on the right. Wrap it in a Tooltip.Provider (the page usually has one). Improve, Edit and Retry\n\t// only appear when you pass a handler, so the pill never shows a button that does nothing. Ported from the Another\n\t// UI (React) Message Toolbar.\n\tlet {\n\t\tref = $bindable(null),\n\t\ttext,\n\t\tonimprove,\n\t\tonedit,\n\t\tonretry,\n\t\tclass: className,\n\t\t...restProps\n\t}: WithElementRef<HTMLAttributes<HTMLDivElement>> & {\n\t\t/** The message text, copied by the Copy button. */\n\t\ttext: string;\n\t\tonimprove?: () => void;\n\t\tonedit?: () => void;\n\t\tonretry?: () => void;\n\t} = $props();\n\n\tconst iconButton =\n\t\t\"rounded-full text-background! hover:bg-background/15 hover:text-background! focus-visible:ring-background/50 [&_svg]:size-4\";\n</script>\n\n{#snippet action(label: string, onclick: () => void, icon: import(\"svelte\").Snippet)}\n\t<Tooltip.Root>\n\t\t<Tooltip.Trigger>\n\t\t\t{#snippet child({ props })}\n\t\t\t\t<Button\n\t\t\t\t\t{...props}\n\t\t\t\t\ttype=\"button\"\n\t\t\t\t\tvariant=\"ghost\"\n\t\t\t\t\tsize=\"icon-xs\"\n\t\t\t\t\taria-label={label}\n\t\t\t\t\t{onclick}\n\t\t\t\t\tclass={iconButton}\n\t\t\t\t>\n\t\t\t\t\t{@render icon()}\n\t\t\t\t</Button>\n\t\t\t{/snippet}\n\t\t</Tooltip.Trigger>\n\t\t<Tooltip.Content side=\"bottom\">{label}</Tooltip.Content>\n\t</Tooltip.Root>\n{/snippet}\n\n<div\n\tbind:this={ref}\n\tdata-slot=\"message-toolbar\"\n\trole=\"group\"\n\taria-label=\"Message actions\"\n\tclass={cn(\n\t\t\"pointer-events-none absolute top-full z-10 mt-1 flex items-center gap-0.5 rounded-full bg-foreground p-1 text-background opacity-0 shadow-md transition-opacity group-focus-within/message:pointer-events-auto group-focus-within/message:opacity-100 group-hover/message:pointer-events-auto group-hover/message:opacity-100 focus-within:pointer-events-auto focus-within:opacity-100 motion-reduce:transition-none [@media(hover:none)]:pointer-events-auto [@media(hover:none)]:opacity-100\",\n\t\tclassName\n\t)}\n\t{...restProps}\n>\n\t{#snippet improveIcon()}\n\t\t<IconPlaceholder\n\t\t\tlucide=\"SparklesIcon\"\n\t\t\ttabler=\"IconSparkles\"\n\t\t\thugeicons=\"SparklesIcon\"\n\t\t\tphosphor=\"SparkleIcon\"\n\t\t\tremixicon=\"RiSparklingLine\"\n\t\t/>\n\t{/snippet}\n\t{#snippet editIcon()}\n\t\t<IconPlaceholder\n\t\t\tlucide=\"PencilIcon\"\n\t\t\ttabler=\"IconPencil\"\n\t\t\thugeicons=\"PencilEdit01Icon\"\n\t\t\tphosphor=\"PencilSimpleIcon\"\n\t\t\tremixicon=\"RiPencilLine\"\n\t\t/>\n\t{/snippet}\n\t{#snippet retryIcon()}\n\t\t<IconPlaceholder\n\t\t\tlucide=\"RefreshCwIcon\"\n\t\t\ttabler=\"IconRefresh\"\n\t\t\thugeicons=\"RefreshIcon\"\n\t\t\tphosphor=\"ArrowsClockwiseIcon\"\n\t\t\tremixicon=\"RiRefreshLine\"\n\t\t/>\n\t{/snippet}\n\t{#if onimprove}{@render action(\"Improve\", onimprove, improveIcon)}{/if}\n\t{#if onedit}{@render action(\"Edit\", onedit, editIcon)}{/if}\n\t{#if onretry}{@render action(\"Retry\", onretry, retryIcon)}{/if}\n\t<Tooltip.Root>\n\t\t<Tooltip.Trigger>\n\t\t\t{#snippet child({ props })}\n\t\t\t\t<CopyButton {...props} value={text} aria-label=\"Copy\" class={iconButton} />\n\t\t\t{/snippet}\n\t\t</Tooltip.Trigger>\n\t\t<Tooltip.Content side=\"bottom\">Copy</Tooltip.Content>\n\t</Tooltip.Root>\n</div>\n",
+			"type": "registry:file",
+			"target": "message-toolbar/message-toolbar.svelte"
+		}
+	]
+}
