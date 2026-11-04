@@ -20,6 +20,7 @@
 		preview,
 		open = $bindable(true),
 		unread = false,
+		attachments,
 		actions,
 		quoted,
 		showQuoted = $bindable(false),
@@ -44,6 +45,8 @@
 		/** Whether the body is shown. Bindable. */
 		open?: boolean;
 		unread?: boolean;
+		/** Number of attachments. Shows a paperclip (and the count above 1) beside the time, so a closed card still tells. */
+		attachments?: number;
 		/** Buttons for the header, such as reply or more. They sit beside the toggle, not inside it. */
 		actions?: Snippet;
 		/** Quoted earlier messages. Folded behind a button until the reader asks. */
@@ -94,9 +97,28 @@
 								>{fromAddress}</span
 							>
 						{/if}
-						{#if time}
-							<span class="ms-auto shrink-0 text-xs text-muted-foreground tabular-nums">{time}</span
+						{#if time || attachments}
+							<span
+								class="ms-auto flex shrink-0 items-center gap-2 text-xs text-muted-foreground tabular-nums"
 							>
+								{#if attachments}
+									<span class="inline-flex items-center gap-0.5">
+										<IconPlaceholder
+											lucide="PaperclipIcon"
+											tabler="IconPaperclip"
+											hugeicons="AttachmentIcon"
+											phosphor="PaperclipIcon"
+											remixicon="RiAttachmentLine"
+											class="size-3.5"
+										/>
+										{#if attachments > 1}<span aria-hidden="true">{attachments}</span>{/if}
+										<span class="sr-only"
+											>{attachments === 1 ? "1 attachment" : `${attachments} attachments`}</span
+										>
+									</span>
+								{/if}
+								{#if time}<span>{time}</span>{/if}
+							</span>
 						{/if}
 					</span>
 					{#if to}<span class="block truncate text-xs text-muted-foreground">{to}</span>{/if}
@@ -110,7 +132,7 @@
 			{/if}
 		</div>
 		<Collapsible.Content>
-			<div class="px-3 ps-16 pb-3">
+			<div class="px-3 pb-3 @md:ps-16">
 				<div class="min-w-0 break-words">{@render children?.()}</div>
 				{#if quoted}
 					<Button
