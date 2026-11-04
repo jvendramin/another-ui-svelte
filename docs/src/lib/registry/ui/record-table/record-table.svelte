@@ -47,6 +47,7 @@
 		columns,
 		getRowId,
 		filter = "",
+		filters,
 		selectable = false,
 		selectedIds = $bindable([]),
 		onRowClick,
@@ -66,6 +67,12 @@
 		getRowId: (row: TData) => string;
 		/** Only the rows where a filterable column contains this text (case insensitive). */
 		filter?: string;
+		/**
+		 * Only the rows whose column value is one of the chosen values, per column id (for example `{ stage: ["lead", "won"] }`).
+		 * A value is the column's `accessor` result as text. A column with no values, or no accessor, does not filter. Pair
+		 * it with FilterChips.
+		 */
+		filters?: Record<string, string[]>;
 		/** Show a checkbox column. */
 		selectable?: boolean;
 		/** The ids of the selected rows, bindable. */
@@ -121,18 +128,29 @@
 		)
 	);
 
+	// The chosen values per column, for the columns that can filter.
+	const facetFilters = $derived(
+		columns
+			.filter((c) => c.accessor && (filters?.[c.id]?.length ?? 0) > 0)
+			.map((c) => ({ accessor: c.accessor!, values: new Set(filters![c.id]) }))
+	);
+	const filtering = $derived(filter.trim() !== "" || facetFilters.length > 0);
+
 	const filtered = $derived.by(() => {
 		const q = filter.trim().toLowerCase();
 		// Always a new array: TanStack memoizes on the identity of `data`, and a parent that pushes onto its $state array
 		// keeps the same identity. Reading the array here also makes this derived value depend on its items.
-		if (!q) return data.slice();
+		if (!q && facetFilters.length === 0) return data.slice();
 		const searchable = columns.filter((c) => c.accessor && (c.filterable ?? true));
-		return data.filter((row) =>
-			searchable.some((c) =>
-				String(c.accessor?.(row) ?? "")
-					.toLowerCase()
-					.includes(q)
-			)
+		return data.filter(
+			(row) =>
+				facetFilters.every((f) => f.values.has(String(f.accessor(row) ?? ""))) &&
+				(!q ||
+					searchable.some((c) =>
+						String(c.accessor?.(row) ?? "")
+							.toLowerCase()
+							.includes(q)
+					))
 		);
 	});
 
@@ -358,7 +376,7 @@
 							{#if empty}
 								{@render empty()}
 							{:else}
-								{filter.trim() ? "No results." : "No records."}
+								{filtering ? "No results." : "No records."}
 							{/if}
 						</Table.Cell>
 					</Table.Row>

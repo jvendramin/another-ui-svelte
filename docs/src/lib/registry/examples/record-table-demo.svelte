@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { Badge } from "$lib/registry/ui/badge/index.js";
+	import { FilterChips, type FilterValue } from "$lib/registry/ui/filter-chips/index.js";
 	import { Input } from "$lib/registry/ui/input/index.js";
 	import { RecordTable, type RecordTableColumn } from "$lib/registry/ui/record-table/index.js";
 
@@ -28,6 +29,7 @@
 	];
 
 	let filter = $state("");
+	let chips = $state<FilterValue>({});
 	let selectedIds = $state<string[]>([]);
 	let opened = $state("");
 	let nextId = 7;
@@ -57,6 +59,20 @@
 			placeholder="Filter"
 			bind:value={filter}
 		/>
+		<FilterChips
+			facets={[
+				{
+					id: "stage",
+					label: "Stage",
+					options: [
+						{ value: "Customer", label: "Customer" },
+						{ value: "Lead", label: "Lead" },
+						{ value: "Prospect", label: "Prospect" },
+					],
+				},
+			]}
+			bind:value={chips}
+		/>
 		<span class="text-[13px] text-muted-foreground">
 			{selectedIds.length} selected{opened ? ` · opened ${opened}` : ""}
 		</span>
@@ -67,6 +83,7 @@
 			{columns}
 			getRowId={(c) => c.id}
 			{filter}
+			filters={chips}
 			selectable
 			bind:selectedIds
 			stickyFirstColumn
