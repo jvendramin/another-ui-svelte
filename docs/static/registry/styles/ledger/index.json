@@ -190,6 +190,12 @@
 		"relativeUrl": "form.json"
 	},
 	{
+		"name": "highlight",
+		"type": "registry:ui",
+		"registryDependencies": [],
+		"relativeUrl": "highlight.json"
+	},
+	{
 		"name": "hover-card",
 		"type": "registry:ui",
 		"registryDependencies": [],
@@ -485,8 +491,10 @@
 		"name": "thread-row",
 		"type": "registry:ui",
 		"registryDependencies": [
+			"skeleton",
 			"avatar",
 			"badge",
+			"highlight",
 			"status-dot"
 		],
 		"relativeUrl": "thread-row.json"

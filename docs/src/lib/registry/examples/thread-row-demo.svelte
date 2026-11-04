@@ -1,7 +1,9 @@
 <script lang="ts">
 	import { Button } from "$lib/registry/ui/button/index.js";
+	import { Input } from "$lib/registry/ui/input/index.js";
 	import {
 		ThreadRow,
+		ThreadRowSkeleton,
 		type ThreadLabel,
 		type ThreadPerson,
 	} from "$lib/registry/ui/thread-row/index.js";
@@ -51,34 +53,54 @@
 		},
 	]);
 	let selected = $state("1");
+	let loading = $state(false);
+	let query = $state("quote");
 </script>
 
-<div class="w-full max-w-xl overflow-hidden rounded-md border">
-	{#each threads as thread (thread.id)}
-		<ThreadRow
-			people={thread.people}
-			subject={thread.subject}
-			snippet={thread.snippet}
-			time={thread.time}
-			unread={thread.unread}
-			count={thread.count}
-			labels={thread.labels}
-			selected={selected === thread.id}
-			onclick={() => {
-				selected = thread.id;
-				thread.unread = false;
-			}}
-		>
-			{#snippet actions()}
-				<Button
-					size="sm"
-					variant="ghost"
+<div class="flex w-full max-w-xl flex-col gap-2">
+	<Input
+		type="search"
+		placeholder="Search threads"
+		aria-label="Search threads"
+		bind:value={query}
+	/>
+	<Button size="sm" variant="outline" class="self-start" onclick={() => (loading = !loading)}>
+		{loading ? "Show threads" : "Show loading"}
+	</Button>
+	<div class="overflow-hidden rounded-md border" aria-busy={loading}>
+		{#if loading}
+			<ThreadRowSkeleton />
+			<ThreadRowSkeleton avatars={1} labels />
+			<ThreadRowSkeleton />
+		{:else}
+			{#each threads as thread (thread.id)}
+				<ThreadRow
+					people={thread.people}
+					subject={thread.subject}
+					snippet={thread.snippet}
+					time={thread.time}
+					unread={thread.unread}
+					count={thread.count}
+					labels={thread.labels}
+					highlight={query.split(/\s+/)}
+					selected={selected === thread.id}
 					onclick={() => {
-						threads = threads.filter((t) => t.id !== thread.id);
-						if (selected === thread.id) selected = threads[0]?.id ?? "";
-					}}>Archive</Button
+						selected = thread.id;
+						thread.unread = false;
+					}}
 				>
-			{/snippet}
-		</ThreadRow>
-	{/each}
+					{#snippet actions()}
+						<Button
+							size="sm"
+							variant="ghost"
+							onclick={() => {
+								threads = threads.filter((t) => t.id !== thread.id);
+								if (selected === thread.id) selected = threads[0]?.id ?? "";
+							}}>Archive</Button
+						>
+					{/snippet}
+				</ThreadRow>
+			{/each}
+		{/if}
+	</div>
 </div>
