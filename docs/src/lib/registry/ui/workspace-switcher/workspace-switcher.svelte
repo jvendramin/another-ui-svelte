@@ -53,15 +53,36 @@
 	}
 
 	// Cmd/Ctrl+1..9 belong to the browser's tabs, so the shortcut is Alt (Option on a Mac). event.code, because Option+1
-	// types a symbol on a Mac keyboard.
+	// types a symbol on a Mac keyboard. That is also why the shortcut never fires while the user is typing: in an input,
+	// a textarea, a select or a contenteditable, Option plus a digit must still type its character.
+	function isEditable(target: EventTarget | null) {
+		return (
+			target instanceof HTMLElement &&
+			(target.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(target.tagName))
+		);
+	}
+
 	function onkeydown(event: KeyboardEvent) {
-		if (!shortcuts || !event.altKey || event.metaKey || event.ctrlKey || event.shiftKey) return;
+		if (!shortcuts || event.defaultPrevented || event.repeat || isEditable(event.target)) return;
+		if (!event.altKey || event.metaKey || event.ctrlKey || event.shiftKey) return;
 		const match = /^Digit([1-9])$/.exec(event.code);
 		const workspace = match ? workspaces[Number(match[1]) - 1] : undefined;
 		if (!workspace) return;
 		event.preventDefault();
 		select(workspace.id);
 	}
+
+	// The hint: the Option glyph on a Mac, "Alt+" elsewhere. Set after mount so server and client render the same.
+	let modifierLabel = $state("Alt+");
+	$effect(() => {
+		if (/Mac|iPhone|iPad/.test(navigator.platform)) modifierLabel = "⌥";
+	});
+
+	// A value that is missing or not in the list falls back to the first workspace. Write that back, so a parent reading
+	// bind:value sees the workspace the button shows.
+	$effect(() => {
+		if (current && value !== current.id) value = current.id;
+	});
 
 	const initial = (name: string) => name.trim().charAt(0).toUpperCase() || "?";
 </script>
@@ -124,7 +145,7 @@
 								{@render logo(workspace, "size-5 shrink-0")}
 								<span class="min-w-0 flex-1 truncate">{workspace.name}</span>
 								{#if shortcuts && index < 9}
-									<DropdownMenu.Shortcut>⌥{index + 1}</DropdownMenu.Shortcut>
+									<DropdownMenu.Shortcut>{modifierLabel}{index + 1}</DropdownMenu.Shortcut>
 								{/if}
 							</DropdownMenu.RadioItem>
 						{/each}

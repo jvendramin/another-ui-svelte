@@ -24,7 +24,7 @@ component: true
 
 ## Source
 
-Ported from the shadcn-svelte sidebar block `sidebar-07`, its `TeamSwitcher`: a `Sidebar.MenuButton` that opens a `DropdownMenu` of the user's workspaces with an add row at the bottom. Changes: a radio group, so the current workspace is a `menuitemradio` with a check; `Alt+1` to `Alt+9` shortcuts; a logo or an initial from `Avatar`; a bold caret; and the Twenty look, a small logo and the name on one line with the menu opening below the button. It does not touch auth. Your app lists the workspaces (for example the user's organizations) and reacts to `onValueChange`.
+Ported from the shadcn-svelte sidebar block `sidebar-07`, its `TeamSwitcher`: a `Sidebar.MenuButton` that opens a `DropdownMenu` of the user's workspaces with an add row at the bottom. Changes: a radio group, so the current workspace is a `menuitemradio` with a check; `Alt+1` to `Alt+9` shortcuts (not while the user is typing in a field); a logo or an initial from `Avatar`; a bold caret; and the Twenty look, a small logo and the name on one line with the menu opening below the button. It does not touch auth. Your app lists the workspaces (for example the user's organizations) and reacts to `onValueChange`.
 
 ## Installation
 
@@ -54,10 +54,15 @@ Put it in `Sidebar.Header`.
 
 ```svelte
 <script lang="ts">
+  import { goto } from "$app/navigation";
   import * as Sidebar from "$lib/components/ui/sidebar/index.js";
   import { WorkspaceSwitcher } from "$lib/components/ui/workspace-switcher/index.js";
 
   let current = $state("advena");
+
+  // Your app: switch the active workspace (for example with Better Auth's organization.setActive).
+  function switchWorkspace(id: string) {}
+
   const workspaces = [
     { id: "advena", name: "Advena Group", logo: "/logos/advena.png" },
     { id: "vwork", name: "vwork Digital" },
