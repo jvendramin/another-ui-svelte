@@ -94,7 +94,7 @@
 					? `. ${count} messages`
 					: ""}{time ? `. ${time}` : ""}{labels.length
 					? `. ${labels.map((l) => l.text).join(", ")}`
-					: ""}
+					: ""}{snippet ? `. ${snippet}` : ""}
 			</span>
 		</svelte:element>
 	{/if}
@@ -119,8 +119,14 @@
 		{/if}
 	</Avatar.Group>
 
-	<div class="pointer-events-none min-w-0 flex-1">
-		<div class="flex items-baseline gap-2">
+	<!-- With a link, its hidden label already says all of this, so hide the visible copy from screen readers. -->
+	<div class="pointer-events-none min-w-0 flex-1" aria-hidden={hasLink ? "true" : undefined}>
+		<div
+			class={cn(
+				"flex items-baseline gap-2",
+				actions && "group-focus-within/thread:pe-24 group-hover/thread:pe-24"
+			)}
+		>
 			<span class={cn("truncate", unread ? "font-semibold" : "font-medium")}>{people[0]?.name}</span
 			>
 			{#if count && count > 1}<span class="text-xs text-muted-foreground">{count}</span>{/if}

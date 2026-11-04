@@ -4,7 +4,7 @@
 	// A small coloured dot for status: online, unread, failed. Colours are the chip ink tokens, so the dot follows the
 	// theme and reads in dark mode. Pair it with text; the dot alone says nothing to a screen reader unless you pass `label`.
 	export const statusDotVariants = tv({
-		base: "cn-status-dot inline-block shrink-0 rounded-full align-middle",
+		base: "cn-status-dot inline-block shrink-0 rounded-full align-middle forced-colors:bg-[CanvasText]",
 		variants: {
 			tone: {
 				gray: "bg-[var(--ledger-chip-gray-ink)]",

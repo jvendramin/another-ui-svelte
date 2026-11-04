@@ -51,22 +51,27 @@ Copy and paste the following code into your project.
 
 ```svelte
 <script lang="ts">
+  import { Button } from "$lib/components/ui/button/index.js";
   import { ThreadRow } from "$lib/components/ui/thread-row/index.js";
+
+  let threads = $state([
+    { id: "1", people: [{ name: "Priya Shah" }, { name: "Alex Moreau" }], subject: "Signage quote", snippet: "Attached is the revised quote.", time: "2:14 PM", unread: true },
+  ]);
+  let openId = $state("1");
+  const archive = (id: string) => (threads = threads.filter((t) => t.id !== id));
 </script>
 
-<ThreadRow
-  people={[{ name: "Priya Shah" }, { name: "Alex Moreau" }]}
-  subject="Signage quote"
-  snippet="Attached is the revised quote."
-  time="2:14 PM"
-  unread
-  selected={openId === thread.id}
-  href={`/inbox/${thread.id}`}
->
-  {#snippet actions()}
-    <Button size="sm" variant="ghost" onclick={archive}>Archive</Button>
-  {/snippet}
-</ThreadRow>
+{#each threads as thread (thread.id)}
+  <ThreadRow
+    {...thread}
+    selected={openId === thread.id}
+    href={`/inbox/${thread.id}`}
+  >
+    {#snippet actions()}
+      <Button size="sm" variant="ghost" onclick={() => archive(thread.id)}>Archive</Button>
+    {/snippet}
+  </ThreadRow>
+{/each}
 ```
 
 ## Props
