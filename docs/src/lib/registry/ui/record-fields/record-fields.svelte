@@ -75,12 +75,24 @@
 
 	// The record picker loads on its own the first time a relation field shows, so a page without one never fetches it.
 	let Picker = $state<Component<Record<string, any>> | null>(null);
-	$effect(() => {
-		if (Picker || !fields.some((f) => f.type === "relation")) return;
+	let pickerFailed = $state(false);
+	function loadPicker() {
+		pickerFailed = false;
 		import("$lib/registry/ui/record-picker/index.js")
 			.then((m) => (Picker = m.RecordPicker as unknown as Component<Record<string, any>>))
-			.catch(() => {});
+			.catch((error) => {
+				console.error("RecordFields: could not load the record picker", error);
+				pickerFailed = true;
+			});
+	}
+	$effect(() => {
+		if (Picker || pickerFailed || !fields.some((f) => f.type === "relation")) return;
+		loadPicker();
 	});
+
+	// A link from record data: only http(s) and relative paths, never a javascript: URL.
+	const safeHref = (href: string | undefined) =>
+		href && /^(https?:\/\/|\/(?!\/))/i.test(href) ? href : undefined;
 
 	const relationOf = (field: RecordField<TRecord>) => {
 		const v = valueOf(field) as RecordPickerOption | null | undefined;
@@ -219,12 +231,40 @@
 	}
 </script>
 
+{#snippet valueButton(
+	field: Pick<RecordField<Record<string, unknown>>, "label" | "type" | "placeholder">,
+	text: string,
+	option: RecordFieldOption | undefined,
+	props: Record<string, unknown>
+)}
+	<Button
+		{...props}
+		type="button"
+		variant="ghost"
+		class={cn(
+			"-ms-2 h-8 w-full justify-start gap-2 px-2 text-[13px] font-normal",
+			!text && "text-muted-foreground"
+		)}
+	>
+		<span class="sr-only">Edit {field.label}:</span>
+		{#if !text}
+			<span>{field.placeholder ?? "Empty"}</span>
+		{:else if field.type === "select"}
+			<Badge tone={option?.tone ?? "gray"}>{option?.label ?? text}</Badge>
+		{:else if field.type === "relation"}
+			<Badge tone="gray" class="max-w-full truncate">{text}</Badge>
+		{:else}
+			<span class="truncate">{text}</span>
+		{/if}
+	</Button>
+{/snippet}
+
 <dl data-slot="record-fields" class={cn("flex flex-col gap-0.5", className)}>
 	{#each fields as field (field.id)}
 		{@const value = valueOf(field)}
 		{@const text = format(field, value)}
 		{@const option = field.options?.find((o) => o.value === value)}
-		{@const locked = readonly || field.readonly}
+		{@const locked = readonly || field.readonly || (field.type === "relation" && !field.search)}
 		<div data-field={field.id} class="grid grid-cols-[7rem_minmax(0,1fr)] items-start gap-2">
 			<dt class="flex h-8 items-center text-[13px] text-muted-foreground">{field.label}</dt>
 			<dd class="min-w-0">
@@ -279,41 +319,25 @@
 							onkeydown={(e: KeyboardEvent) => keydown(e, field)}
 						/>
 					{/if}
+				{:else if field.type === "relation" && !locked && Picker}
+					<Picker
+						value={relationOf(field)}
+						search={field.search}
+						label={field.label}
+						clearLabel={field.clearLabel}
+						onSelect={(option: RecordPickerOption | null) => onChange?.(field.id, option)}
+					>
+						{#snippet trigger({ props }: { props: Record<string, unknown> })}
+							{@render valueButton(field, text, option, props)}
+						{/snippet}
+					</Picker>
 				{:else if field.type === "relation" && !locked}
-					{@const picked = relationOf(field)}
-					{#snippet relationButton(props: Record<string, unknown>)}
-						<Button
-							{...props}
-							type="button"
-							variant="ghost"
-							class={cn(
-								"-ms-2 h-8 w-full justify-start gap-2 px-2 text-[13px] font-normal",
-								!picked && "text-muted-foreground"
-							)}
-						>
-							<span class="sr-only">Edit {field.label}:</span>
-							{#if picked}
-								<Badge tone="gray" class="max-w-full truncate">{picked.label}</Badge>
-							{:else}
-								<span>{field.placeholder ?? "Empty"}</span>
-							{/if}
-						</Button>
-					{/snippet}
-					{#if Picker && field.search}
-						<Picker
-							value={picked}
-							search={field.search}
-							label={field.label}
-							clearLabel={field.clearLabel}
-							onSelect={(option: RecordPickerOption | null) => onChange?.(field.id, option)}
-						>
-							{#snippet trigger({ props }: { props: Record<string, unknown> })}
-								{@render relationButton(props)}
-							{/snippet}
-						</Picker>
-					{:else}
-						{@render relationButton({ disabled: true })}
-					{/if}
+					<!-- The picker is loading, or failed to load: a click tries again. -->
+					{@render valueButton(field, text, option, {
+						disabled: !pickerFailed,
+						title: pickerFailed ? "Could not load. Click to try again." : undefined,
+						onclick: loadPicker,
+					})}
 				{:else if field.type === "boolean"}
 					<div class="flex h-8 items-center">
 						<Switch
@@ -330,8 +354,8 @@
 							<Badge tone={option?.tone ?? "gray"}>{option?.label ?? text}</Badge>
 						{:else if field.type === "relation"}
 							{@const rel = relationOf(field)}
-							{#if rel?.href}
-								<a href={rel.href} class="min-w-0 hover:underline"
+							{#if safeHref(rel?.href)}
+								<a href={safeHref(rel?.href)} class="min-w-0 hover:underline"
 									><Badge tone="gray" class="max-w-full truncate">{text}</Badge></a
 								>
 							{:else}
@@ -342,24 +366,7 @@
 						{/if}
 					</div>
 				{:else}
-					<Button
-						type="button"
-						variant="ghost"
-						class={cn(
-							"-ms-2 h-8 w-full justify-start gap-2 px-2 text-[13px] font-normal",
-							!text && "text-muted-foreground"
-						)}
-						onclick={() => startEdit(field)}
-					>
-						<span class="sr-only">Edit {field.label}:</span>
-						{#if !text}
-							<span>{field.placeholder ?? "Empty"}</span>
-						{:else if field.type === "select"}
-							<Badge tone={option?.tone ?? "gray"}>{option?.label ?? text}</Badge>
-						{:else}
-							<span class="truncate">{text}</span>
-						{/if}
-					</Button>
+					{@render valueButton(field, text, option, { onclick: () => startEdit(field) })}
 				{/if}
 			</dd>
 		</div>

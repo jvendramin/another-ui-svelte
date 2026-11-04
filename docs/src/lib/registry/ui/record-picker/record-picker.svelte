@@ -12,9 +12,10 @@
 </script>
 
 <script lang="ts">
-	import { tick } from "svelte";
+	import { tick, untrack } from "svelte";
 	import * as Command from "$lib/registry/ui/command/index.js";
 	import * as Popover from "$lib/registry/ui/popover/index.js";
+	import IconPlaceholder from "$lib/components/icon-placeholder/icon-placeholder.svelte";
 	import { cn } from "$lib/utils.js";
 
 	// Pick one record from a searchable list, in a popover. The list comes from `search(query)`, which may call your API:
@@ -80,14 +81,21 @@
 	}
 
 	// Open: reset the text and load the first page. Typing: wait for a pause, then ask again.
+	// Only `open` is tracked: a new `search` function (an inline arrow, a rebuilt fields list) must not reset a popover
+	// the user is typing in.
 	$effect(() => {
 		if (open) {
-			query = "";
-			saveFailed = false;
-			run("");
+			untrack(() => {
+				query = "";
+				options = [];
+				saveFailed = false;
+				run("");
+			});
 		} else {
-			latest++;
-			clearTimeout(timer);
+			untrack(() => {
+				latest++;
+				clearTimeout(timer);
+			});
 		}
 	});
 
@@ -99,7 +107,8 @@
 	}
 
 	async function pick(option: RecordPickerOption | null) {
-		if (saving) return;
+		// Not while a save is running, and not while the list is stale because the user just typed.
+		if (saving || (loading && option)) return;
 		saving = true;
 		saveFailed = false;
 		try {
@@ -116,14 +125,26 @@
 	}
 </script>
 
-<Popover.Root bind:open>
+<Popover.Root
+	{open}
+	onOpenChange={(next) => {
+		// A save in flight keeps the popover open, so its error can still be shown.
+		if (!next && saving) return;
+		open = next;
+	}}
+>
 	<Popover.Trigger bind:ref={triggerRef}>
 		{#snippet child({ props })}
 			{@render trigger({ props, open })}
 		{/snippet}
 	</Popover.Trigger>
 	<Popover.Content class={cn("w-72 p-0", className)} align="start">
-		<Command.Root shouldFilter={false} data-slot="record-picker" aria-label={label}>
+		<Command.Root
+			shouldFilter={false}
+			data-slot="record-picker"
+			aria-label={label}
+			aria-busy={loading || saving || undefined}
+		>
 			<Command.Input
 				{placeholder}
 				value={query}
@@ -153,17 +174,31 @@
 							data-checked={value?.id === option.id}
 							onSelect={() => pick(option)}
 						>
-							<span class="flex min-w-0 flex-col">
+							<span class="flex min-w-0 flex-1 flex-col">
 								<span class="truncate">{option.label}</span>
 								{#if option.description}
 									<span class="truncate text-xs text-muted-foreground">{option.description}</span>
 								{/if}
 							</span>
+							{#if value?.id === option.id}
+								<IconPlaceholder
+									lucide="CheckIcon"
+									tabler="IconCheck"
+									hugeicons="Tick02Icon"
+									phosphor="CheckIcon"
+									remixicon="RiCheckLine"
+									class="ms-auto size-3.5 shrink-0"
+								/>
+								<span class="sr-only">(current)</span>
+							{/if}
 						</Command.Item>
 					{/each}
 				</Command.Group>
 				{#if !loading && !failed && options.length === 0 && clearLabel}
 					<div class="px-3 py-4 text-center text-[13px] text-muted-foreground">{emptyLabel}</div>
+				{/if}
+				{#if saving}
+					<div role="status" class="px-3 py-2 text-[13px] text-muted-foreground">Saving...</div>
 				{/if}
 				{#if saveFailed}
 					<div role="alert" class="px-3 py-2 text-[13px] text-destructive">
