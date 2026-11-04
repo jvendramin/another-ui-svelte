@@ -5,7 +5,7 @@
 
 <div class="w-full max-w-md">
 	<Field.Set>
-		<Field.Legend required>Workspace</Field.Legend>
+		<Field.Legend>Workspace</Field.Legend>
 		<Field.Group>
 			<Field.Field>
 				<Field.Label for="required-name" required>Name</Field.Label>
