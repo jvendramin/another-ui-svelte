@@ -2,6 +2,7 @@
 	import * as Avatar from "$lib/registry/ui/avatar/index.js";
 	import * as Collapsible from "$lib/registry/ui/collapsible/index.js";
 	import IconPlaceholder from "$lib/components/icon-placeholder/icon-placeholder.svelte";
+	import { Button } from "$lib/registry/ui/button/index.js";
 	import { cn, type WithElementRef } from "$lib/utils.js";
 	import type { Snippet } from "svelte";
 	import type { HTMLAttributes } from "svelte/elements";
@@ -22,7 +23,7 @@
 		actions,
 		quoted,
 		showQuoted = $bindable(false),
-		quotedLabel = "Show quoted text",
+		quotedLabel = "Quoted text",
 		footer,
 		children,
 		class: className,
@@ -58,6 +59,7 @@
 	const initials = $derived(
 		from
 			.replace(/@.*$/, "")
+			.replace(/[^\p{L}\p{N}\s]/gu, "")
 			.split(/\s+/)
 			.filter(Boolean)
 			.slice(0, 2)
@@ -79,7 +81,6 @@
 		<div class="flex items-start gap-3 p-3">
 			<Collapsible.Trigger
 				class="flex min-w-0 flex-1 items-start gap-3 rounded-md text-start outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
-				aria-label="{open ? 'Collapse' : 'Expand'} message from {from}"
 			>
 				<Avatar.Root size="lg">
 					{#if avatar}<Avatar.Image src={avatar} alt="" />{/if}
@@ -108,14 +109,17 @@
 				<div class="flex shrink-0 items-center gap-0.5">{@render actions()}</div>
 			{/if}
 		</div>
-		<Collapsible.Content id={bodyId}>
+		<Collapsible.Content>
 			<div class="px-3 ps-[3.75rem] pb-3">
 				<div class="min-w-0 break-words">{@render children?.()}</div>
 				{#if quoted}
-					<button
+					<Button
 						type="button"
-						class="mt-2 inline-flex h-5 items-center gap-1 rounded-md border bg-muted px-1.5 text-xs text-muted-foreground hover:text-foreground focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none"
+						variant="secondary"
+						size="icon-sm"
+						class="mt-2 size-6"
 						aria-expanded={showQuoted}
+						aria-controls="{bodyId}-quoted"
 						onclick={() => (showQuoted = !showQuoted)}
 					>
 						<IconPlaceholder
@@ -126,10 +130,12 @@
 							remixicon="RiMoreLine"
 							class="size-3.5"
 						/>
-						<span class="sr-only">{showQuoted ? "Hide quoted text" : quotedLabel}</span>
-					</button>
+						<span class="sr-only">{quotedLabel}</span>
+					</Button>
 					{#if showQuoted}
-						<div class="mt-2 border-s-2 ps-3 text-muted-foreground">{@render quoted()}</div>
+						<div id="{bodyId}-quoted" class="mt-2 border-s-2 ps-3 text-muted-foreground">
+							{@render quoted()}
+						</div>
 					{/if}
 				{/if}
 				{#if footer}<div class="mt-3 border-t pt-3">{@render footer()}</div>{/if}

@@ -11,8 +11,9 @@ component: true
 	import Steps from "$lib/components/steps.svelte";
 	import InstallTabs from "$lib/components/install-tabs.svelte";
 
-	let { viewerData } = $props();
 	import Step from "$lib/components/step.svelte";
+
+	let { viewerData } = $props();
 </script>
 
 <ComponentPreview name="message-card-demo">
@@ -79,6 +80,7 @@ Copy and paste the following code into your project.
 | `open`              | Whether the body shows. Bindable, default true. The header toggles it.                          |
 | `preview`           | One line shown instead of the body while closed.                                                |
 | `unread`            | Bold sender.                                                                                    |
+| `quotedLabel`       | Screen reader name of the quoted-text button. It reads with `aria-expanded`, so keep it neutral. Default "Quoted text". |
 | `actions`           | Header buttons, beside the toggle rather than inside it.                                        |
 | `quoted`, `showQuoted` | Snippet folded behind a "..." button. `showQuoted` is bindable so the parent owns the toggle. |
 | `footer`            | Snippet below the body for attachments.                                                         |

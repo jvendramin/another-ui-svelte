@@ -271,7 +271,8 @@
 		"type": "registry:ui",
 		"registryDependencies": [
 			"avatar",
-			"collapsible"
+			"collapsible",
+			"button"
 		],
 		"relativeUrl": "message-card.json"
 	},
