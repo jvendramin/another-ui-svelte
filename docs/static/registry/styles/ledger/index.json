@@ -176,8 +176,7 @@
 		"registryDependencies": [
 			"command",
 			"popover",
-			"button",
-			"badge"
+			"button"
 		],
 		"relativeUrl": "filter-chips.json"
 	},

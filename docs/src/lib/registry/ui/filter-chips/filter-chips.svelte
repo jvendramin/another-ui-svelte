@@ -1,13 +1,13 @@
 <script lang="ts" module>
-	import type { BadgeTone } from "$lib/registry/ui/badge/badge.svelte";
-
-	export type FilterOption = { value: string; label: string; tone?: BadgeTone };
+	/** `value` is compared with a column's value as text. The value "" matches the rows whose value is empty. */
+	export type FilterOption = { value: string; label: string };
 	export type FilterFacet = { id: string; label: string; options: FilterOption[] };
 	/** The chosen values per facet id. A facet with no values, or missing, is not filtering. */
 	export type FilterValue = Record<string, string[]>;
 </script>
 
 <script lang="ts">
+	import { tick } from "svelte";
 	import * as Command from "$lib/registry/ui/command/index.js";
 	import * as Popover from "$lib/registry/ui/popover/index.js";
 	import IconPlaceholder from "$lib/components/icon-placeholder/icon-placeholder.svelte";
@@ -15,8 +15,10 @@
 	import { cn } from "$lib/utils.js";
 
 	// A row of filter chips, one per facet (stage, owner, status). Click a chip to pick values from a list, several at a time;
-	// an active chip shows what is picked and has a button to clear it. Composed from Popover, Command, Button and Badge.
+	// an active chip shows what is picked and has a button to clear it. Composed from Popover, Command and Button.
 	// Pair it with RecordTable's `filters` prop,.
+	let root = $state<HTMLElement | null>(null);
+
 	let {
 		facets,
 		value = $bindable({}),
@@ -47,6 +49,15 @@
 		onChange?.(clean);
 	}
 
+	// Clearing removes the button that had focus, so focus moves to a chip that is still there.
+	async function focusChip(facetId?: string) {
+		await tick();
+		const selector = facetId
+			? `[data-facet="${CSS.escape(facetId)}"] [data-slot="popover-trigger"]`
+			: '[data-slot="popover-trigger"]';
+		root?.querySelector<HTMLElement>(selector)?.focus();
+	}
+
 	function toggle(facet: FilterFacet, optionValue: string) {
 		const current = picked(facet);
 		set({
@@ -57,18 +68,16 @@
 		});
 	}
 
-	// Written as an escape: the registry build trims every double-quoted string, which would turn ", " into ",".
-	const SEPARATOR = ",\u0020";
-
 	function summary(facet: FilterFacet) {
 		const labels = picked(facet).map((v) => facet.options.find((o) => o.value === v)?.label ?? v);
 		return labels.length > 2
-			? `${labels.slice(0, 2).join(SEPARATOR)} +${labels.length - 2}`
-			: labels.join(SEPARATOR);
+			? `${labels.slice(0, 2).join(", ")} +${labels.length - 2}`
+			: labels.join(", ");
 	}
 </script>
 
 <div
+	bind:this={root}
 	data-slot="filter-chips"
 	role="group"
 	aria-label="Filters"
@@ -117,7 +126,8 @@
 								{#each facet.options as option (option.value)}
 									{@const on = chosen.includes(option.value)}
 									<Command.Item
-										value={option.label}
+										value={`option:${option.value}`}
+										keywords={[option.label]}
 										data-checked={on}
 										onSelect={() => toggle(facet, option.value)}
 									>
@@ -147,7 +157,10 @@
 					size="sm"
 					aria-label="Clear {facet.label} filter"
 					class="rounded-s-none border-s border-border px-1.5"
-					onclick={() => set({ ...value, [facet.id]: [] })}
+					onclick={() => {
+						set({ ...value, [facet.id]: [] });
+						focusChip(facet.id);
+					}}
 				>
 					<IconPlaceholder
 						lucide="XIcon"
@@ -167,7 +180,10 @@
 			variant="ghost"
 			size="sm"
 			class="text-muted-foreground"
-			onclick={() => set({})}
+			onclick={() => {
+				set({});
+				focusChip();
+			}}
 		>
 			{clearLabel}
 		</Button>

@@ -24,7 +24,7 @@ component: true
 
 ## Source
 
-Composed from [Popover](/docs/components/popover), [Command](/docs/components/command), [Button](/docs/components/button) and [Badge](/docs/components/badge), with the Twenty look of one chip per field. The chips only hold the chosen values; [Record table](/docs/components/record-table) applies them through its `filters` prop, or you filter your own list.
+Composed from [Popover](/docs/components/popover), [Command](/docs/components/command), and [Button](/docs/components/button), with the Twenty look of one chip per field. The chips only hold the chosen values; [Record table](/docs/components/record-table) applies them through its `filters` prop, or you filter your own list.
 
 ## Installation
 
@@ -90,7 +90,7 @@ Copy and paste the following code into your project.
 | `onChange`                 | Called with the new value after the user changes a chip.                                                                              |
 | `clearLabel`, `searchFrom` | The text of the button that clears every chip, and how many options a list needs before it gets a search box (8).                     |
 
-An empty chip shows its name and a plus. An active chip shows what is chosen ("Status To do, In progress", then "+2" past two values) with a button beside it that clears just that chip. Chips open a list: click or press Enter to toggle a value, the list stays open so you can pick several, Escape closes it. Each chip has an accessible name like "Stage filter: Lead, Won".
+Give an option `value: ""` (labelled "No owner", say) to filter for rows whose value is empty. An empty chip shows its name and a plus. An active chip shows what is chosen ("Status To do, In progress", then "+2" past two values) with a button beside it that clears just that chip. Chips open a list: click or press Enter to toggle a value, the list stays open so you can pick several, Escape closes it. Each chip has an accessible name like "Stage filter: Lead, Won".
 
 ## On Record table
 

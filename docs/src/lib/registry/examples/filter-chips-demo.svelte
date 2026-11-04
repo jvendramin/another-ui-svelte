@@ -16,6 +16,7 @@
 		{ id: "t4", title: "Update pricing sheet", status: "todo", owner: "sam" },
 		{ id: "t5", title: "Book Initech demo", status: "doing", owner: "priya" },
 		{ id: "t6", title: "Invoice Hooli", status: "done", owner: "alex" },
+		{ id: "t7", title: "Plan the offsite", status: "todo", owner: "" },
 	];
 
 	const facets: FilterFacet[] = [
@@ -35,6 +36,7 @@
 				{ value: "alex", label: "Alex Moreau" },
 				{ value: "priya", label: "Priya Shah" },
 				{ value: "sam", label: "Sam Okafor" },
+				{ value: "", label: "No owner" },
 			],
 		},
 	];
