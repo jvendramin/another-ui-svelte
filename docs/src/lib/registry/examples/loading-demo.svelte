@@ -1,7 +1,9 @@
 <script lang="ts">
+	import { onDestroy } from "svelte";
 	import { Button } from "$lib/registry/ui/button/index.js";
 	import { Loading } from "$lib/registry/ui/loading/index.js";
 	import { ThreadRow, type ThreadPerson } from "$lib/registry/ui/thread-row/index.js";
+	import { Toggle } from "$lib/registry/ui/toggle/index.js";
 
 	type Thread = {
 		id: string;
@@ -45,6 +47,9 @@
 
 	let mode = $state<"loading" | "loaded" | "empty" | "error">("loading");
 	const modes = ["loading", "loaded", "empty", "error"] as const;
+	let failFast = $state(true);
+	let retryTimer: ReturnType<typeof setTimeout> | undefined;
+	onDestroy(() => clearTimeout(retryTimer));
 </script>
 
 <div class="flex w-full max-w-xl flex-col gap-3">
@@ -54,9 +59,13 @@
 				size="sm"
 				variant={mode === m ? "secondary" : "outline"}
 				aria-pressed={mode === m}
-				onclick={() => (mode = m)}>{m}</Button
+				onclick={() => {
+					clearTimeout(retryTimer);
+					mode = m;
+				}}>{m}</Button
 			>
 		{/each}
+		<Toggle size="sm" variant="outline" bind:pressed={failFast}>Server down</Toggle>
 	</div>
 	<div class="overflow-hidden rounded-md border">
 		<Loading
@@ -69,7 +78,13 @@
 			emptyDescription="New mail shows up here."
 			error={mode === "error" ? new Error("The mail server did not answer.") : undefined}
 			errorTitle="Could not load threads"
-			onRetry={() => (mode = "loading")}
+			onRetry={() => {
+				mode = "loading";
+				// A retry against a server that is plainly down answers at once: error, skeleton, error within milliseconds.
+				clearTimeout(retryTimer);
+				if (failFast)
+					retryTimer = setTimeout(() => (mode === "loading" ? (mode = "error") : null), 30);
+			}}
 		>
 			{#snippet children(rows)}
 				{#each rows as thread (thread.id)}
