@@ -216,6 +216,17 @@
 		"relativeUrl": "item.json"
 	},
 	{
+		"name": "kanban",
+		"type": "registry:ui",
+		"registryDependencies": [
+			"card",
+			"badge",
+			"button",
+			"input"
+		],
+		"relativeUrl": "kanban.json"
+	},
+	{
 		"name": "kbd",
 		"type": "registry:ui",
 		"registryDependencies": [],
