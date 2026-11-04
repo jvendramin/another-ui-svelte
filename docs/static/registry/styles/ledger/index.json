@@ -468,6 +468,14 @@
 		"relativeUrl": "spinner.json"
 	},
 	{
+		"name": "split-pane",
+		"type": "registry:ui",
+		"registryDependencies": [
+			"resizable"
+		],
+		"relativeUrl": "split-pane.json"
+	},
+	{
 		"name": "status-dot",
 		"type": "registry:ui",
 		"registryDependencies": [],
