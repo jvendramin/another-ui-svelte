@@ -222,21 +222,34 @@ async function assembleLedgerTokens(registryRootPath: string): Promise<RegistryI
 	const cssPath = path.resolve(registryRootPath, "styles", "ledger-tokens.css");
 	const css = fs.readFileSync(cssPath, "utf8");
 
-	const readBlock = (selectorStart: string): Record<string, string> => {
-		const start = css.indexOf(selectorStart);
-		if (start === -1) throw new Error(`ledger-tokens.css: block "${selectorStart}" not found`);
-		const open = css.indexOf("{", start);
-		const close = css.indexOf("\n}", open);
+	// A token block is `<selector list> { --name: value; ... }` with no nested rules. Every `--name:` declaration in the
+	// block must be parsed, so a multi-line value, two declarations on one line or a trailing comment fails the build
+	// instead of shipping a short token set.
+	const readBlock = (selectorPattern: RegExp): Record<string, string> => {
+		const match = selectorPattern.exec(css);
+		if (!match) throw new Error(`ledger-tokens.css: block ${selectorPattern} not found`);
+		const open = css.indexOf("{", match.index);
+		const close = css.indexOf("}", open);
+		const body = css.slice(open + 1, close);
+		if (body.includes("{"))
+			throw new Error(`ledger-tokens.css: nested rule in block ${selectorPattern}`);
+
+		const declared = (body.match(/--[a-z0-9-]+\s*:/g) ?? []).length;
 		const vars: Record<string, string> = {};
-		for (const line of css.slice(open + 1, close).split("\n")) {
-			const match = line.match(/^\s*--([a-z0-9-]+):\s*(.+?);\s*$/);
-			if (match) vars[match[1]!] = match[2]!;
+		for (const line of body.split("\n")) {
+			const decl = line.match(/^\s*--([a-z0-9-]+):\s*(.+?);\s*$/);
+			if (decl) vars[decl[1]!] = decl[2]!;
+		}
+		if (Object.keys(vars).length !== declared) {
+			throw new Error(
+				`ledger-tokens.css: parsed ${Object.keys(vars).length} of ${declared} tokens in ${selectorPattern}; keep one "--name: value;" per line`
+			);
 		}
 		return vars;
 	};
 
-	const light = readBlock("\n.style-ledger {");
-	const dark = readBlock("\n.dark .style-ledger");
+	const light = readBlock(/^\.style-ledger\s*\{/m);
+	const dark = readBlock(/^\.dark\s+\.style-ledger\b/m);
 	if (!Object.keys(light).length || !Object.keys(dark).length) {
 		throw new Error("ledger-tokens.css: no tokens parsed");
 	}
@@ -247,7 +260,7 @@ async function assembleLedgerTokens(registryRootPath: string): Promise<RegistryI
 			type: "registry:style",
 			title: "Ledger tokens",
 			description:
-				"The Ledger design tokens (colors, radius, chip tones, field border and shadow) written into :root and .dark. Re-add to update them.",
+				"The Ledger design tokens (colors, radius, chip tones, field border and shadow) written into :root and .dark. Re-add to update them. Color values come from the twenty-ui theme tokens (github.com/twentyhq/twenty, MIT License, Copyright (c) 2023-present Twenty.com, PBC).",
 			cssVars: { light, dark },
 			files: [],
 			registryDependencies: [],
