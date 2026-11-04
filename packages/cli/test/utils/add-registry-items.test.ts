@@ -125,6 +125,60 @@ describe("addRegistryItems", () => {
 		expect(p.log.warn).toHaveBeenCalledWith(expect.stringContaining("already exist"));
 	});
 
+	it("--yes keeps existing items without asking, and --yes with --overwrite replaces them", async () => {
+		const customComponent = {
+			name: "data-grid",
+			type: "registry:component" as const,
+			files: [{ target: "data-grid.svelte", type: "registry:component", content: "" }],
+			registryDependencies: ["button"],
+		} satisfies ResolvedRegistryItem;
+		const buttonComponent = {
+			name: "button",
+			type: "registry:ui",
+			files: [{ target: "button.svelte", type: "registry:ui", content: "" }],
+			registryDependencies: [],
+		} satisfies ResolvedRegistryItem;
+
+		vi.mocked(existsSync).mockImplementation((path) => path.toString().includes("button"));
+		vi.mocked(registry.resolveRegistryItems).mockResolvedValue([customComponent, buttonComponent]);
+		vi.mocked(registry.fetchRegistryItems).mockResolvedValue([customComponent, buttonComponent]);
+		vi.mocked(registry.resolveItemFilePath).mockImplementation((config, item, file) => {
+			return `/path/to/${item.name}/${file.target}`;
+		});
+		vi.mocked(registry.getItemAliasDir).mockReturnValue("/test/components");
+		vi.mocked(p.tasks).mockResolvedValue(undefined);
+
+		await addRegistryItems({
+			selectedItems: ["https://example.com/data-grid.json"],
+			config: mockConfig,
+			overwrite: false,
+			yes: true,
+			deps: true,
+		});
+		expect(p.confirm).not.toHaveBeenCalled();
+		expect(p.log.warn).toHaveBeenCalledWith(expect.stringContaining("Keeping existing items"));
+
+		vi.clearAllMocks();
+		vi.mocked(existsSync).mockImplementation((path) => path.toString().includes("button"));
+		vi.mocked(registry.resolveRegistryItems).mockResolvedValue([customComponent, buttonComponent]);
+		vi.mocked(registry.fetchRegistryItems).mockResolvedValue([customComponent, buttonComponent]);
+		vi.mocked(registry.resolveItemFilePath).mockImplementation((config, item, file) => {
+			return `/path/to/${item.name}/${file.target}`;
+		});
+		vi.mocked(registry.getItemAliasDir).mockReturnValue("/test/components");
+		vi.mocked(p.tasks).mockResolvedValue(undefined);
+
+		await addRegistryItems({
+			selectedItems: ["https://example.com/data-grid.json"],
+			config: mockConfig,
+			overwrite: true,
+			yes: true,
+			deps: true,
+		});
+		expect(p.confirm).not.toHaveBeenCalled();
+		expect(p.log.warn).not.toHaveBeenCalledWith(expect.stringContaining("Keeping existing items"));
+	});
+
 	it("should include all resolved dependencies in selectedItems for custom registry", async () => {
 		const customComponent = {
 			name: "data-grid",

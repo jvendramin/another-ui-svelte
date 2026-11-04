@@ -2,6 +2,18 @@
 	"$schema": "https://shadcn-svelte.com/schema/registry-item.json",
 	"name": "dashboard-01",
 	"type": "registry:block",
+	"dependencies": [
+		"@dnd-kit-svelte/svelte@^0.1.5",
+		"@dnd-kit/abstract@^0.1.21",
+		"@dnd-kit/helpers@^0.1.21",
+		"@tabler/icons-svelte@^3.40.0",
+		"@tanstack/svelte-table@^9.0.0",
+		"d3-scale@^4.0.2",
+		"d3-shape@^3.2.0",
+		"layerchart@^2.0.0",
+		"svelte-sonner@^1.2.0",
+		"zod@^4.6.7"
+	],
 	"devDependencies": [
 		"@tabler/icons-svelte@^3.40.0",
 		"d3-scale@^4.0.2",

@@ -2,6 +2,9 @@
 	{
 		"name": "accordion",
 		"type": "registry:ui",
+		"dependencies": [
+			"bits-ui@^2.20.0"
+		],
 		"registryDependencies": [],
 		"relativeUrl": "accordion.json"
 	},
@@ -23,12 +26,18 @@
 	{
 		"name": "alert",
 		"type": "registry:ui",
+		"dependencies": [
+			"tailwind-variants@^3.3.0"
+		],
 		"registryDependencies": [],
 		"relativeUrl": "alert.json"
 	},
 	{
 		"name": "alert-dialog",
 		"type": "registry:ui",
+		"dependencies": [
+			"bits-ui@^2.20.0"
+		],
 		"registryDependencies": [
 			"button"
 		],
@@ -51,12 +60,18 @@
 	{
 		"name": "aspect-ratio",
 		"type": "registry:ui",
+		"dependencies": [
+			"bits-ui@^2.20.0"
+		],
 		"registryDependencies": [],
 		"relativeUrl": "aspect-ratio.json"
 	},
 	{
 		"name": "attachment",
 		"type": "registry:ui",
+		"dependencies": [
+			"tailwind-variants@^3.3.0"
+		],
 		"registryDependencies": [
 			"button"
 		],
@@ -65,12 +80,18 @@
 	{
 		"name": "avatar",
 		"type": "registry:ui",
+		"dependencies": [
+			"bits-ui@^2.20.0"
+		],
 		"registryDependencies": [],
 		"relativeUrl": "avatar.json"
 	},
 	{
 		"name": "badge",
 		"type": "registry:ui",
+		"dependencies": [
+			"tailwind-variants@^3.3.0"
+		],
 		"registryDependencies": [],
 		"relativeUrl": "badge.json"
 	},
@@ -83,18 +104,27 @@
 	{
 		"name": "bubble",
 		"type": "registry:ui",
+		"dependencies": [
+			"tailwind-variants@^3.3.0"
+		],
 		"registryDependencies": [],
 		"relativeUrl": "bubble.json"
 	},
 	{
 		"name": "button",
 		"type": "registry:ui",
+		"dependencies": [
+			"tailwind-variants@^3.3.0"
+		],
 		"registryDependencies": [],
 		"relativeUrl": "button.json"
 	},
 	{
 		"name": "button-group",
 		"type": "registry:ui",
+		"dependencies": [
+			"tailwind-variants@^3.3.0"
+		],
 		"registryDependencies": [
 			"separator"
 		],
@@ -103,6 +133,10 @@
 	{
 		"name": "calendar",
 		"type": "registry:ui",
+		"dependencies": [
+			"@internationalized/date@^3.12.0",
+			"bits-ui@^2.20.0"
+		],
 		"registryDependencies": [
 			"button"
 		],
@@ -117,6 +151,10 @@
 	{
 		"name": "carousel",
 		"type": "registry:ui",
+		"dependencies": [
+			"bits-ui@^2.20.0",
+			"embla-carousel-svelte@^8.6.0"
+		],
 		"registryDependencies": [
 			"button"
 		],
@@ -125,18 +163,27 @@
 	{
 		"name": "chart",
 		"type": "registry:ui",
+		"dependencies": [
+			"layerchart@^2.0.0"
+		],
 		"registryDependencies": [],
 		"relativeUrl": "chart.json"
 	},
 	{
 		"name": "checkbox",
 		"type": "registry:ui",
+		"dependencies": [
+			"bits-ui@^2.20.0"
+		],
 		"registryDependencies": [],
 		"relativeUrl": "checkbox.json"
 	},
 	{
 		"name": "code-block",
 		"type": "registry:ui",
+		"dependencies": [
+			"tailwind-variants@^3.3.0"
+		],
 		"registryDependencies": [
 			"use-highlighted-code",
 			"button"
@@ -146,12 +193,18 @@
 	{
 		"name": "collapsible",
 		"type": "registry:ui",
+		"dependencies": [
+			"bits-ui@^2.20.0"
+		],
 		"registryDependencies": [],
 		"relativeUrl": "collapsible.json"
 	},
 	{
 		"name": "command",
 		"type": "registry:ui",
+		"dependencies": [
+			"bits-ui@^2.20.0"
+		],
 		"registryDependencies": [
 			"dialog",
 			"input-group"
@@ -172,12 +225,18 @@
 	{
 		"name": "context-menu",
 		"type": "registry:ui",
+		"dependencies": [
+			"bits-ui@^2.20.0"
+		],
 		"registryDependencies": [],
 		"relativeUrl": "context-menu.json"
 	},
 	{
 		"name": "dialog",
 		"type": "registry:ui",
+		"dependencies": [
+			"bits-ui@^2.20.0"
+		],
 		"registryDependencies": [
 			"button"
 		],
@@ -186,24 +245,36 @@
 	{
 		"name": "drawer",
 		"type": "registry:ui",
+		"dependencies": [
+			"vaul-svelte@1.0.0-next.7"
+		],
 		"registryDependencies": [],
 		"relativeUrl": "drawer.json"
 	},
 	{
 		"name": "dropdown-menu",
 		"type": "registry:ui",
+		"dependencies": [
+			"bits-ui@^2.20.0"
+		],
 		"registryDependencies": [],
 		"relativeUrl": "dropdown-menu.json"
 	},
 	{
 		"name": "empty",
 		"type": "registry:ui",
+		"dependencies": [
+			"tailwind-variants@^3.3.0"
+		],
 		"registryDependencies": [],
 		"relativeUrl": "empty.json"
 	},
 	{
 		"name": "field",
 		"type": "registry:ui",
+		"dependencies": [
+			"tailwind-variants@^3.3.0"
+		],
 		"registryDependencies": [
 			"label",
 			"separator"
@@ -223,6 +294,10 @@
 	{
 		"name": "form",
 		"type": "registry:ui",
+		"dependencies": [
+			"formsnap@^2.1.0",
+			"sveltekit-superforms@^3.0.0"
+		],
 		"registryDependencies": [
 			"button",
 			"label"
@@ -238,6 +313,9 @@
 	{
 		"name": "hover-card",
 		"type": "registry:ui",
+		"dependencies": [
+			"bits-ui@^2.20.0"
+		],
 		"registryDependencies": [],
 		"relativeUrl": "hover-card.json"
 	},
@@ -250,6 +328,9 @@
 	{
 		"name": "input-group",
 		"type": "registry:ui",
+		"dependencies": [
+			"tailwind-variants@^3.3.0"
+		],
 		"registryDependencies": [
 			"button",
 			"input",
@@ -260,12 +341,18 @@
 	{
 		"name": "input-otp",
 		"type": "registry:ui",
+		"dependencies": [
+			"bits-ui@^2.20.0"
+		],
 		"registryDependencies": [],
 		"relativeUrl": "input-otp.json"
 	},
 	{
 		"name": "item",
 		"type": "registry:ui",
+		"dependencies": [
+			"tailwind-variants@^3.3.0"
+		],
 		"registryDependencies": [
 			"separator"
 		],
@@ -274,6 +361,9 @@
 	{
 		"name": "kanban",
 		"type": "registry:ui",
+		"dependencies": [
+			"svelte-dnd-action@0.9.80"
+		],
 		"registryDependencies": [
 			"card",
 			"badge",
@@ -291,12 +381,18 @@
 	{
 		"name": "label",
 		"type": "registry:ui",
+		"dependencies": [
+			"bits-ui@^2.20.0"
+		],
 		"registryDependencies": [],
 		"relativeUrl": "label.json"
 	},
 	{
 		"name": "loading",
 		"type": "registry:ui",
+		"dependencies": [
+			"skullet@0.0.3"
+		],
 		"registryDependencies": [
 			"alert",
 			"empty",
@@ -307,12 +403,18 @@
 	{
 		"name": "marker",
 		"type": "registry:ui",
+		"dependencies": [
+			"tailwind-variants@^3.3.0"
+		],
 		"registryDependencies": [],
 		"relativeUrl": "marker.json"
 	},
 	{
 		"name": "menubar",
 		"type": "registry:ui",
+		"dependencies": [
+			"bits-ui@^2.20.0"
+		],
 		"registryDependencies": [],
 		"relativeUrl": "menubar.json"
 	},
@@ -335,6 +437,9 @@
 	{
 		"name": "message-scroller",
 		"type": "registry:ui",
+		"dependencies": [
+			"@shadcn-svelte/primitives@^0.0.1"
+		],
 		"registryDependencies": [
 			"button"
 		],
@@ -359,12 +464,19 @@
 	{
 		"name": "navigation-menu",
 		"type": "registry:ui",
+		"dependencies": [
+			"bits-ui@^2.20.0",
+			"tailwind-variants@^3.3.0"
+		],
 		"registryDependencies": [],
 		"relativeUrl": "navigation-menu.json"
 	},
 	{
 		"name": "pagination",
 		"type": "registry:ui",
+		"dependencies": [
+			"bits-ui@^2.20.0"
+		],
 		"registryDependencies": [
 			"button"
 		],
@@ -373,18 +485,27 @@
 	{
 		"name": "popover",
 		"type": "registry:ui",
+		"dependencies": [
+			"bits-ui@^2.20.0"
+		],
 		"registryDependencies": [],
 		"relativeUrl": "popover.json"
 	},
 	{
 		"name": "progress",
 		"type": "registry:ui",
+		"dependencies": [
+			"bits-ui@^2.20.0"
+		],
 		"registryDependencies": [],
 		"relativeUrl": "progress.json"
 	},
 	{
 		"name": "questionnaire",
 		"type": "registry:ui",
+		"dependencies": [
+			"@shadcn-svelte/primitives@^0.0.1"
+		],
 		"registryDependencies": [
 			"button"
 		],
@@ -393,12 +514,19 @@
 	{
 		"name": "radio-group",
 		"type": "registry:ui",
+		"dependencies": [
+			"bits-ui@^2.20.0"
+		],
 		"registryDependencies": [],
 		"relativeUrl": "radio-group.json"
 	},
 	{
 		"name": "range-calendar",
 		"type": "registry:ui",
+		"dependencies": [
+			"@internationalized/date@^3.12.0",
+			"bits-ui@^2.20.0"
+		],
 		"registryDependencies": [
 			"button"
 		],
@@ -445,6 +573,9 @@
 	{
 		"name": "record-table",
 		"type": "registry:ui",
+		"dependencies": [
+			"@tanstack/svelte-table@^9.0.0"
+		],
 		"registryDependencies": [
 			"table",
 			"button",
@@ -457,18 +588,27 @@
 	{
 		"name": "resizable",
 		"type": "registry:ui",
+		"dependencies": [
+			"paneforge@^1.0.2"
+		],
 		"registryDependencies": [],
 		"relativeUrl": "resizable.json"
 	},
 	{
 		"name": "scroll-area",
 		"type": "registry:ui",
+		"dependencies": [
+			"bits-ui@^2.20.0"
+		],
 		"registryDependencies": [],
 		"relativeUrl": "scroll-area.json"
 	},
 	{
 		"name": "select",
 		"type": "registry:ui",
+		"dependencies": [
+			"bits-ui@^2.20.0"
+		],
 		"registryDependencies": [
 			"separator"
 		],
@@ -477,6 +617,9 @@
 	{
 		"name": "separator",
 		"type": "registry:ui",
+		"dependencies": [
+			"bits-ui@^2.20.0"
+		],
 		"registryDependencies": [],
 		"relativeUrl": "separator.json"
 	},
@@ -493,6 +636,9 @@
 	{
 		"name": "sheet",
 		"type": "registry:ui",
+		"dependencies": [
+			"bits-ui@^2.20.0"
+		],
 		"registryDependencies": [
 			"button"
 		],
@@ -501,6 +647,10 @@
 	{
 		"name": "sidebar",
 		"type": "registry:ui",
+		"dependencies": [
+			"bits-ui@^2.20.0",
+			"tailwind-variants@^3.3.0"
+		],
 		"registryDependencies": [
 			"is-mobile",
 			"input",
@@ -515,6 +665,9 @@
 	{
 		"name": "sidebar-favorites",
 		"type": "registry:ui",
+		"dependencies": [
+			"svelte-dnd-action@0.9.80"
+		],
 		"registryDependencies": [
 			"collapsible",
 			"sidebar"
@@ -536,12 +689,19 @@
 	{
 		"name": "slider",
 		"type": "registry:ui",
+		"dependencies": [
+			"bits-ui@^2.20.0"
+		],
 		"registryDependencies": [],
 		"relativeUrl": "slider.json"
 	},
 	{
 		"name": "sonner",
 		"type": "registry:ui",
+		"dependencies": [
+			"mode-watcher@^1.1.0",
+			"svelte-sonner@^1.2.0"
+		],
 		"registryDependencies": [],
 		"relativeUrl": "sonner.json"
 	},
@@ -560,12 +720,18 @@
 	{
 		"name": "status-dot",
 		"type": "registry:ui",
+		"dependencies": [
+			"tailwind-variants@^3.3.0"
+		],
 		"registryDependencies": [],
 		"relativeUrl": "status-dot.json"
 	},
 	{
 		"name": "switch",
 		"type": "registry:ui",
+		"dependencies": [
+			"bits-ui@^2.20.0"
+		],
 		"registryDependencies": [],
 		"relativeUrl": "switch.json"
 	},
@@ -578,6 +744,10 @@
 	{
 		"name": "tabs",
 		"type": "registry:ui",
+		"dependencies": [
+			"bits-ui@^2.20.0",
+			"tailwind-variants@^3.3.0"
+		],
 		"registryDependencies": [],
 		"relativeUrl": "tabs.json"
 	},
@@ -602,12 +772,20 @@
 	{
 		"name": "toggle",
 		"type": "registry:ui",
+		"dependencies": [
+			"bits-ui@^2.20.0",
+			"tailwind-variants@^3.3.0"
+		],
 		"registryDependencies": [],
 		"relativeUrl": "toggle.json"
 	},
 	{
 		"name": "toggle-group",
 		"type": "registry:ui",
+		"dependencies": [
+			"bits-ui@^2.20.0",
+			"tailwind-variants@^3.3.0"
+		],
 		"registryDependencies": [
 			"toggle"
 		],
@@ -627,12 +805,18 @@
 	{
 		"name": "tooltip",
 		"type": "registry:ui",
+		"dependencies": [
+			"bits-ui@^2.20.0"
+		],
 		"registryDependencies": [],
 		"relativeUrl": "tooltip.json"
 	},
 	{
 		"name": "trace",
 		"type": "registry:ui",
+		"dependencies": [
+			"bits-ui@^2.20.0"
+		],
 		"registryDependencies": [
 			"collapsible"
 		],
@@ -659,6 +843,9 @@
 	{
 		"name": "calendar-01",
 		"type": "registry:block",
+		"dependencies": [
+			"@internationalized/date@^3.12.0"
+		],
 		"registryDependencies": [
 			"calendar"
 		],
@@ -667,6 +854,9 @@
 	{
 		"name": "calendar-02",
 		"type": "registry:block",
+		"dependencies": [
+			"@internationalized/date@^3.12.0"
+		],
 		"registryDependencies": [
 			"calendar"
 		],
@@ -675,6 +865,9 @@
 	{
 		"name": "calendar-03",
 		"type": "registry:block",
+		"dependencies": [
+			"@internationalized/date@^3.12.0"
+		],
 		"registryDependencies": [
 			"calendar"
 		],
@@ -683,6 +876,10 @@
 	{
 		"name": "calendar-04",
 		"type": "registry:block",
+		"dependencies": [
+			"@internationalized/date@^3.12.0",
+			"bits-ui@^2.20.0"
+		],
 		"registryDependencies": [
 			"range-calendar"
 		],
@@ -691,6 +888,10 @@
 	{
 		"name": "calendar-05",
 		"type": "registry:block",
+		"dependencies": [
+			"@internationalized/date@^3.12.0",
+			"bits-ui@^2.20.0"
+		],
 		"registryDependencies": [
 			"range-calendar"
 		],
@@ -699,6 +900,10 @@
 	{
 		"name": "calendar-06",
 		"type": "registry:block",
+		"dependencies": [
+			"@internationalized/date@^3.12.0",
+			"bits-ui@^2.20.0"
+		],
 		"registryDependencies": [
 			"range-calendar"
 		],
@@ -707,6 +912,10 @@
 	{
 		"name": "calendar-07",
 		"type": "registry:block",
+		"dependencies": [
+			"@internationalized/date@^3.12.0",
+			"bits-ui@^2.20.0"
+		],
 		"registryDependencies": [
 			"range-calendar"
 		],
@@ -715,6 +924,9 @@
 	{
 		"name": "calendar-08",
 		"type": "registry:block",
+		"dependencies": [
+			"@internationalized/date@^3.12.0"
+		],
 		"registryDependencies": [
 			"calendar"
 		],
@@ -723,6 +935,10 @@
 	{
 		"name": "calendar-09",
 		"type": "registry:block",
+		"dependencies": [
+			"@internationalized/date@^3.12.0",
+			"bits-ui@^2.20.0"
+		],
 		"registryDependencies": [
 			"range-calendar"
 		],
@@ -731,6 +947,9 @@
 	{
 		"name": "calendar-10",
 		"type": "registry:block",
+		"dependencies": [
+			"@internationalized/date@^3.12.0"
+		],
 		"registryDependencies": [
 			"card",
 			"calendar",
@@ -741,6 +960,10 @@
 	{
 		"name": "calendar-11",
 		"type": "registry:block",
+		"dependencies": [
+			"@internationalized/date@^3.12.0",
+			"bits-ui@^2.20.0"
+		],
 		"registryDependencies": [
 			"range-calendar"
 		],
@@ -749,6 +972,10 @@
 	{
 		"name": "calendar-12",
 		"type": "registry:block",
+		"dependencies": [
+			"@internationalized/date@^3.12.0",
+			"bits-ui@^2.20.0"
+		],
 		"registryDependencies": [
 			"card",
 			"select",
@@ -759,6 +986,9 @@
 	{
 		"name": "calendar-13",
 		"type": "registry:block",
+		"dependencies": [
+			"@internationalized/date@^3.12.0"
+		],
 		"registryDependencies": [
 			"select",
 			"calendar",
@@ -769,6 +999,9 @@
 	{
 		"name": "calendar-14",
 		"type": "registry:block",
+		"dependencies": [
+			"@internationalized/date@^3.12.0"
+		],
 		"registryDependencies": [
 			"calendar"
 		],
@@ -777,12 +1010,19 @@
 	{
 		"name": "calendar-15",
 		"type": "registry:block",
+		"dependencies": [
+			"@lucide/svelte@^1.27.0"
+		],
 		"registryDependencies": [],
 		"relativeUrl": "calendar-15.json"
 	},
 	{
 		"name": "calendar-16",
 		"type": "registry:block",
+		"dependencies": [
+			"@internationalized/date@^3.12.0",
+			"@lucide/svelte@^1.27.0"
+		],
 		"registryDependencies": [
 			"card",
 			"calendar",
@@ -794,6 +1034,9 @@
 	{
 		"name": "calendar-17",
 		"type": "registry:block",
+		"dependencies": [
+			"@internationalized/date@^3.12.0"
+		],
 		"registryDependencies": [
 			"card",
 			"calendar",
@@ -805,6 +1048,9 @@
 	{
 		"name": "calendar-18",
 		"type": "registry:block",
+		"dependencies": [
+			"@internationalized/date@^3.12.0"
+		],
 		"registryDependencies": [
 			"calendar"
 		],
@@ -813,6 +1059,9 @@
 	{
 		"name": "calendar-19",
 		"type": "registry:block",
+		"dependencies": [
+			"@internationalized/date@^3.12.0"
+		],
 		"registryDependencies": [
 			"card",
 			"calendar",
@@ -823,6 +1072,9 @@
 	{
 		"name": "calendar-20",
 		"type": "registry:block",
+		"dependencies": [
+			"@internationalized/date@^3.12.0"
+		],
 		"registryDependencies": [
 			"card",
 			"calendar",
@@ -833,6 +1085,10 @@
 	{
 		"name": "calendar-21",
 		"type": "registry:block",
+		"dependencies": [
+			"@internationalized/date@^3.12.0",
+			"bits-ui@^2.20.0"
+		],
 		"registryDependencies": [
 			"range-calendar"
 		],
@@ -841,6 +1097,10 @@
 	{
 		"name": "calendar-22",
 		"type": "registry:block",
+		"dependencies": [
+			"@internationalized/date@^3.12.0",
+			"@lucide/svelte@^1.27.0"
+		],
 		"registryDependencies": [
 			"popover",
 			"calendar",
@@ -852,6 +1112,11 @@
 	{
 		"name": "calendar-23",
 		"type": "registry:block",
+		"dependencies": [
+			"@internationalized/date@^3.12.0",
+			"@lucide/svelte@^1.27.0",
+			"bits-ui@^2.20.0"
+		],
 		"registryDependencies": [
 			"popover",
 			"range-calendar",
@@ -863,6 +1128,10 @@
 	{
 		"name": "calendar-24",
 		"type": "registry:block",
+		"dependencies": [
+			"@internationalized/date@^3.12.0",
+			"@lucide/svelte@^1.27.0"
+		],
 		"registryDependencies": [
 			"popover",
 			"calendar",
@@ -875,6 +1144,10 @@
 	{
 		"name": "calendar-25",
 		"type": "registry:block",
+		"dependencies": [
+			"@internationalized/date@^3.12.0",
+			"@lucide/svelte@^1.27.0"
+		],
 		"registryDependencies": [
 			"popover",
 			"calendar",
@@ -887,6 +1160,10 @@
 	{
 		"name": "calendar-26",
 		"type": "registry:block",
+		"dependencies": [
+			"@internationalized/date@^3.12.0",
+			"@lucide/svelte@^1.27.0"
+		],
 		"registryDependencies": [
 			"popover",
 			"calendar",
@@ -899,6 +1176,13 @@
 	{
 		"name": "calendar-27",
 		"type": "registry:block",
+		"dependencies": [
+			"@internationalized/date@^3.12.0",
+			"@lucide/svelte@^1.27.0",
+			"bits-ui@^2.20.0",
+			"d3-scale@^4.0.2",
+			"layerchart@^2.0.0"
+		],
 		"registryDependencies": [
 			"card",
 			"chart",
@@ -911,6 +1195,10 @@
 	{
 		"name": "calendar-28",
 		"type": "registry:block",
+		"dependencies": [
+			"@internationalized/date@^3.12.0",
+			"@lucide/svelte@^1.27.0"
+		],
 		"registryDependencies": [
 			"popover",
 			"calendar",
@@ -923,6 +1211,11 @@
 	{
 		"name": "calendar-29",
 		"type": "registry:block",
+		"dependencies": [
+			"@internationalized/date@^3.12.0",
+			"@lucide/svelte@^1.27.0",
+			"chrono-node@^2.9.0"
+		],
 		"registryDependencies": [
 			"popover",
 			"button",
@@ -935,6 +1228,12 @@
 	{
 		"name": "calendar-30",
 		"type": "registry:block",
+		"dependencies": [
+			"@internationalized/date@^3.12.0",
+			"@lucide/svelte@^1.27.0",
+			"bits-ui@^2.20.0",
+			"little-date@^1.2.1"
+		],
 		"registryDependencies": [
 			"popover",
 			"range-calendar",
@@ -946,6 +1245,11 @@
 	{
 		"name": "calendar-31",
 		"type": "registry:block",
+		"dependencies": [
+			"@internationalized/date@^3.12.0",
+			"@lucide/svelte@^1.27.0",
+			"little-date@^1.2.1"
+		],
 		"registryDependencies": [
 			"card",
 			"calendar",
@@ -956,6 +1260,10 @@
 	{
 		"name": "calendar-32",
 		"type": "registry:block",
+		"dependencies": [
+			"@internationalized/date@^3.12.0",
+			"@lucide/svelte@^1.27.0"
+		],
 		"registryDependencies": [
 			"drawer",
 			"calendar",
@@ -967,6 +1275,12 @@
 	{
 		"name": "chart-area-axes",
 		"type": "registry:block",
+		"dependencies": [
+			"@lucide/svelte@^1.27.0",
+			"d3-scale@^4.0.2",
+			"d3-shape@^3.2.0",
+			"layerchart@^2.0.0"
+		],
 		"registryDependencies": [
 			"card",
 			"chart"
@@ -976,6 +1290,12 @@
 	{
 		"name": "chart-area-default",
 		"type": "registry:block",
+		"dependencies": [
+			"@lucide/svelte@^1.27.0",
+			"d3-scale@^4.0.2",
+			"d3-shape@^3.2.0",
+			"layerchart@^2.0.0"
+		],
 		"registryDependencies": [
 			"card",
 			"chart"
@@ -985,6 +1305,12 @@
 	{
 		"name": "chart-area-gradient",
 		"type": "registry:block",
+		"dependencies": [
+			"@lucide/svelte@^1.27.0",
+			"d3-scale@^4.0.2",
+			"d3-shape@^3.2.0",
+			"layerchart@^2.0.0"
+		],
 		"registryDependencies": [
 			"card",
 			"chart"
@@ -994,6 +1320,12 @@
 	{
 		"name": "chart-area-icons",
 		"type": "registry:block",
+		"dependencies": [
+			"@lucide/svelte@^1.27.0",
+			"d3-scale@^4.0.2",
+			"d3-shape@^3.2.0",
+			"layerchart@^2.0.0"
+		],
 		"registryDependencies": [
 			"card",
 			"chart"
@@ -1003,6 +1335,11 @@
 	{
 		"name": "chart-area-interactive",
 		"type": "registry:block",
+		"dependencies": [
+			"d3-scale@^4.0.2",
+			"d3-shape@^3.2.0",
+			"layerchart@^2.0.0"
+		],
 		"registryDependencies": [
 			"card",
 			"chart",
@@ -1013,6 +1350,12 @@
 	{
 		"name": "chart-area-legend",
 		"type": "registry:block",
+		"dependencies": [
+			"@lucide/svelte@^1.27.0",
+			"d3-scale@^4.0.2",
+			"d3-shape@^3.2.0",
+			"layerchart@^2.0.0"
+		],
 		"registryDependencies": [
 			"card",
 			"chart"
@@ -1022,6 +1365,12 @@
 	{
 		"name": "chart-area-linear",
 		"type": "registry:block",
+		"dependencies": [
+			"@lucide/svelte@^1.27.0",
+			"d3-scale@^4.0.2",
+			"d3-shape@^3.2.0",
+			"layerchart@^2.0.0"
+		],
 		"registryDependencies": [
 			"card",
 			"chart"
@@ -1031,6 +1380,12 @@
 	{
 		"name": "chart-area-stacked-expand",
 		"type": "registry:block",
+		"dependencies": [
+			"@lucide/svelte@^1.27.0",
+			"d3-scale@^4.0.2",
+			"d3-shape@^3.2.0",
+			"layerchart@^2.0.0"
+		],
 		"registryDependencies": [
 			"card",
 			"chart"
@@ -1040,6 +1395,12 @@
 	{
 		"name": "chart-area-stacked",
 		"type": "registry:block",
+		"dependencies": [
+			"@lucide/svelte@^1.27.0",
+			"d3-scale@^4.0.2",
+			"d3-shape@^3.2.0",
+			"layerchart@^2.0.0"
+		],
 		"registryDependencies": [
 			"card",
 			"chart"
@@ -1049,6 +1410,12 @@
 	{
 		"name": "chart-area-step",
 		"type": "registry:block",
+		"dependencies": [
+			"@lucide/svelte@^1.27.0",
+			"d3-scale@^4.0.2",
+			"d3-shape@^3.2.0",
+			"layerchart@^2.0.0"
+		],
 		"registryDependencies": [
 			"card",
 			"chart"
@@ -1058,6 +1425,11 @@
 	{
 		"name": "chart-bar-active",
 		"type": "registry:block",
+		"dependencies": [
+			"@lucide/svelte@^1.27.0",
+			"d3-scale@^4.0.2",
+			"layerchart@^2.0.0"
+		],
 		"registryDependencies": [
 			"card",
 			"chart"
@@ -1067,6 +1439,11 @@
 	{
 		"name": "chart-bar-default",
 		"type": "registry:block",
+		"dependencies": [
+			"@lucide/svelte@^1.27.0",
+			"d3-scale@^4.0.2",
+			"layerchart@^2.0.0"
+		],
 		"registryDependencies": [
 			"card",
 			"chart"
@@ -1076,6 +1453,11 @@
 	{
 		"name": "chart-bar-horizontal",
 		"type": "registry:block",
+		"dependencies": [
+			"@lucide/svelte@^1.27.0",
+			"d3-scale@^4.0.2",
+			"layerchart@^2.0.0"
+		],
 		"registryDependencies": [
 			"card",
 			"chart"
@@ -1085,6 +1467,10 @@
 	{
 		"name": "chart-bar-interactive",
 		"type": "registry:block",
+		"dependencies": [
+			"d3-scale@^4.0.2",
+			"layerchart@^2.0.0"
+		],
 		"registryDependencies": [
 			"card",
 			"chart"
@@ -1094,6 +1480,11 @@
 	{
 		"name": "chart-bar-label-custom",
 		"type": "registry:block",
+		"dependencies": [
+			"@lucide/svelte@^1.27.0",
+			"d3-scale@^4.0.2",
+			"layerchart@^2.0.0"
+		],
 		"registryDependencies": [
 			"card",
 			"chart"
@@ -1103,6 +1494,11 @@
 	{
 		"name": "chart-bar-label",
 		"type": "registry:block",
+		"dependencies": [
+			"@lucide/svelte@^1.27.0",
+			"d3-scale@^4.0.2",
+			"layerchart@^2.0.0"
+		],
 		"registryDependencies": [
 			"card",
 			"chart"
@@ -1112,6 +1508,11 @@
 	{
 		"name": "chart-bar-mixed",
 		"type": "registry:block",
+		"dependencies": [
+			"@lucide/svelte@^1.27.0",
+			"d3-scale@^4.0.2",
+			"layerchart@^2.0.0"
+		],
 		"registryDependencies": [
 			"card",
 			"chart"
@@ -1121,6 +1522,11 @@
 	{
 		"name": "chart-bar-multiple",
 		"type": "registry:block",
+		"dependencies": [
+			"@lucide/svelte@^1.27.0",
+			"d3-scale@^4.0.2",
+			"layerchart@^2.0.0"
+		],
 		"registryDependencies": [
 			"card",
 			"chart"
@@ -1130,6 +1536,11 @@
 	{
 		"name": "chart-bar-negative",
 		"type": "registry:block",
+		"dependencies": [
+			"@lucide/svelte@^1.27.0",
+			"d3-scale@^4.0.2",
+			"layerchart@^2.0.0"
+		],
 		"registryDependencies": [
 			"card",
 			"chart"
@@ -1139,6 +1550,11 @@
 	{
 		"name": "chart-bar-stacked",
 		"type": "registry:block",
+		"dependencies": [
+			"@lucide/svelte@^1.27.0",
+			"d3-scale@^4.0.2",
+			"layerchart@^2.0.0"
+		],
 		"registryDependencies": [
 			"card",
 			"chart"
@@ -1148,6 +1564,12 @@
 	{
 		"name": "chart-line-default",
 		"type": "registry:block",
+		"dependencies": [
+			"@lucide/svelte@^1.27.0",
+			"d3-scale@^4.0.2",
+			"d3-shape@^3.2.0",
+			"layerchart@^2.0.0"
+		],
 		"registryDependencies": [
 			"card",
 			"chart"
@@ -1157,6 +1579,12 @@
 	{
 		"name": "chart-line-dots-colors",
 		"type": "registry:block",
+		"dependencies": [
+			"@lucide/svelte@^1.27.0",
+			"d3-scale@^4.0.2",
+			"d3-shape@^3.2.0",
+			"layerchart@^2.0.0"
+		],
 		"registryDependencies": [
 			"card",
 			"chart"
@@ -1166,6 +1594,12 @@
 	{
 		"name": "chart-line-dots-custom",
 		"type": "registry:block",
+		"dependencies": [
+			"@lucide/svelte@^1.27.0",
+			"d3-scale@^4.0.2",
+			"d3-shape@^3.2.0",
+			"layerchart@^2.0.0"
+		],
 		"registryDependencies": [
 			"card",
 			"chart"
@@ -1175,6 +1609,12 @@
 	{
 		"name": "chart-line-dots",
 		"type": "registry:block",
+		"dependencies": [
+			"@lucide/svelte@^1.27.0",
+			"d3-scale@^4.0.2",
+			"d3-shape@^3.2.0",
+			"layerchart@^2.0.0"
+		],
 		"registryDependencies": [
 			"card",
 			"chart"
@@ -1184,6 +1624,11 @@
 	{
 		"name": "chart-line-interactive",
 		"type": "registry:block",
+		"dependencies": [
+			"d3-scale@^4.0.2",
+			"d3-shape@^3.2.0",
+			"layerchart@^2.0.0"
+		],
 		"registryDependencies": [
 			"card",
 			"chart"
@@ -1193,6 +1638,12 @@
 	{
 		"name": "chart-line-label-custom",
 		"type": "registry:block",
+		"dependencies": [
+			"@lucide/svelte@^1.27.0",
+			"d3-scale@^4.0.2",
+			"d3-shape@^3.2.0",
+			"layerchart@^2.0.0"
+		],
 		"registryDependencies": [
 			"card",
 			"chart"
@@ -1202,6 +1653,12 @@
 	{
 		"name": "chart-line-label",
 		"type": "registry:block",
+		"dependencies": [
+			"@lucide/svelte@^1.27.0",
+			"d3-scale@^4.0.2",
+			"d3-shape@^3.2.0",
+			"layerchart@^2.0.0"
+		],
 		"registryDependencies": [
 			"card",
 			"chart"
@@ -1211,6 +1668,12 @@
 	{
 		"name": "chart-line-linear",
 		"type": "registry:block",
+		"dependencies": [
+			"@lucide/svelte@^1.27.0",
+			"d3-scale@^4.0.2",
+			"d3-shape@^3.2.0",
+			"layerchart@^2.0.0"
+		],
 		"registryDependencies": [
 			"card",
 			"chart"
@@ -1220,6 +1683,12 @@
 	{
 		"name": "chart-line-multiple",
 		"type": "registry:block",
+		"dependencies": [
+			"@lucide/svelte@^1.27.0",
+			"d3-scale@^4.0.2",
+			"d3-shape@^3.2.0",
+			"layerchart@^2.0.0"
+		],
 		"registryDependencies": [
 			"card",
 			"chart"
@@ -1229,6 +1698,12 @@
 	{
 		"name": "chart-line-step",
 		"type": "registry:block",
+		"dependencies": [
+			"@lucide/svelte@^1.27.0",
+			"d3-scale@^4.0.2",
+			"d3-shape@^3.2.0",
+			"layerchart@^2.0.0"
+		],
 		"registryDependencies": [
 			"card",
 			"chart"
@@ -1238,6 +1713,10 @@
 	{
 		"name": "chart-pie-donut-active",
 		"type": "registry:block",
+		"dependencies": [
+			"@lucide/svelte@^1.27.0",
+			"layerchart@^2.0.0"
+		],
 		"registryDependencies": [
 			"card",
 			"chart"
@@ -1247,6 +1726,10 @@
 	{
 		"name": "chart-pie-donut-text",
 		"type": "registry:block",
+		"dependencies": [
+			"@lucide/svelte@^1.27.0",
+			"layerchart@^2.0.0"
+		],
 		"registryDependencies": [
 			"card",
 			"chart"
@@ -1256,6 +1739,10 @@
 	{
 		"name": "chart-pie-donut",
 		"type": "registry:block",
+		"dependencies": [
+			"@lucide/svelte@^1.27.0",
+			"layerchart@^2.0.0"
+		],
 		"registryDependencies": [
 			"card",
 			"chart"
@@ -1265,6 +1752,10 @@
 	{
 		"name": "chart-pie-interactive",
 		"type": "registry:block",
+		"dependencies": [
+			"@lucide/svelte@^1.27.0",
+			"layerchart@^2.0.0"
+		],
 		"registryDependencies": [
 			"card",
 			"chart",
@@ -1275,6 +1766,10 @@
 	{
 		"name": "chart-pie-label-custom",
 		"type": "registry:block",
+		"dependencies": [
+			"@lucide/svelte@^1.27.0",
+			"layerchart@^2.0.0"
+		],
 		"registryDependencies": [
 			"card",
 			"chart"
@@ -1284,6 +1779,10 @@
 	{
 		"name": "chart-pie-label-list",
 		"type": "registry:block",
+		"dependencies": [
+			"@lucide/svelte@^1.27.0",
+			"layerchart@^2.0.0"
+		],
 		"registryDependencies": [
 			"card",
 			"chart"
@@ -1293,6 +1792,10 @@
 	{
 		"name": "chart-pie-label",
 		"type": "registry:block",
+		"dependencies": [
+			"@lucide/svelte@^1.27.0",
+			"layerchart@^2.0.0"
+		],
 		"registryDependencies": [
 			"card",
 			"chart"
@@ -1302,6 +1805,10 @@
 	{
 		"name": "chart-pie-legend",
 		"type": "registry:block",
+		"dependencies": [
+			"@lucide/svelte@^1.27.0",
+			"layerchart@^2.0.0"
+		],
 		"registryDependencies": [
 			"card",
 			"chart"
@@ -1311,6 +1818,9 @@
 	{
 		"name": "chart-pie-separator-none",
 		"type": "registry:block",
+		"dependencies": [
+			"@lucide/svelte@^1.27.0"
+		],
 		"registryDependencies": [
 			"card"
 		],
@@ -1319,6 +1829,10 @@
 	{
 		"name": "chart-pie-simple",
 		"type": "registry:block",
+		"dependencies": [
+			"@lucide/svelte@^1.27.0",
+			"layerchart@^2.0.0"
+		],
 		"registryDependencies": [
 			"card",
 			"chart"
@@ -1328,6 +1842,10 @@
 	{
 		"name": "chart-pie-stacked",
 		"type": "registry:block",
+		"dependencies": [
+			"@lucide/svelte@^1.27.0",
+			"layerchart@^2.0.0"
+		],
 		"registryDependencies": [
 			"card",
 			"chart"
@@ -1337,6 +1855,12 @@
 	{
 		"name": "chart-radar-default",
 		"type": "registry:block",
+		"dependencies": [
+			"@lucide/svelte@^1.27.0",
+			"d3-scale@^4.0.2",
+			"d3-shape@^3.2.0",
+			"layerchart@^2.0.0"
+		],
 		"registryDependencies": [
 			"card",
 			"chart"
@@ -1346,6 +1870,12 @@
 	{
 		"name": "chart-radar-dots",
 		"type": "registry:block",
+		"dependencies": [
+			"@lucide/svelte@^1.27.0",
+			"d3-scale@^4.0.2",
+			"d3-shape@^3.2.0",
+			"layerchart@^2.0.0"
+		],
 		"registryDependencies": [
 			"card",
 			"chart"
@@ -1355,6 +1885,12 @@
 	{
 		"name": "chart-radar-grid-circle-fill",
 		"type": "registry:block",
+		"dependencies": [
+			"@lucide/svelte@^1.27.0",
+			"d3-scale@^4.0.2",
+			"d3-shape@^3.2.0",
+			"layerchart@^2.0.0"
+		],
 		"registryDependencies": [
 			"card",
 			"chart"
@@ -1364,6 +1900,12 @@
 	{
 		"name": "chart-radar-grid-circle-no-lines",
 		"type": "registry:block",
+		"dependencies": [
+			"@lucide/svelte@^1.27.0",
+			"d3-scale@^4.0.2",
+			"d3-shape@^3.2.0",
+			"layerchart@^2.0.0"
+		],
 		"registryDependencies": [
 			"card",
 			"chart"
@@ -1373,6 +1915,12 @@
 	{
 		"name": "chart-radar-grid-circle",
 		"type": "registry:block",
+		"dependencies": [
+			"@lucide/svelte@^1.27.0",
+			"d3-scale@^4.0.2",
+			"d3-shape@^3.2.0",
+			"layerchart@^2.0.0"
+		],
 		"registryDependencies": [
 			"card",
 			"chart"
@@ -1382,6 +1930,12 @@
 	{
 		"name": "chart-radar-grid-custom",
 		"type": "registry:block",
+		"dependencies": [
+			"@lucide/svelte@^1.27.0",
+			"d3-scale@^4.0.2",
+			"d3-shape@^3.2.0",
+			"layerchart@^2.0.0"
+		],
 		"registryDependencies": [
 			"card",
 			"chart"
@@ -1391,6 +1945,12 @@
 	{
 		"name": "chart-radar-grid-fill",
 		"type": "registry:block",
+		"dependencies": [
+			"@lucide/svelte@^1.27.0",
+			"d3-scale@^4.0.2",
+			"d3-shape@^3.2.0",
+			"layerchart@^2.0.0"
+		],
 		"registryDependencies": [
 			"card",
 			"chart"
@@ -1400,6 +1960,12 @@
 	{
 		"name": "chart-radar-grid-none",
 		"type": "registry:block",
+		"dependencies": [
+			"@lucide/svelte@^1.27.0",
+			"d3-scale@^4.0.2",
+			"d3-shape@^3.2.0",
+			"layerchart@^2.0.0"
+		],
 		"registryDependencies": [
 			"card",
 			"chart"
@@ -1409,6 +1975,12 @@
 	{
 		"name": "chart-radar-icons",
 		"type": "registry:block",
+		"dependencies": [
+			"@lucide/svelte@^1.27.0",
+			"d3-scale@^4.0.2",
+			"d3-shape@^3.2.0",
+			"layerchart@^2.0.0"
+		],
 		"registryDependencies": [
 			"card",
 			"chart"
@@ -1418,6 +1990,12 @@
 	{
 		"name": "chart-radar-label-custom",
 		"type": "registry:block",
+		"dependencies": [
+			"@lucide/svelte@^1.27.0",
+			"d3-scale@^4.0.2",
+			"d3-shape@^3.2.0",
+			"layerchart@^2.0.0"
+		],
 		"registryDependencies": [
 			"card",
 			"chart"
@@ -1427,6 +2005,12 @@
 	{
 		"name": "chart-radar-legend",
 		"type": "registry:block",
+		"dependencies": [
+			"@lucide/svelte@^1.27.0",
+			"d3-scale@^4.0.2",
+			"d3-shape@^3.2.0",
+			"layerchart@^2.0.0"
+		],
 		"registryDependencies": [
 			"card",
 			"chart"
@@ -1436,6 +2020,12 @@
 	{
 		"name": "chart-radar-lines-only",
 		"type": "registry:block",
+		"dependencies": [
+			"@lucide/svelte@^1.27.0",
+			"d3-scale@^4.0.2",
+			"d3-shape@^3.2.0",
+			"layerchart@^2.0.0"
+		],
 		"registryDependencies": [
 			"card",
 			"chart"
@@ -1445,6 +2035,12 @@
 	{
 		"name": "chart-radar-multiple",
 		"type": "registry:block",
+		"dependencies": [
+			"@lucide/svelte@^1.27.0",
+			"d3-scale@^4.0.2",
+			"d3-shape@^3.2.0",
+			"layerchart@^2.0.0"
+		],
 		"registryDependencies": [
 			"card",
 			"chart"
@@ -1454,6 +2050,12 @@
 	{
 		"name": "chart-radar-radius",
 		"type": "registry:block",
+		"dependencies": [
+			"@lucide/svelte@^1.27.0",
+			"d3-scale@^4.0.2",
+			"d3-shape@^3.2.0",
+			"layerchart@^2.0.0"
+		],
 		"registryDependencies": [
 			"card",
 			"chart"
@@ -1463,6 +2065,10 @@
 	{
 		"name": "chart-radial-grid",
 		"type": "registry:block",
+		"dependencies": [
+			"@lucide/svelte@^1.27.0",
+			"layerchart@^2.0.0"
+		],
 		"registryDependencies": [
 			"card",
 			"chart"
@@ -1472,6 +2078,10 @@
 	{
 		"name": "chart-radial-label",
 		"type": "registry:block",
+		"dependencies": [
+			"@lucide/svelte@^1.27.0",
+			"layerchart@^2.0.0"
+		],
 		"registryDependencies": [
 			"card",
 			"chart"
@@ -1481,6 +2091,10 @@
 	{
 		"name": "chart-radial-shape",
 		"type": "registry:block",
+		"dependencies": [
+			"@lucide/svelte@^1.27.0",
+			"layerchart@^2.0.0"
+		],
 		"registryDependencies": [
 			"card",
 			"chart"
@@ -1490,6 +2104,10 @@
 	{
 		"name": "chart-radial-simple",
 		"type": "registry:block",
+		"dependencies": [
+			"@lucide/svelte@^1.27.0",
+			"layerchart@^2.0.0"
+		],
 		"registryDependencies": [
 			"card",
 			"chart"
@@ -1499,6 +2117,10 @@
 	{
 		"name": "chart-radial-stacked",
 		"type": "registry:block",
+		"dependencies": [
+			"@lucide/svelte@^1.27.0",
+			"layerchart@^2.0.0"
+		],
 		"registryDependencies": [
 			"card",
 			"chart"
@@ -1508,6 +2130,10 @@
 	{
 		"name": "chart-radial-text",
 		"type": "registry:block",
+		"dependencies": [
+			"@lucide/svelte@^1.27.0",
+			"layerchart@^2.0.0"
+		],
 		"registryDependencies": [
 			"card",
 			"chart"
@@ -1517,6 +2143,10 @@
 	{
 		"name": "chart-tooltip-advanced",
 		"type": "registry:block",
+		"dependencies": [
+			"d3-scale@^4.0.2",
+			"layerchart@^2.0.0"
+		],
 		"registryDependencies": [
 			"card",
 			"chart"
@@ -1526,6 +2156,10 @@
 	{
 		"name": "chart-tooltip-default",
 		"type": "registry:block",
+		"dependencies": [
+			"d3-scale@^4.0.2",
+			"layerchart@^2.0.0"
+		],
 		"registryDependencies": [
 			"card",
 			"chart"
@@ -1535,6 +2169,10 @@
 	{
 		"name": "chart-tooltip-formatter",
 		"type": "registry:block",
+		"dependencies": [
+			"d3-scale@^4.0.2",
+			"layerchart@^2.0.0"
+		],
 		"registryDependencies": [
 			"card",
 			"chart"
@@ -1544,6 +2182,11 @@
 	{
 		"name": "chart-tooltip-icons",
 		"type": "registry:block",
+		"dependencies": [
+			"@lucide/svelte@^1.27.0",
+			"d3-scale@^4.0.2",
+			"layerchart@^2.0.0"
+		],
 		"registryDependencies": [
 			"card",
 			"chart"
@@ -1553,6 +2196,10 @@
 	{
 		"name": "chart-tooltip-indicator-line",
 		"type": "registry:block",
+		"dependencies": [
+			"d3-scale@^4.0.2",
+			"layerchart@^2.0.0"
+		],
 		"registryDependencies": [
 			"card",
 			"chart"
@@ -1562,6 +2209,10 @@
 	{
 		"name": "chart-tooltip-indicator-none",
 		"type": "registry:block",
+		"dependencies": [
+			"d3-scale@^4.0.2",
+			"layerchart@^2.0.0"
+		],
 		"registryDependencies": [
 			"card",
 			"chart"
@@ -1571,6 +2222,10 @@
 	{
 		"name": "chart-tooltip-label-custom",
 		"type": "registry:block",
+		"dependencies": [
+			"d3-scale@^4.0.2",
+			"layerchart@^2.0.0"
+		],
 		"registryDependencies": [
 			"card",
 			"chart"
@@ -1580,6 +2235,10 @@
 	{
 		"name": "chart-tooltip-label-formatter",
 		"type": "registry:block",
+		"dependencies": [
+			"d3-scale@^4.0.2",
+			"layerchart@^2.0.0"
+		],
 		"registryDependencies": [
 			"card",
 			"chart"
@@ -1589,6 +2248,10 @@
 	{
 		"name": "chart-tooltip-label-none",
 		"type": "registry:block",
+		"dependencies": [
+			"d3-scale@^4.0.2",
+			"layerchart@^2.0.0"
+		],
 		"registryDependencies": [
 			"card",
 			"chart"
@@ -1598,6 +2261,18 @@
 	{
 		"name": "dashboard-01",
 		"type": "registry:block",
+		"dependencies": [
+			"@dnd-kit-svelte/svelte@^0.1.5",
+			"@dnd-kit/abstract@^0.1.21",
+			"@dnd-kit/helpers@^0.1.21",
+			"@tabler/icons-svelte@^3.40.0",
+			"@tanstack/svelte-table@^9.0.0",
+			"d3-scale@^4.0.2",
+			"d3-shape@^3.2.0",
+			"layerchart@^2.0.0",
+			"svelte-sonner@^1.2.0",
+			"zod@^4.6.7"
+		],
 		"registryDependencies": [
 			"sidebar",
 			"card",
@@ -1622,6 +2297,9 @@
 	{
 		"name": "demo-sidebar-controlled",
 		"type": "registry:block",
+		"dependencies": [
+			"@lucide/svelte@^1.27.0"
+		],
 		"registryDependencies": [
 			"sidebar",
 			"button"
@@ -1631,6 +2309,9 @@
 	{
 		"name": "demo-sidebar-footer",
 		"type": "registry:block",
+		"dependencies": [
+			"@lucide/svelte@^1.27.0"
+		],
 		"registryDependencies": [
 			"dropdown-menu",
 			"sidebar"
@@ -1640,6 +2321,10 @@
 	{
 		"name": "demo-sidebar-group-action",
 		"type": "registry:block",
+		"dependencies": [
+			"@lucide/svelte@^1.27.0",
+			"svelte-sonner@^1.2.0"
+		],
 		"registryDependencies": [
 			"sidebar",
 			"sonner"
@@ -1649,6 +2334,9 @@
 	{
 		"name": "demo-sidebar-group-collapsible",
 		"type": "registry:block",
+		"dependencies": [
+			"@lucide/svelte@^1.27.0"
+		],
 		"registryDependencies": [
 			"collapsible",
 			"sidebar"
@@ -1658,6 +2346,9 @@
 	{
 		"name": "demo-sidebar-group",
 		"type": "registry:block",
+		"dependencies": [
+			"@lucide/svelte@^1.27.0"
+		],
 		"registryDependencies": [
 			"sidebar"
 		],
@@ -1666,6 +2357,9 @@
 	{
 		"name": "demo-sidebar-header",
 		"type": "registry:block",
+		"dependencies": [
+			"@lucide/svelte@^1.27.0"
+		],
 		"registryDependencies": [
 			"dropdown-menu",
 			"sidebar"
@@ -1675,6 +2369,9 @@
 	{
 		"name": "demo-sidebar-icon",
 		"type": "registry:block",
+		"dependencies": [
+			"@lucide/svelte@^1.27.0"
+		],
 		"registryDependencies": [
 			"avatar",
 			"collapsible",
@@ -1687,6 +2384,9 @@
 	{
 		"name": "demo-sidebar-menu-action",
 		"type": "registry:block",
+		"dependencies": [
+			"@lucide/svelte@^1.27.0"
+		],
 		"registryDependencies": [
 			"dropdown-menu",
 			"sidebar"
@@ -1696,6 +2396,9 @@
 	{
 		"name": "demo-sidebar-menu-badge",
 		"type": "registry:block",
+		"dependencies": [
+			"@lucide/svelte@^1.27.0"
+		],
 		"registryDependencies": [
 			"sidebar"
 		],
@@ -1704,6 +2407,9 @@
 	{
 		"name": "demo-sidebar-menu-collapsible",
 		"type": "registry:block",
+		"dependencies": [
+			"@lucide/svelte@^1.27.0"
+		],
 		"registryDependencies": [
 			"collapsible",
 			"sidebar"
@@ -1721,6 +2427,9 @@
 	{
 		"name": "demo-sidebar-menu",
 		"type": "registry:block",
+		"dependencies": [
+			"@lucide/svelte@^1.27.0"
+		],
 		"registryDependencies": [
 			"sidebar"
 		],
@@ -1729,6 +2438,9 @@
 	{
 		"name": "demo-sidebar",
 		"type": "registry:block",
+		"dependencies": [
+			"@lucide/svelte@^1.27.0"
+		],
 		"registryDependencies": [
 			"sidebar"
 		],
@@ -1748,6 +2460,9 @@
 	{
 		"name": "login-02",
 		"type": "registry:block",
+		"dependencies": [
+			"@lucide/svelte@^1.27.0"
+		],
 		"registryDependencies": [
 			"button",
 			"field",
@@ -1758,6 +2473,9 @@
 	{
 		"name": "login-03",
 		"type": "registry:block",
+		"dependencies": [
+			"@lucide/svelte@^1.27.0"
+		],
 		"registryDependencies": [
 			"card",
 			"button",
@@ -1780,6 +2498,9 @@
 	{
 		"name": "login-05",
 		"type": "registry:block",
+		"dependencies": [
+			"@lucide/svelte@^1.27.0"
+		],
 		"registryDependencies": [
 			"button",
 			"field",
@@ -1790,6 +2511,10 @@
 	{
 		"name": "new-components-01",
 		"type": "registry:block",
+		"dependencies": [
+			"@lucide/svelte@^1.27.0",
+			"@tabler/icons-svelte@^3.40.0"
+		],
 		"registryDependencies": [
 			"field",
 			"tooltip",
@@ -1841,6 +2566,9 @@
 	{
 		"name": "otp-03",
 		"type": "registry:block",
+		"dependencies": [
+			"@lucide/svelte@^1.27.0"
+		],
 		"registryDependencies": [
 			"card",
 			"field",
@@ -1863,6 +2591,9 @@
 	{
 		"name": "otp-05",
 		"type": "registry:block",
+		"dependencies": [
+			"@lucide/svelte@^1.27.0"
+		],
 		"registryDependencies": [
 			"field",
 			"input-otp",
@@ -1873,6 +2604,9 @@
 	{
 		"name": "sidebar-01",
 		"type": "registry:block",
+		"dependencies": [
+			"@lucide/svelte@^1.27.0"
+		],
 		"registryDependencies": [
 			"breadcrumb",
 			"sidebar",
@@ -1885,6 +2619,9 @@
 	{
 		"name": "sidebar-02",
 		"type": "registry:block",
+		"dependencies": [
+			"@lucide/svelte@^1.27.0"
+		],
 		"registryDependencies": [
 			"breadcrumb",
 			"sidebar",
@@ -1898,6 +2635,9 @@
 	{
 		"name": "sidebar-03",
 		"type": "registry:block",
+		"dependencies": [
+			"@lucide/svelte@^1.27.0"
+		],
 		"registryDependencies": [
 			"breadcrumb",
 			"sidebar",
@@ -1908,6 +2648,9 @@
 	{
 		"name": "sidebar-04",
 		"type": "registry:block",
+		"dependencies": [
+			"@lucide/svelte@^1.27.0"
+		],
 		"registryDependencies": [
 			"breadcrumb",
 			"sidebar",
@@ -1918,6 +2661,9 @@
 	{
 		"name": "sidebar-05",
 		"type": "registry:block",
+		"dependencies": [
+			"@lucide/svelte@^1.27.0"
+		],
 		"registryDependencies": [
 			"breadcrumb",
 			"sidebar",
@@ -1930,6 +2676,9 @@
 	{
 		"name": "sidebar-06",
 		"type": "registry:block",
+		"dependencies": [
+			"@lucide/svelte@^1.27.0"
+		],
 		"registryDependencies": [
 			"breadcrumb",
 			"sidebar",
@@ -1943,6 +2692,9 @@
 	{
 		"name": "sidebar-07",
 		"type": "registry:block",
+		"dependencies": [
+			"@lucide/svelte@^1.27.0"
+		],
 		"registryDependencies": [
 			"breadcrumb",
 			"sidebar",
@@ -1956,6 +2708,9 @@
 	{
 		"name": "sidebar-08",
 		"type": "registry:block",
+		"dependencies": [
+			"@lucide/svelte@^1.27.0"
+		],
 		"registryDependencies": [
 			"breadcrumb",
 			"sidebar",
@@ -1969,6 +2724,9 @@
 	{
 		"name": "sidebar-09",
 		"type": "registry:block",
+		"dependencies": [
+			"@lucide/svelte@^1.27.0"
+		],
 		"registryDependencies": [
 			"breadcrumb",
 			"sidebar",
@@ -1983,6 +2741,9 @@
 	{
 		"name": "sidebar-10",
 		"type": "registry:block",
+		"dependencies": [
+			"@lucide/svelte@^1.27.0"
+		],
 		"registryDependencies": [
 			"breadcrumb",
 			"sidebar",
@@ -1997,6 +2758,9 @@
 	{
 		"name": "sidebar-11",
 		"type": "registry:block",
+		"dependencies": [
+			"@lucide/svelte@^1.27.0"
+		],
 		"registryDependencies": [
 			"breadcrumb",
 			"sidebar",
@@ -2008,6 +2772,9 @@
 	{
 		"name": "sidebar-12",
 		"type": "registry:block",
+		"dependencies": [
+			"@lucide/svelte@^1.27.0"
+		],
 		"registryDependencies": [
 			"breadcrumb",
 			"sidebar",
@@ -2022,6 +2789,9 @@
 	{
 		"name": "sidebar-13",
 		"type": "registry:block",
+		"dependencies": [
+			"@lucide/svelte@^1.27.0"
+		],
 		"registryDependencies": [
 			"breadcrumb",
 			"dialog",
@@ -2042,6 +2812,9 @@
 	{
 		"name": "sidebar-15",
 		"type": "registry:block",
+		"dependencies": [
+			"@lucide/svelte@^1.27.0"
+		],
 		"registryDependencies": [
 			"breadcrumb",
 			"sidebar",
@@ -2056,6 +2829,9 @@
 	{
 		"name": "sidebar-16",
 		"type": "registry:block",
+		"dependencies": [
+			"@lucide/svelte@^1.27.0"
+		],
 		"registryDependencies": [
 			"sidebar",
 			"collapsible",
@@ -2082,6 +2858,9 @@
 	{
 		"name": "signup-02",
 		"type": "registry:block",
+		"dependencies": [
+			"@lucide/svelte@^1.27.0"
+		],
 		"registryDependencies": [
 			"field",
 			"button",
@@ -2092,6 +2871,9 @@
 	{
 		"name": "signup-03",
 		"type": "registry:block",
+		"dependencies": [
+			"@lucide/svelte@^1.27.0"
+		],
 		"registryDependencies": [
 			"card",
 			"field",
@@ -2114,6 +2896,9 @@
 	{
 		"name": "signup-05",
 		"type": "registry:block",
+		"dependencies": [
+			"@lucide/svelte@^1.27.0"
+		],
 		"registryDependencies": [
 			"field",
 			"button",
@@ -2130,6 +2915,9 @@
 	{
 		"name": "use-highlighted-code",
 		"type": "registry:hook",
+		"dependencies": [
+			"shiki@^3.20.0"
+		],
 		"registryDependencies": [
 			"highlighter"
 		],
@@ -2144,6 +2932,9 @@
 	{
 		"name": "highlighter",
 		"type": "registry:lib",
+		"dependencies": [
+			"shiki@^3.20.0"
+		],
 		"registryDependencies": [],
 		"relativeUrl": "highlighter.json"
 	},

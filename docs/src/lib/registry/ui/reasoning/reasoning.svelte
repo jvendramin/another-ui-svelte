@@ -86,44 +86,6 @@
 
 	const ms = $derived(duration ?? elapsed);
 	const failed = $derived(steps.some((s) => s.status === "error"));
-
-	const KIND_ICONS = {
-		think: {
-			lucide: "BrainIcon",
-			tabler: "IconBrain",
-			hugeicons: "AiBrainIcon",
-			phosphor: "BrainIcon",
-			remixicon: "RiBrainLine",
-		},
-		search: {
-			lucide: "SearchIcon",
-			tabler: "IconSearch",
-			hugeicons: "Search01Icon",
-			phosphor: "MagnifyingGlassIcon",
-			remixicon: "RiSearchLine",
-		},
-		read: {
-			lucide: "BookOpenIcon",
-			tabler: "IconBook",
-			hugeicons: "BookOpen02Icon",
-			phosphor: "BookOpenIcon",
-			remixicon: "RiBookOpenLine",
-		},
-		code: {
-			lucide: "CodeIcon",
-			tabler: "IconCode",
-			hugeicons: "CodeIcon",
-			phosphor: "CodeIcon",
-			remixicon: "RiCodeLine",
-		},
-		tool: {
-			lucide: "WrenchIcon",
-			tabler: "IconTool",
-			hugeicons: "Wrench01Icon",
-			phosphor: "WrenchIcon",
-			remixicon: "RiToolsLine",
-		},
-	} as const;
 </script>
 
 <Collapsible.Root
@@ -136,7 +98,14 @@
 	<Collapsible.Trigger
 		class="flex w-fit max-w-full min-w-0 cursor-pointer items-center gap-1.5 rounded-md py-1 text-muted-foreground outline-none hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50"
 	>
-		<IconPlaceholder {...KIND_ICONS.think} class="size-4 shrink-0" />
+		<IconPlaceholder
+			lucide="BrainIcon"
+			tabler="IconBrain"
+			hugeicons="AiBrainIcon"
+			phosphor="BrainIcon"
+			remixicon="RiBrainLine"
+			class="size-4 shrink-0"
+		/>
 		{#if streaming}
 			<span class="flex min-w-0 items-center gap-1.5">
 				<ShimmerText class="truncate">{label}...</ShimmerText>
@@ -193,7 +162,52 @@
 								class="size-3.5"
 							/>
 						{:else}
-							<IconPlaceholder {...KIND_ICONS[step.kind]} class="size-3.5" />
+							{#if step.kind === "search"}
+								<IconPlaceholder
+									lucide="SearchIcon"
+									tabler="IconSearch"
+									hugeicons="Search01Icon"
+									phosphor="MagnifyingGlassIcon"
+									remixicon="RiSearchLine"
+									class="size-3.5"
+								/>
+							{:else if step.kind === "read"}
+								<IconPlaceholder
+									lucide="BookOpenIcon"
+									tabler="IconBook"
+									hugeicons="BookOpen02Icon"
+									phosphor="BookOpenIcon"
+									remixicon="RiBookOpenLine"
+									class="size-3.5"
+								/>
+							{:else if step.kind === "code"}
+								<IconPlaceholder
+									lucide="CodeIcon"
+									tabler="IconCode"
+									hugeicons="CodeIcon"
+									phosphor="CodeIcon"
+									remixicon="RiCodeLine"
+									class="size-3.5"
+								/>
+							{:else if step.kind === "tool"}
+								<IconPlaceholder
+									lucide="WrenchIcon"
+									tabler="IconTool"
+									hugeicons="Wrench01Icon"
+									phosphor="WrenchIcon"
+									remixicon="RiToolsLine"
+									class="size-3.5"
+								/>
+							{:else}
+								<IconPlaceholder
+									lucide="BrainIcon"
+									tabler="IconBrain"
+									hugeicons="AiBrainIcon"
+									phosphor="BrainIcon"
+									remixicon="RiBrainLine"
+									class="size-3.5"
+								/>
+							{/if}
 						{/if}
 					</span>
 					<div class="flex min-w-0 flex-1 flex-col gap-1 pt-px">

@@ -13,6 +13,63 @@ const REGISTRY_LIB_PATH = "$lib/registry/lib/";
 
 const tsParser = acorn.Parser.extend(tsPlugin());
 
+// npm packages an item imports are declared on the item, so `shadcn-svelte add` installs them. A bare import is a
+// dependency unless it is one of these: the framework, the app's own aliases, or a Node built-in.
+const NOT_A_DEPENDENCY = (name: string) =>
+	name === "svelte" ||
+	name === "@sveltejs/kit" ||
+	name.startsWith("node:") ||
+	["fs", "path", "url", "os", "crypto", "util", "child_process"].includes(name);
+
+function readJson(file: string): Record<string, unknown> {
+	return JSON.parse(fs.readFileSync(file, "utf8")) as Record<string, unknown>;
+}
+
+// The version each package is declared with in the docs app, so an app gets a range the registry was built against.
+// A workspace package (the primitives) has no range of its own, so its published version is used.
+const DOCS_PACKAGE_VERSIONS: Record<string, string> = (() => {
+	const pkg = readJson(path.resolve("package.json")) as {
+		dependencies?: Record<string, string>;
+		devDependencies?: Record<string, string>;
+	};
+	const versions = { ...pkg.devDependencies, ...pkg.dependencies };
+
+	// Workspace packages are found by the name in their own package.json (the folder name can differ).
+	const workspace = new Map<string, string>();
+	const packagesDir = path.resolve("..", "packages");
+	for (const dir of fs.readdirSync(packagesDir)) {
+		const file = path.join(packagesDir, dir, "package.json");
+		if (!fs.existsSync(file)) continue;
+		const own = readJson(file) as { name?: string; version?: string };
+		if (own.name && own.version) workspace.set(own.name, own.version);
+	}
+	for (const [name, range] of Object.entries(versions)) {
+		if (range.startsWith("workspace:")) {
+			const version = workspace.get(name);
+			versions[name] = version ? `^${version}` : "latest";
+		}
+	}
+	return versions;
+})();
+
+/** The package a bare import specifier belongs to: `shiki/core` is `shiki`, `@scope/pkg/sub` is `@scope/pkg`. */
+function packageOf(specifier: string): string {
+	const parts = specifier.split("/");
+	return specifier.startsWith("@") ? parts.slice(0, 2).join("/") : parts[0]!;
+}
+
+/** `name@range` for an npm package, or the bare name when the docs app does not pin it. */
+function withVersion(name: string): string {
+	const range = DOCS_PACKAGE_VERSIONS[name];
+	return range ? `${name}@${range}` : name;
+}
+
+/** The item's `dependencies` field, left out when empty so items without npm imports stay as they were. */
+function npmField(deps: Iterable<string>): { dependencies?: string[] } {
+	const list = [...new Set([...deps].map(withVersion))].sort();
+	return list.length ? { dependencies: list } : {};
+}
+
 type RegistryItems = Registry["items"];
 type RegistryItemFiles = Registry["items"][number]["files"];
 
@@ -59,6 +116,7 @@ async function buildUIRegistry(
 
 	const fileEntries = dir.filter((d) => d.isFile());
 	const registryDependencies = new Set<string>();
+	const npmDependencies = new Set<string>();
 
 	let meta: Partial<RegistryItems[number]> = {};
 	const files: RegistryItemFiles = [];
@@ -73,6 +131,8 @@ async function buildUIRegistry(
 				meta = registryItemSchema.parse(JSON.parse(source));
 				// dependencies that can't be inferred from imports (e.g. a hook used alongside the component)
 				meta.registryDependencies?.forEach((dep) => registryDependencies.add(dep));
+				// Declared by hand, for a package the imports do not show.
+				meta.dependencies?.forEach((dep) => npmDependencies.add(packageOf(dep)));
 				return;
 			}
 
@@ -84,6 +144,7 @@ async function buildUIRegistry(
 			const deps = await getFileDependencies(filepath, source);
 			if (!deps) return;
 			deps.registryDependencies.forEach((dep) => registryDependencies.add(dep));
+			deps.npmDependencies.forEach((dep) => npmDependencies.add(dep));
 		})
 	);
 
@@ -93,6 +154,7 @@ async function buildUIRegistry(
 		files,
 		name: componentName,
 		registryDependencies: Array.from(registryDependencies),
+		...npmField(npmDependencies),
 	} satisfies RegistryItems[number];
 }
 
@@ -105,12 +167,13 @@ async function crawlExamples(rootPath: string): Promise<RegistryItems> {
 			const filepath = path.join(rootPath, dirent.name);
 			const source = fs.readFileSync(filepath, { encoding: "utf8" });
 			const relativePath = path.relative(process.cwd(), filepath);
-			const { registryDependencies } = await getFileDependencies(filepath, source);
+			const { registryDependencies, npmDependencies } = await getFileDependencies(filepath, source);
 			return {
 				name,
 				type: "registry:example" as const,
 				files: [{ path: relativePath, type: "registry:component" as const }],
 				registryDependencies: Array.from(registryDependencies),
+				...npmField(npmDependencies),
 			};
 		})
 	);
@@ -122,6 +185,7 @@ async function buildBlockRegistry(
 ): Promise<RegistryItems[number]> {
 	const dir = fs.readdirSync(blockPath, { withFileTypes: true, recursive: true });
 	const registryDependencies = new Set<string>();
+	const npmDependencies = new Set<string>();
 
 	const pagesNames = ["+page.svelte"];
 	const fileNames = ["data.json", "data.ts"];
@@ -141,7 +205,10 @@ async function buildBlockRegistry(
 			const source = fs.readFileSync(filepath, { encoding: "utf8" });
 
 			const deps = await getFileDependencies(filepath, source);
-			if (deps) deps.registryDependencies.forEach((dep) => registryDependencies.add(dep));
+			if (deps) {
+				deps.registryDependencies.forEach((dep) => registryDependencies.add(dep));
+				deps.npmDependencies.forEach((dep) => npmDependencies.add(dep));
+			}
 
 			return { path: relativePath, type } satisfies RegistryItemFiles[number];
 		})
@@ -152,6 +219,7 @@ async function buildBlockRegistry(
 		files,
 		name: blockName,
 		registryDependencies: Array.from(registryDependencies),
+		...npmField(npmDependencies),
 	} satisfies RegistryItems[number];
 }
 
@@ -168,12 +236,13 @@ async function crawlBlocks(rootPath: string): Promise<RegistryItems> {
 			const [name] = dirent.name.split(".svelte");
 			const source = fs.readFileSync(filepath, { encoding: "utf8" });
 			const relativePath = path.relative(process.cwd(), filepath);
-			const { registryDependencies } = await getFileDependencies(filepath, source);
+			const { registryDependencies, npmDependencies } = await getFileDependencies(filepath, source);
 			return {
 				name,
 				type: "registry:block" as const,
 				files: [{ path: relativePath, type: "registry:component" as const }],
 				registryDependencies: Array.from(registryDependencies),
+				...npmField(npmDependencies),
 			};
 		})
 	).then((results) => results.filter((r) => r !== null));
@@ -188,12 +257,13 @@ async function crawlLib(rootPath: string): Promise<RegistryItems> {
 			const filepath = path.join(rootPath, dirent.name);
 			const source = fs.readFileSync(filepath, { encoding: "utf8" });
 			const relativePath = path.relative(process.cwd(), filepath);
-			const { registryDependencies } = await getFileDependencies(filepath, source);
+			const { registryDependencies, npmDependencies } = await getFileDependencies(filepath, source);
 			return {
 				name,
 				type: "registry:lib" as const,
 				files: [{ path: relativePath, type: "registry:lib" as const }],
 				registryDependencies: Array.from(registryDependencies),
+				...npmField(npmDependencies),
 			};
 		})
 	);
@@ -287,12 +357,13 @@ async function crawlHooks(rootPath: string): Promise<RegistryItems> {
 			const filepath = path.join(rootPath, dirent.name);
 			const source = fs.readFileSync(filepath, { encoding: "utf8" });
 			const relativePath = path.relative(process.cwd(), filepath);
-			const { registryDependencies } = await getFileDependencies(filepath, source);
+			const { registryDependencies, npmDependencies } = await getFileDependencies(filepath, source);
 			return {
 				name,
 				type: "registry:hook" as const,
 				files: [{ path: relativePath, type: "registry:hook" as const }],
 				registryDependencies: Array.from(registryDependencies),
+				...npmField(npmDependencies),
 			};
 		})
 	);
@@ -301,7 +372,7 @@ async function crawlHooks(rootPath: string): Promise<RegistryItems> {
 async function getFileDependencies(
 	filename: string,
 	content: string
-): Promise<{ registryDependencies: Set<string> }> {
+): Promise<{ registryDependencies: Set<string>; npmDependencies: Set<string> }> {
 	let ast: unknown;
 	let moduleAst: unknown;
 	let fragmentAst: unknown;
@@ -320,6 +391,7 @@ async function getFileDependencies(
 	}
 
 	const registryDependencies = new Set<string>();
+	const npmDependencies = new Set<string>();
 
 	const enter = (node: Node) => {
 		// A static `import x from "..."` or a dynamic `import("...")` with a literal path.
@@ -333,6 +405,12 @@ async function getFileDependencies(
 		if (isStatic || isDynamic) {
 			// @ts-expect-error both node kinds carry source.value here
 			const source = node.source.value as string;
+
+			// A bare specifier is an npm package (relative paths and the `$lib`, `$app` aliases are not).
+			if (!source.startsWith(".") && !source.startsWith("$") && !source.startsWith("/")) {
+				const name = packageOf(source);
+				if (!NOT_A_DEPENDENCY(name)) npmDependencies.add(name);
+			}
 
 			if (source.startsWith(REGISTRY_DEPENDENCY) && source !== UTILS_PATH) {
 				if (source.startsWith(REGISTRY_LIB_PATH)) {
@@ -362,5 +440,5 @@ async function getFileDependencies(
 		walk(fragmentAst, { enter });
 	}
 
-	return { registryDependencies };
+	return { registryDependencies, npmDependencies };
 }

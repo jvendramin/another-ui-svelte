@@ -2,6 +2,9 @@
 	"$schema": "https://shadcn-svelte.com/schema/registry-item.json",
 	"name": "questionnaire",
 	"type": "registry:ui",
+	"dependencies": [
+		"@shadcn-svelte/primitives@^0.0.1"
+	],
 	"devDependencies": [
 		"@shadcn-svelte/primitives@^0.0.1"
 	],

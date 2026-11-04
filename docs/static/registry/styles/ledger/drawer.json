@@ -2,6 +2,9 @@
 	"$schema": "https://shadcn-svelte.com/schema/registry-item.json",
 	"name": "drawer",
 	"type": "registry:ui",
+	"dependencies": [
+		"vaul-svelte@1.0.0-next.7"
+	],
 	"devDependencies": [
 		"vaul-svelte@next"
 	],

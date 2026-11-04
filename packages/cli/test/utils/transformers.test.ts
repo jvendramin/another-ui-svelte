@@ -146,6 +146,32 @@ describe("transformIcons", () => {
 		expect(result.devDependencies).toEqual(["@lucide/svelte"]);
 	});
 
+	it("imports an icon once when the same placeholder appears twice", async () => {
+		const twice = `
+<script lang="ts">
+	import IconPlaceholder from "$lib/components/icon-placeholder/icon-placeholder.svelte";
+	let { open } = $props();
+</script>
+
+{#if open}
+	<IconPlaceholder lucide="ChevronDownIcon" tabler="IconChevronDown" hugeicons="ArrowDown01Icon" phosphor="CaretDownIcon" remixicon="RiArrowDownSLine" />
+{:else}
+	<IconPlaceholder lucide="ChevronDownIcon" tabler="IconChevronDown" hugeicons="ArrowDown01Icon" phosphor="CaretDownIcon" remixicon="RiArrowDownSLine" class="mt-0.5" />
+{/if}
+`.trim();
+
+		for (const library of ["lucide", "tabler", "hugeicons", "phosphor", "remixicon"] as const) {
+			const result = await transformIcons({
+				content: twice,
+				filePath: "twice.svelte",
+				config: getConfig(library),
+			});
+			const imports = (result.content ?? "").split("\n").filter((l) => l.trim().startsWith("import "));
+			expect(new Set(imports).size, library).toBe(imports.length);
+			expect(imports.length, library).toBeGreaterThan(0);
+		}
+	});
+
 	it("lucide: correctly adds restProps", async () => {
 		const result = await transformIcons({
 			content: restPropsInput,

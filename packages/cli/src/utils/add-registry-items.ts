@@ -33,6 +33,8 @@ type AddRegistryItemsProps = {
 	silent?: boolean;
 	only?: ApplyOnly[];
 	skipExisting?: boolean;
+	/** `--yes`: never ask. Existing files are kept unless `overwrite` is also set. */
+	yes?: boolean;
 	forceStylesheet?: boolean;
 };
 
@@ -98,8 +100,16 @@ export async function addRegistryItems(opts: AddRegistryItemsProps) {
 		}
 	}
 
+	// `--yes` without `--overwrite` answers the overwrite questions itself: keep what is already there.
+	const keepExisting = opts.skipExisting || (opts.yes === true && opts.overwrite === false);
+	if (opts.yes && !opts.skipExisting && opts.overwrite === false && existingItems.length > 0) {
+		p.log.warn(
+			`Keeping existing items (${color.bold("--yes")} does not overwrite; add ${color.bold("--overwrite")} to replace them):\n${color.gray(prettifyList(existingItems))}`
+		);
+	}
+
 	// prompt if the user wants to overwrite ALL files or individually
-	if (!opts.skipExisting && opts.overwrite === false && existingItems.length > 0) {
+	if (!keepExisting && opts.overwrite === false && existingItems.length > 0) {
 		const prettyList = prettifyList(existingItems);
 		p.log.warn(
 			`The following items ${color.bold(color.yellow("already exist"))}:\n${color.gray(prettyList)}`
@@ -120,7 +130,7 @@ export async function addRegistryItems(opts: AddRegistryItemsProps) {
 	for (const item of itemsWithContent) {
 		if (item.type === "registry:font" && !shouldApplyFont) continue;
 
-		if (opts.skipExisting && existingItems.includes(item.name)) continue;
+		if (keepExisting && existingItems.includes(item.name)) continue;
 
 		// `theme`s and `style`s do the same thing, because why not?
 		if (!STYLE_TYPES.includes(item.type)) {
@@ -249,7 +259,8 @@ export async function addRegistryItems(opts: AddRegistryItemsProps) {
 		const isModified = cssSource !== modifiedCss;
 
 		if (isModified) {
-			let writeStylesheet = opts.overwrite || opts.forceStylesheet === true;
+			// `--yes` has already said continue.
+			let writeStylesheet = opts.overwrite || opts.yes === true || opts.forceStylesheet === true;
 			if (!writeStylesheet) {
 				const overwrite = await p.confirm({
 					message: `Updates to your ${highlight(relative)} are required. Existing CSS variables may be ${color.bold(color.red("overwritten"))}. Continue?`,

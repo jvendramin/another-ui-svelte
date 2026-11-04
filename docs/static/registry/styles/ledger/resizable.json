@@ -2,6 +2,9 @@
 	"$schema": "https://shadcn-svelte.com/schema/registry-item.json",
 	"name": "resizable",
 	"type": "registry:ui",
+	"dependencies": [
+		"paneforge@^1.0.2"
+	],
 	"devDependencies": [
 		"paneforge@^1.0.2"
 	],

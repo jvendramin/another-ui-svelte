@@ -2,6 +2,9 @@
 	"$schema": "https://shadcn-svelte.com/schema/registry-item.json",
 	"name": "use-highlighted-code",
 	"type": "registry:hook",
+	"dependencies": [
+		"shiki@^3.20.0"
+	],
 	"devDependencies": [
 		"shiki@^3.20.0"
 	],

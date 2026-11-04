@@ -2,6 +2,9 @@
 	"$schema": "https://shadcn-svelte.com/schema/registry-item.json",
 	"name": "record-table",
 	"type": "registry:ui",
+	"dependencies": [
+		"@tanstack/svelte-table@^9.0.0"
+	],
 	"devDependencies": [
 		"@tanstack/svelte-table@^9.0.0"
 	],

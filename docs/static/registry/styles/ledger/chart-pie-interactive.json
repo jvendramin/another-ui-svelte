@@ -2,6 +2,10 @@
 	"$schema": "https://shadcn-svelte.com/schema/registry-item.json",
 	"name": "chart-pie-interactive",
 	"type": "registry:block",
+	"dependencies": [
+		"@lucide/svelte@^1.27.0",
+		"layerchart@^2.0.0"
+	],
 	"devDependencies": [
 		"@lucide/svelte@^1.27.0",
 		"layerchart@^2.0.0"

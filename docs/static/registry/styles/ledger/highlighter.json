@@ -2,6 +2,9 @@
 	"$schema": "https://shadcn-svelte.com/schema/registry-item.json",
 	"name": "highlighter",
 	"type": "registry:lib",
+	"dependencies": [
+		"shiki@^3.20.0"
+	],
 	"devDependencies": [
 		"shiki@^3.20.0"
 	],

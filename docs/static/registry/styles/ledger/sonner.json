@@ -2,6 +2,10 @@
 	"$schema": "https://shadcn-svelte.com/schema/registry-item.json",
 	"name": "sonner",
 	"type": "registry:ui",
+	"dependencies": [
+		"mode-watcher@^1.1.0",
+		"svelte-sonner@^1.2.0"
+	],
 	"devDependencies": [
 		"mode-watcher@^1.1.0",
 		"svelte-sonner@^1.2.0"

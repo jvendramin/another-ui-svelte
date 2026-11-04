@@ -2,6 +2,10 @@
 	"$schema": "https://shadcn-svelte.com/schema/registry-item.json",
 	"name": "chart-tooltip-default",
 	"type": "registry:block",
+	"dependencies": [
+		"d3-scale@^4.0.2",
+		"layerchart@^2.0.0"
+	],
 	"devDependencies": [
 		"d3-scale@^4.0.2",
 		"@types/d3-scale@^4.0.9",

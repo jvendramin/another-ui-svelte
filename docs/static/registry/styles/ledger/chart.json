@@ -2,6 +2,9 @@
 	"$schema": "https://shadcn-svelte.com/schema/registry-item.json",
 	"name": "chart",
 	"type": "registry:ui",
+	"dependencies": [
+		"layerchart@^2.0.0"
+	],
 	"devDependencies": [
 		"layerchart@^2.0.0"
 	],
