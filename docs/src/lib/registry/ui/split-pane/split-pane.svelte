@@ -22,6 +22,7 @@
 		autoSaveId,
 		listLabel = "List",
 		detailLabel = "Detail",
+		handleLabel = `Resize ${listLabel}`,
 		class: className,
 		...restProps
 	}: Omit<WithElementRef<HTMLAttributes<HTMLDivElement>>, "children"> & {
@@ -47,11 +48,18 @@
 		autoSaveId?: string;
 		listLabel?: string;
 		detailLabel?: string;
+		/** Name of the drag handle. Default "Resize" plus `listLabel`. */
+		handleLabel?: string;
 	} = $props();
 
 	let width = $state(0);
 	// Until the width is measured, render the wide layout so the server and first paint match.
 	const narrow = $derived(width > 0 && width < stackBelow);
+	const collapsedNow = $derived(collapsible && listCollapsed);
+	const lo = $derived(Math.min(minListSize, maxListSize));
+	const hi = $derived(Math.max(minListSize, maxListSize));
+	const startSize = $derived(Math.min(hi, Math.max(lo, listSize)));
+
 	let listPane = $state<{ collapse: () => void; expand: () => void; isCollapsed: () => boolean }>();
 
 	$effect(() => {
@@ -59,11 +67,6 @@
 		if (collapsedNow && !listPane.isCollapsed()) listPane.collapse();
 		else if (!collapsedNow && listPane.isCollapsed()) listPane.expand();
 	});
-
-	const collapsedNow = $derived(collapsible && listCollapsed);
-	const lo = $derived(Math.min(minListSize, maxListSize));
-	const hi = $derived(Math.max(minListSize, maxListSize));
-	const startSize = $derived(Math.min(hi, Math.max(lo, listSize)));
 
 	// In the stacked layout the list stays mounted (so its scroll position survives) and is hidden while a thread is open.
 	// Opening moves focus to the detail; closing puts it back on the control that opened it.
@@ -79,9 +82,26 @@
 		if (open) {
 			opener = document.activeElement;
 			queueMicrotask(() => detailEl?.focus());
-		} else if (opener instanceof HTMLElement && opener.isConnected) {
-			const target = opener;
-			queueMicrotask(() => target.focus());
+		} else {
+			const target = opener instanceof HTMLElement && opener.isConnected ? opener : null;
+			queueMicrotask(() =>
+				(
+					target ??
+					ref?.querySelector<HTMLElement>(
+						"[data-slot=resizable-handle], [role=region] button, [role=region] a"
+					)
+				)?.focus()
+			);
+		}
+	});
+
+	// Making the list inert while focus is inside it would drop focus to the page; move it to the handle first.
+	$effect(() => {
+		if (
+			collapsedNow &&
+			ref?.querySelector("[role=region][aria-label]")?.contains(document.activeElement)
+		) {
+			ref.querySelector<HTMLElement>("[data-slot=resizable-handle]")?.focus();
 		}
 	});
 </script>
@@ -122,8 +142,13 @@
 				maxSize={hi}
 				{collapsible}
 				collapsedSize={0}
-				onCollapse={() => (listCollapsed = true)}
-				onExpand={() => (listCollapsed = false)}
+				onCollapse={() => {
+					// Paneforge also calls these on its first layout, before the pane is bound; ignore that call.
+					if (listPane) listCollapsed = true;
+				}}
+				onExpand={() => {
+					if (listPane) listCollapsed = false;
+				}}
 			>
 				<div
 					class="h-full overflow-auto"
@@ -135,7 +160,7 @@
 					{@render list({ narrow })}
 				</div>
 			</Resizable.Pane>
-			<Resizable.Handle withHandle aria-label="Resize {listLabel.toLowerCase()}" />
+			<Resizable.Handle withHandle aria-label={handleLabel} />
 			<Resizable.Pane defaultSize={100 - startSize}>
 				<div class="h-full overflow-auto" role="region" aria-label={detailLabel}>
 					{#if showDetail}{@render detail({ narrow })}{:else if empty}{@render empty()}{/if}
