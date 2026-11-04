@@ -267,6 +267,15 @@
 		"relativeUrl": "message.json"
 	},
 	{
+		"name": "message-card",
+		"type": "registry:ui",
+		"registryDependencies": [
+			"avatar",
+			"collapsible"
+		],
+		"relativeUrl": "message-card.json"
+	},
+	{
 		"name": "message-scroller",
 		"type": "registry:ui",
 		"registryDependencies": [
