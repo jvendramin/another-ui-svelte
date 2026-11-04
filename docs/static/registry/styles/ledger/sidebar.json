@@ -13,7 +13,8 @@
 		"tooltip",
 		"skeleton",
 		"separator",
-		"button"
+		"button",
+		"sheet"
 	],
 	"files": [
 		{
