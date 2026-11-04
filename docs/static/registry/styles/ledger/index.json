@@ -402,8 +402,7 @@
 			"tooltip",
 			"skeleton",
 			"separator",
-			"button",
-			"sheet"
+			"button"
 		],
 		"relativeUrl": "sidebar.json"
 	},
