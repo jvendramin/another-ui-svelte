@@ -304,6 +304,7 @@ async function getFileDependencies(
 ): Promise<{ registryDependencies: Set<string> }> {
 	let ast: unknown;
 	let moduleAst: unknown;
+	let fragmentAst: unknown;
 
 	if (filename.endsWith(".svelte")) {
 		const { code } = await svelte.preprocess(content, [], { filename });
@@ -312,6 +313,8 @@ async function getFileDependencies(
 		if (result.module) {
 			moduleAst = result.module;
 		}
+		// The markup can hold `{#await import("...")}`, a lazy load the script blocks do not show.
+		fragmentAst = result.html;
 	} else {
 		ast = tsParser.parse(content, { ecmaVersion: "latest", sourceType: "module" });
 	}
@@ -319,7 +322,16 @@ async function getFileDependencies(
 	const registryDependencies = new Set<string>();
 
 	const enter = (node: Node) => {
-		if (node.type === "ImportDeclaration") {
+		// A static `import x from "..."` or a dynamic `import("...")` with a literal path.
+		const isStatic = node.type === "ImportDeclaration";
+		const isDynamic =
+			(node.type as string) === "ImportExpression" &&
+			// @ts-expect-error ImportExpression is not in this Node union
+			node.source?.type === "Literal" &&
+			// @ts-expect-error same
+			typeof node.source.value === "string";
+		if (isStatic || isDynamic) {
+			// @ts-expect-error both node kinds carry source.value here
 			const source = node.source.value as string;
 
 			if (source.startsWith(REGISTRY_DEPENDENCY) && source !== UTILS_PATH) {
@@ -343,6 +355,11 @@ async function getFileDependencies(
 	if (moduleAst) {
 		// @ts-expect-error yea, stfu x2
 		walk(moduleAst, { enter });
+	}
+
+	if (fragmentAst) {
+		// @ts-expect-error the template tree mixes Svelte and ESTree nodes
+		walk(fragmentAst, { enter });
 	}
 
 	return { registryDependencies };
