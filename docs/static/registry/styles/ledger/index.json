@@ -452,6 +452,12 @@
 		"relativeUrl": "spinner.json"
 	},
 	{
+		"name": "status-dot",
+		"type": "registry:ui",
+		"registryDependencies": [],
+		"relativeUrl": "status-dot.json"
+	},
+	{
 		"name": "switch",
 		"type": "registry:ui",
 		"registryDependencies": [],
@@ -474,6 +480,16 @@
 		"type": "registry:ui",
 		"registryDependencies": [],
 		"relativeUrl": "textarea.json"
+	},
+	{
+		"name": "thread-row",
+		"type": "registry:ui",
+		"registryDependencies": [
+			"avatar",
+			"badge",
+			"status-dot"
+		],
+		"relativeUrl": "thread-row.json"
 	},
 	{
 		"name": "toggle",
