@@ -1,0 +1,57 @@
+{
+	"$schema": "https://shadcn-svelte.com/schema/registry-item.json",
+	"name": "settings",
+	"type": "registry:ui",
+	"registryDependencies": [
+		"sidebar",
+		"item",
+		"field"
+	],
+	"files": [
+		{
+			"content": "import Content from \"./settings-content.svelte\";\nimport NavGroup from \"./settings-nav-group.svelte\";\nimport NavItem from \"./settings-nav-item.svelte\";\nimport NavSubItem from \"./settings-nav-sub-item.svelte\";\nimport Nav from \"./settings-nav.svelte\";\nimport Row from \"./settings-row.svelte\";\nimport Section from \"./settings-section.svelte\";\nimport Root from \"./settings.svelte\";\n\nexport {\n\tRoot,\n\tNav,\n\tNavGroup,\n\tNavItem,\n\tNavSubItem,\n\tContent,\n\tSection,\n\tRow,\n\t//\n\tRoot as Settings,\n\tNav as SettingsNav,\n\tNavGroup as SettingsNavGroup,\n\tNavItem as SettingsNavItem,\n\tNavSubItem as SettingsNavSubItem,\n\tContent as SettingsContent,\n\tSection as SettingsSection,\n\tRow as SettingsRow,\n};\n",
+			"type": "registry:file",
+			"target": "settings/index.ts"
+		},
+		{
+			"content": "<script lang=\"ts\">\n\timport { cn, type WithElementRef } from \"$UTILS$.js\";\n\timport type { HTMLAttributes } from \"svelte/elements\";\n\n\tlet {\n\t\tref = $bindable(null),\n\t\tclass: className,\n\t\tchildren,\n\t\t...restProps\n\t}: WithElementRef<HTMLAttributes<HTMLElement>> = $props();\n</script>\n\n<main\n\tbind:this={ref}\n\tdata-slot=\"settings-content\"\n\tclass=\"min-w-0 flex-1 overflow-y-auto\"\n\t{...restProps}\n>\n\t<div class={cn(\"mx-auto flex w-full max-w-[44rem] flex-col gap-8 px-6 py-6\", className)}>\n\t\t{@render children?.()}\n\t</div>\n</main>\n",
+			"type": "registry:file",
+			"target": "settings/settings-content.svelte"
+		},
+		{
+			"content": "<script lang=\"ts\">\n\timport * as Sidebar from \"$UI$/sidebar/index.js\";\n\timport type { Snippet } from \"svelte\";\n\n\tlet {\n\t\tlabel,\n\t\tchildren,\n\t}: {\n\t\t/** The group heading, for example \"User\" or \"Workspace\". */\n\t\tlabel?: string;\n\t\tchildren?: Snippet;\n\t} = $props();\n</script>\n\n<Sidebar.Group data-slot=\"settings-nav-group\">\n\t{#if label}\n\t\t<Sidebar.GroupLabel>{label}</Sidebar.GroupLabel>\n\t{/if}\n\t<Sidebar.GroupContent>\n\t\t<Sidebar.Menu>\n\t\t\t{@render children?.()}\n\t\t</Sidebar.Menu>\n\t</Sidebar.GroupContent>\n</Sidebar.Group>\n",
+			"type": "registry:file",
+			"target": "settings/settings-nav-group.svelte"
+		},
+		{
+			"content": "<script lang=\"ts\">\n\timport * as Sidebar from \"$UI$/sidebar/index.js\";\n\timport type { Snippet } from \"svelte\";\n\n\tlet {\n\t\thref = \"#\",\n\t\tactive = false,\n\t\ticon,\n\t\tsub,\n\t\tchildren,\n\t}: {\n\t\thref?: string;\n\t\tactive?: boolean;\n\t\t/** An icon snippet, shown before the label. */\n\t\ticon?: Snippet;\n\t\t/** Nested items (SettingsNavSubItem), drawn under this item with a tree line. */\n\t\tsub?: Snippet;\n\t\tchildren?: Snippet;\n\t} = $props();\n</script>\n\n<Sidebar.MenuItem data-slot=\"settings-nav-item\">\n\t<Sidebar.MenuButton isActive={active}>\n\t\t{#snippet child({ props })}\n\t\t\t<a {href} aria-current={active ? \"page\" : undefined} {...props}>\n\t\t\t\t{@render icon?.()}\n\t\t\t\t<span>{@render children?.()}</span>\n\t\t\t</a>\n\t\t{/snippet}\n\t</Sidebar.MenuButton>\n\t{#if sub}\n\t\t<Sidebar.MenuSub>\n\t\t\t{@render sub()}\n\t\t</Sidebar.MenuSub>\n\t{/if}\n</Sidebar.MenuItem>\n",
+			"type": "registry:file",
+			"target": "settings/settings-nav-item.svelte"
+		},
+		{
+			"content": "<script lang=\"ts\">\n\timport * as Sidebar from \"$UI$/sidebar/index.js\";\n\timport type { Snippet } from \"svelte\";\n\n\tlet {\n\t\thref = \"#\",\n\t\tactive = false,\n\t\ticon,\n\t\tchildren,\n\t}: {\n\t\thref?: string;\n\t\tactive?: boolean;\n\t\ticon?: Snippet;\n\t\tchildren?: Snippet;\n\t} = $props();\n</script>\n\n<Sidebar.MenuSubItem data-slot=\"settings-nav-sub-item\">\n\t<Sidebar.MenuSubButton isActive={active}>\n\t\t{#snippet child({ props })}\n\t\t\t<a {href} aria-current={active ? \"page\" : undefined} {...props}>\n\t\t\t\t{@render icon?.()}\n\t\t\t\t<span>{@render children?.()}</span>\n\t\t\t</a>\n\t\t{/snippet}\n\t</Sidebar.MenuSubButton>\n</Sidebar.MenuSubItem>\n",
+			"type": "registry:file",
+			"target": "settings/settings-nav-sub-item.svelte"
+		},
+		{
+			"content": "<script lang=\"ts\">\n\timport * as Sidebar from \"$UI$/sidebar/index.js\";\n\timport { cn, type WithElementRef } from \"$UTILS$.js\";\n\timport type { HTMLAttributes } from \"svelte/elements\";\n\n\t// The sub navigation of a settings area. Ported from the shadcn-svelte settings dialog block (sidebar-13): a\n\t// Sidebar.Provider with a non collapsible Sidebar.Root, so it can sit inside a page that has its own sidebar.\n\tlet {\n\t\tref = $bindable(null),\n\t\tclass: className,\n\t\twidth = \"13.75rem\",\n\t\tchildren,\n\t\t...restProps\n\t}: WithElementRef<HTMLAttributes<HTMLDivElement>> & {\n\t\t/** Width of the nav, any CSS length. Twenty uses 220px. */\n\t\twidth?: string;\n\t} = $props();\n</script>\n\n<Sidebar.Provider class=\"min-h-0 w-auto items-stretch\" style=\"--sidebar-width: {width};\">\n\t<Sidebar.Root\n\t\tbind:ref\n\t\tcollapsible=\"none\"\n\t\tdata-slot=\"settings-nav\"\n\t\tclass={cn(\"hidden border-r md:flex\", className)}\n\t\t{...restProps}\n\t>\n\t\t<Sidebar.Content>\n\t\t\t{@render children?.()}\n\t\t</Sidebar.Content>\n\t</Sidebar.Root>\n</Sidebar.Provider>\n",
+			"type": "registry:file",
+			"target": "settings/settings-nav.svelte"
+		},
+		{
+			"content": "<script lang=\"ts\">\n\timport * as Item from \"$UI$/item/index.js\";\n\timport { cn, type WithElementRef } from \"$UTILS$.js\";\n\timport type { HTMLAttributes } from \"svelte/elements\";\n\n\t// A label and a description on the left, a control on the right, built from Item.\n\tlet {\n\t\tref = $bindable(null),\n\t\tclass: className,\n\t\ttitle,\n\t\tdescription,\n\t\tchildren,\n\t\t...restProps\n\t}: WithElementRef<HTMLAttributes<HTMLDivElement>> & {\n\t\ttitle: string;\n\t\tdescription?: string;\n\t} = $props();\n</script>\n\n<Item.Root bind:ref data-slot=\"settings-row\" size=\"sm\" class={cn(\"px-0\", className)} {...restProps}>\n\t<Item.Content>\n\t\t<Item.Title>{title}</Item.Title>\n\t\t{#if description}\n\t\t\t<Item.Description>{description}</Item.Description>\n\t\t{/if}\n\t</Item.Content>\n\t<Item.Actions>\n\t\t{@render children?.()}\n\t</Item.Actions>\n</Item.Root>\n",
+			"type": "registry:file",
+			"target": "settings/settings-row.svelte"
+		},
+		{
+			"content": "<script lang=\"ts\">\n\timport * as Field from \"$UI$/field/index.js\";\n\timport { cn, type WithElementRef } from \"$UTILS$.js\";\n\timport type { Snippet } from \"svelte\";\n\timport type { HTMLAttributes } from \"svelte/elements\";\n\n\tlet {\n\t\tref = $bindable(null),\n\t\tclass: className,\n\t\ttitle,\n\t\tdescription,\n\t\tactions,\n\t\tchildren,\n\t\t...restProps\n\t}: WithElementRef<HTMLAttributes<HTMLFieldSetElement>> & {\n\t\ttitle: string;\n\t\tdescription?: string;\n\t\t/** Controls placed at the end of the header, for example an Add button. */\n\t\tactions?: Snippet;\n\t} = $props();\n</script>\n\n<Field.Set bind:ref data-slot=\"settings-section\" class={cn(\"gap-3\", className)} {...restProps}>\n\t<div class=\"flex items-start justify-between gap-4\">\n\t\t<div class=\"flex min-w-0 flex-col gap-1\">\n\t\t\t<Field.Legend variant=\"label\" class=\"mb-0\">{title}</Field.Legend>\n\t\t\t{#if description}\n\t\t\t\t<Field.Description>{description}</Field.Description>\n\t\t\t{/if}\n\t\t</div>\n\t\t{#if actions}\n\t\t\t<div class=\"shrink-0\">{@render actions()}</div>\n\t\t{/if}\n\t</div>\n\t{@render children?.()}\n</Field.Set>\n",
+			"type": "registry:file",
+			"target": "settings/settings-section.svelte"
+		},
+		{
+			"content": "<script lang=\"ts\">\n\timport { cn, type WithElementRef } from \"$UTILS$.js\";\n\timport type { HTMLAttributes } from \"svelte/elements\";\n\n\tlet {\n\t\tref = $bindable(null),\n\t\tclass: className,\n\t\tchildren,\n\t\t...restProps\n\t}: WithElementRef<HTMLAttributes<HTMLDivElement>> = $props();\n</script>\n\n<div\n\tbind:this={ref}\n\tdata-slot=\"settings\"\n\tclass={cn(\"flex min-h-0 w-full flex-1 items-stretch\", className)}\n\t{...restProps}\n>\n\t{@render children?.()}\n</div>\n",
+			"type": "registry:file",
+			"target": "settings/settings.svelte"
+		}
+	]
+}
