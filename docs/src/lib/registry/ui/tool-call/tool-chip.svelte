@@ -33,7 +33,6 @@
 <span
 	data-slot="tool-chip"
 	data-status={status}
-	aria-label="{name}, {status}"
 	class={cn(
 		"inline-flex h-7 max-w-full min-w-0 items-center gap-1.5 rounded-full border bg-background px-2.5 text-xs font-medium text-foreground data-[status=error]:border-destructive/30 data-[status=error]:bg-destructive/5 data-[status=error]:text-destructive",
 		className
@@ -54,4 +53,5 @@
 	<span class="min-w-0 truncate">{name}</span>
 	{#if time}<span class="shrink-0 text-xs text-muted-foreground tabular-nums">{time}</span>{/if}
 	<ToolStatusIcon {status} />
+	<span class="sr-only">, {status}</span>
 </span>

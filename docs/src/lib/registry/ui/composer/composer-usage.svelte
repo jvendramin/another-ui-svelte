@@ -19,7 +19,8 @@
 	} = $props();
 
 	const left = $derived(Math.max(0, total - used));
-	const low = $derived(left / total <= warnAt);
+	const ratio = $derived(total > 0 ? left / total : 0);
+	const low = $derived(total > 0 && ratio <= warnAt);
 </script>
 
 <div
@@ -31,7 +32,7 @@
 	)}
 >
 	<Progress
-		value={(left / total) * 100}
+		value={ratio * 100}
 		aria-label="{left} {label}"
 		class={cn("h-1 w-12", low && "[&>[data-slot=progress-indicator]]:bg-destructive")}
 	/>

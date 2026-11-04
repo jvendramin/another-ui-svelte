@@ -138,7 +138,7 @@
 	>
 		<IconPlaceholder {...KIND_ICONS.think} class="size-4 shrink-0" />
 		{#if streaming}
-			<span class="flex min-w-0 items-center gap-1.5" aria-live="polite">
+			<span class="flex min-w-0 items-center gap-1.5">
 				<ShimmerText class="truncate">{label}...</ShimmerText>
 				{#if elapsed >= 1000}
 					<span class="text-xs tabular-nums">{formatSeconds(elapsed)}</span>
@@ -217,7 +217,7 @@
 						{/if}
 						{#if step.sources && step.sources.length > 0}
 							<ul class="m-0 flex list-none flex-wrap gap-1.5 p-0 pt-0.5">
-								{#each step.sources as s (s.title)}
+								{#each step.sources as s, i (i)}
 									<li class="m-0 min-w-0">
 										{#if s.href}
 											<a

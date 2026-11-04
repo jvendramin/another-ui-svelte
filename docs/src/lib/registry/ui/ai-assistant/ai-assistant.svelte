@@ -29,6 +29,10 @@
 				approval?: AssistantApproval;
 				resolved?: "approved" | "denied";
 				streaming?: boolean;
+				/** The person pressed Stop before the answer finished. */
+				stopped?: boolean;
+				/** The id of the notice added after an approval, removed if the denial is undone. */
+				noticeId?: string;
 				error?: string;
 				/** A plain follow-up, such as the outcome of an approval. It has no Retry. */
 				notice?: boolean;
@@ -118,6 +122,10 @@
 	let model = $state<string | undefined>(undefined);
 	let busy = $state(false);
 	let seq = 0;
+	// Follow the stream only while the reader is at the bottom, so scrolling up to reread is not undone.
+	let stick = true;
+	// One short message per finished turn for screen readers; the streaming bubble itself is not announced.
+	let announce = $state("");
 	let abort: AbortController | null = null;
 	let scroller = $state<HTMLElement | null>(null);
 	let composerBox = $state<HTMLElement | null>(null);
@@ -127,9 +135,14 @@
 		composerBox?.querySelector<HTMLTextAreaElement>("textarea")?.focus();
 	}
 
-	async function toBottom() {
+	function onscroll() {
+		if (scroller) stick = scroller.scrollHeight - scroller.scrollTop - scroller.clientHeight < 80;
+	}
+
+	async function toBottom(force = false) {
+		if (force) stick = true;
 		await tick();
-		scroller?.scrollTo({ top: scroller.scrollHeight });
+		if (stick) scroller?.scrollTo({ top: scroller.scrollHeight });
 	}
 
 	function patch(id: string, change: Partial<Extract<ChatMessage, { role: "assistant" }>>) {
@@ -143,7 +156,15 @@
 		const controller = new AbortController();
 		abort = controller;
 		busy = true;
-		patch(id, { text: "", approval: undefined, resolved: undefined, error: undefined, streaming: true });
+		patch(id, {
+			text: "",
+			approval: undefined,
+			resolved: undefined,
+			noticeId: undefined,
+			stopped: false,
+			error: undefined,
+			streaming: true,
+		});
 		try {
 			const result = await reply(prompt, modelId ?? "", controller.signal);
 			if (Symbol.asyncIterator in (result as object)) {
@@ -153,16 +174,21 @@
 					if (i >= 0 && messages[i].role === "assistant") messages[i].text += delta;
 					toBottom();
 				}
-			} else {
+			} else if (!controller.signal.aborted) {
 				const r = result as AssistantReply;
 				patch(id, { text: r.text, approval: r.approval });
 			}
+			if (controller.signal.aborted) patch(id, { stopped: true });
 		} catch (e) {
 			if (!controller.signal.aborted) {
 				patch(id, { error: e instanceof Error ? e.message : "Something went wrong." });
 			}
 		} finally {
 			patch(id, { streaming: false });
+			if (!controller.signal.aborted) {
+				const done = messages.find((m) => m.id === id);
+				if (done?.role === "assistant") announce = done.error ? "The assistant could not answer." : `Assistant: ${done.text}`;
+			}
 			if (abort === controller) {
 				abort = null;
 				busy = false;
@@ -179,7 +205,7 @@
 			{ id: nextId("u"), role: "user", text },
 			{ id: assistantId, role: "assistant", text: "", prompt: text, streaming: true }
 		);
-		toBottom();
+		toBottom(true);
 		run(assistantId, text, modelId);
 	}
 
@@ -192,10 +218,11 @@
 		outcome: "approved" | "denied",
 		always = false
 	) {
-		patch(m.id, { resolved: outcome });
+		const noticeId = nextId("a");
+		patch(m.id, { resolved: outcome, noticeId });
 		if (outcome === "approved" && m.approval) onapprove?.(m.approval, { always });
 		messages.push({
-			id: nextId("a"),
+			id: noticeId,
 			role: "assistant",
 			text:
 				outcome === "approved"
@@ -205,6 +232,12 @@
 			notice: true,
 		});
 		toBottom();
+	}
+
+	// Undoing a denial puts the card back, so the notice that followed it goes away.
+	function undo(m: Extract<ChatMessage, { role: "assistant" }>) {
+		messages = messages.filter((x) => x.id !== m.noticeId);
+		patch(m.id, { resolved: undefined, noticeId: undefined });
 	}
 
 	let showMore = $state(false);
@@ -257,6 +290,7 @@
 
 			<div
 				bind:this={scroller}
+				{onscroll}
 				class="flex min-h-0 flex-1 flex-col gap-6 overflow-y-auto px-5 pt-2 pb-4"
 			>
 				{#if messages.length === 0}
@@ -276,7 +310,7 @@
 							Pick a starting point or type below.
 						</p>
 						<div role="group" aria-label="Prompt ideas" class="mt-4 flex flex-wrap justify-center gap-2">
-							{#each visiblePrompts as p (p.label)}
+							{#each visiblePrompts as p, i (i)}
 								<Button
 									type="button"
 									variant="outline"
@@ -303,7 +337,7 @@
 					</div>
 				{/if}
 				<!-- Always mounted, so screen readers announce the first reply. -->
-				<div role="log" aria-live="polite" aria-label="Conversation" class="flex flex-col gap-6">
+				<div role="log" aria-live="off" aria-label="Conversation" class="flex flex-col gap-6">
 					{#each messages as m (m.id)}
 						{#if m.role === "user"}
 							<div class="flex flex-col pb-10">
@@ -328,25 +362,31 @@
 							<div class="flex flex-col pb-10">
 								<Message.Root align="start">
 									<Message.Content class="w-full min-w-0 gap-3">
-										<Bubble.Root variant="ghost">
-											<Bubble.Content class="whitespace-pre-wrap">
-												{#if m.streaming && !m.text}
-													<span class="text-muted-foreground">Thinking...</span>
-												{:else}
-													{m.text}
-												{/if}
-											</Bubble.Content>
-										</Bubble.Root>
+										{#if m.text || m.streaming}
+											<Bubble.Root variant="ghost">
+												<Bubble.Content class="whitespace-pre-wrap">
+													{#if m.streaming && !m.text}
+														<span class="text-muted-foreground">Thinking...</span>
+													{:else}
+														{m.text}
+													{/if}
+												</Bubble.Content>
+											</Bubble.Root>
+										{/if}
+										{#if m.stopped}
+											<p class="m-0 text-xs text-muted-foreground">Stopped.</p>
+										{/if}
 										{#if m.error}
 											<p class="m-0 text-sm text-destructive" role="alert">{m.error}</p>
 										{/if}
-										{#if m.approval && !m.resolved}
+										{#if m.approval}
 											<ApprovalCard
 												title={m.approval.title}
 												reason={m.approval.reason}
 												details={m.approval.details}
 												onapprove={({ always }) => resolve(m, "approved", always)}
 												ondeny={() => resolve(m, "denied")}
+												onundo={() => undo(m)}
 											/>
 										{/if}
 									</Message.Content>
@@ -359,7 +399,7 @@
 														focusComposer();
 													}
 												: undefined}
-											onretry={m.notice || m.resolved || busy ? undefined : () => run(m.id, m.prompt, model)}
+											onretry={m.notice || m.resolved || busy ? undefined : () => run(m.id, m.prompt, model ?? models[0]?.id)}
 											class="left-0"
 										/>
 									{/if}
@@ -369,6 +409,8 @@
 					{/each}
 				</div>
 			</div>
+
+			<div class="sr-only" aria-live="polite" aria-atomic="true">{announce}</div>
 
 			<div bind:this={composerBox} class="shrink-0 p-3">
 				<Composer

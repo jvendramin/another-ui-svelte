@@ -26,7 +26,7 @@
 	bind:this={ref}
 	data-slot="reasoning-shimmer"
 	class={cn(
-		"bg-[linear-gradient(90deg,var(--muted-foreground)_0%,var(--muted-foreground)_40%,var(--foreground)_50%,var(--muted-foreground)_60%,var(--muted-foreground)_100%)] bg-size-[200%_100%] bg-clip-text text-transparent",
+		"bg-[linear-gradient(90deg,var(--muted-foreground)_0%,var(--muted-foreground)_40%,var(--foreground)_50%,var(--muted-foreground)_60%,var(--muted-foreground)_100%)] bg-size-[200%_100%] bg-clip-text text-transparent forced-colors:bg-none forced-colors:text-[CanvasText]",
 		className
 	)}
 	{...restProps}

@@ -202,9 +202,10 @@
 							size="icon-sm"
 							aria-label={voice === "listening" ? "Stop dictation" : "Dictate"}
 							aria-pressed={voice === "listening"}
-							disabled={disabled || voice === "unsupported"}
+							{disabled}
+							aria-disabled={voice === "unsupported" ? true : undefined}
 							data-listening={voice === "listening" ? "" : undefined}
-							class="rounded-full data-listening:bg-destructive/10 data-listening:text-destructive"
+							class="rounded-full data-listening:bg-destructive/10 data-listening:text-destructive aria-disabled:opacity-50"
 							onclick={toggleVoice}
 						>
 							<IconPlaceholder lucide="MicIcon" tabler="IconMicrophone" hugeicons="Mic01Icon" phosphor="MicrophoneIcon" remixicon="RiMicLine" class={cn(voice === "listening" && "animate-pulse")} />

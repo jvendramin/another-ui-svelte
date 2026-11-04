@@ -127,9 +127,13 @@
 		if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
 			e.preventDefault();
 			decide("approved");
-		} else if (e.key === "Escape" && !editing) {
-			e.preventDefault();
-			decide("denied");
+		} else if (e.key === "Escape") {
+			// Keep Escape from reaching a Sheet or Dialog around the card: denying is the whole answer here.
+			e.stopPropagation();
+			if (!editing) {
+				e.preventDefault();
+				decide("denied");
+			}
 		}
 	}
 
@@ -241,7 +245,7 @@
 			<dl
 				class="mx-3 my-0 grid grid-cols-[minmax(0,auto)_minmax(0,1fr)] items-baseline gap-x-4 gap-y-1.5 rounded-lg bg-muted/50 px-3 py-2.5 text-sm [&>dd]:m-0 [&>dd]:p-0 [&>dt]:m-0 [&>dt]:p-0"
 			>
-				{#each details as d (d.label)}
+				{#each details as d, i (i)}
 					<dt class="text-muted-foreground">{d.label}</dt>
 					<dd class="min-w-0 wrap-break-word">{d.value}</dd>
 				{/each}
