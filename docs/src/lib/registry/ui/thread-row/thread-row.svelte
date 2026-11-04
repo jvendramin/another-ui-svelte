@@ -14,9 +14,11 @@
 	import type { Snippet } from "svelte";
 	import type { HTMLAttributes } from "svelte/elements";
 
-	// One row of an inbox list: the people on the thread as an avatar group, the sender names, subject, a snippet of the
-	// last message, the time, an unread dot and labels. `actions` shows on hover and keyboard focus, beside the row's link,
-	// so it never nests a button inside the link. Composed from Avatar, Badge, Highlight and StatusDot.
+	// One row of an inbox list, laid out like Twenty's thread list: one avatar (the latest sender) in a fixed column so
+	// every row's text starts at the same x whatever the participant count; the sender, subject and a snippet of the
+	// last message; then a row of chips for the people on the thread and the message count. `actions` shows on hover
+	// and keyboard focus, beside the row's link, so it never nests a button inside the link. Composed from Avatar,
+	// Badge, Highlight and StatusDot.
 	let {
 		ref = $bindable(null),
 		people,
@@ -28,14 +30,14 @@
 		count,
 		labels = [],
 		highlight = [],
-		maxAvatars = 2,
+		maxChips = 3,
 		href,
 		onclick,
 		actions,
 		class: className,
 		...restProps
 	}: WithElementRef<Omit<HTMLAttributes<HTMLDivElement>, "onclick" | "children">> & {
-		/** Who is on the thread, newest first. All names show in the row, joined and truncated; the avatars show the first `maxAvatars`. */
+		/** Who is on the thread, latest sender first. The first person is the avatar; all of them are chips under the snippet. */
 		people: ThreadPerson[];
 		subject: string;
 		snippet?: string;
@@ -44,13 +46,13 @@
 		unread?: boolean;
 		/** The thread open in the pane. Sets `aria-current`. */
 		selected?: boolean;
-		/** Number of messages, shown beside the sender when above 1. */
+		/** Number of messages, shown as a chip when above 1. */
 		count?: number;
 		labels?: ThreadLabel[];
 		/** Search terms to mark in the names, subject and snippet. Case and accent insensitive. */
 		highlight?: string[];
-		/** Avatars shown before the "+N" count. Default 2. */
-		maxAvatars?: number;
+		/** People chips shown before the "+N" chip. Default 3. */
+		maxChips?: number;
 		/** Makes the row a link. With only `onclick` it is a button. With neither, the row is not interactive. */
 		href?: string;
 		onclick?: (event: MouseEvent) => void;
@@ -58,14 +60,13 @@
 		actions?: Snippet;
 	} = $props();
 
-	const max = $derived(Number.isFinite(maxAvatars) ? Math.max(1, Math.floor(maxAvatars)) : 2);
+	const max = $derived(Number.isFinite(maxChips) ? Math.max(1, Math.floor(maxChips)) : 3);
+	const latest = $derived(people[0]);
 	const shown = $derived(people.slice(0, max));
 	const extra = $derived(Math.max(0, people.length - shown.length));
-	const sender = $derived(people.map((p) => p.name).join(", "));
-	// Width of the avatar column from what is shown: each avatar is 1.5rem and overlaps the next by 0.25rem, plus a slot for "+N".
-	const slots = $derived(shown.length + (extra > 0 ? 1 : 0));
-	const stackWidth = $derived(`${slots * 1.5 - Math.max(0, slots - 1) * 0.25}rem`);
+	const names = $derived(people.map((p) => p.name).join(", "));
 	const hasLink = $derived(Boolean(href || onclick));
+	const hasChips = $derived(people.length > 0 || (count ?? 0) > 1);
 	const initials = (name: string) =>
 		name
 			.split(/\s+/)
@@ -73,6 +74,8 @@
 			.slice(0, 2)
 			.map((w) => w[0]?.toUpperCase())
 			.join("");
+	// The chip shows the first name only; a company or an address has no second word to drop.
+	const firstName = (name: string) => name.trim().split(/\s+/)[0] ?? name;
 </script>
 
 <div
@@ -98,7 +101,7 @@
 			class="absolute inset-0 z-0 outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:ring-inset"
 		>
 			<span class="sr-only">
-				{unread ? "Unread. " : ""}{sender}. {subject}{count && count > 1
+				{unread ? "Unread. " : ""}{names}. {subject}{count && count > 1
 					? `. ${count} messages`
 					: ""}{time ? `. ${time}` : ""}{labels.length
 					? `. ${labels.map((l) => l.text).join(", ")}`
@@ -111,21 +114,15 @@
 		{#if unread}<StatusDot tone="blue" />{/if}
 	</div>
 
-	<Avatar.Group
-		class="pointer-events-none shrink-0 -space-x-1"
-		style="width: {stackWidth}"
-		aria-hidden="true"
-	>
-		{#each shown as person, i (i)}
-			<Avatar.Root size="sm" style="z-index: {shown.length - i}">
-				{#if person.image}<Avatar.Image src={person.image} alt="" />{/if}
-				<Avatar.Fallback>{initials(person.name)}</Avatar.Fallback>
+	<!-- One avatar, the latest sender, in a column that is always 1.5rem wide so the text lines up across rows. -->
+	<div class="pointer-events-none w-6 shrink-0" aria-hidden="true">
+		{#if latest}
+			<Avatar.Root size="sm">
+				{#if latest.image}<Avatar.Image src={latest.image} alt="" />{/if}
+				<Avatar.Fallback>{initials(latest.name)}</Avatar.Fallback>
 			</Avatar.Root>
-		{/each}
-		{#if extra > 0}
-			<Avatar.GroupCount class="size-6 rounded-full bg-muted text-xs">+{extra}</Avatar.GroupCount>
 		{/if}
-	</Avatar.Group>
+	</div>
 
 	<!-- With a link, its hidden label already says all of this, so hide the visible copy from screen readers. -->
 	<div class="pointer-events-none min-w-0 flex-1" aria-hidden={hasLink ? "true" : undefined}>
@@ -136,9 +133,8 @@
 			)}
 		>
 			<span class={cn("truncate", unread ? "font-semibold" : "font-medium")}
-				><Highlight text={sender} terms={highlight} /></span
+				><Highlight text={latest?.name ?? ""} terms={highlight} /></span
 			>
-			{#if count && count > 1}<span class="text-xs text-muted-foreground">{count}</span>{/if}
 			{#if time}
 				<span
 					class={cn(
@@ -154,10 +150,22 @@
 		{#if snippet}<div class="truncate text-muted-foreground">
 				<Highlight text={snippet} terms={highlight} />
 			</div>{/if}
-		{#if labels.length}
-			<div class="mt-1 flex flex-wrap gap-1">
+		{#if hasChips || labels.length}
+			<!-- Third row: who is on the thread and how long it is, as flat chips (Badge tone gray), then the labels. -->
+			<div class="mt-1.5 flex flex-wrap gap-1" data-slot="thread-row-chips">
+				{#each shown as person, i (i)}
+					<Badge tone="gray" class="h-5 gap-1 ps-0.5 pe-1.5">
+						<Avatar.Root size="xs">
+							{#if person.image}<Avatar.Image src={person.image} alt="" />{/if}
+							<Avatar.Fallback>{initials(person.name)}</Avatar.Fallback>
+						</Avatar.Root>
+						<span class="max-w-24 truncate"><Highlight text={firstName(person.name)} terms={highlight} /></span>
+					</Badge>
+				{/each}
+				{#if extra > 0}<Badge tone="gray" class="h-5">+{extra}</Badge>{/if}
+				{#if count && count > 1}<Badge tone="gray" class="h-5">{count} messages</Badge>{/if}
 				{#each labels as label, i (i)}
-					<Badge tone={label.tone ?? "gray"}>{label.text}</Badge>
+					<Badge tone={label.tone ?? "gray"} class="h-5">{label.text}</Badge>
 				{/each}
 			</div>
 		{/if}

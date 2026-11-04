@@ -1,6 +1,6 @@
 ---
 title: Thread row
-description: One row of an inbox list with an avatar group, sender, subject, snippet, time, unread dot, labels and hover actions.
+description: One row of an inbox list with one avatar, sender, subject, snippet, time, unread dot, a row of people and count chips, labels and hover actions.
 component: true
 ---
 
@@ -78,27 +78,27 @@ Copy and paste the following code into your project.
 
 | Prop                         | What it does                                                                                                   |
 | ---------------------------- | -------------------------------------------------------------------------------------------------------------- |
-| `people`                     | `{ name, image? }[]`, newest first. Shown as an avatar group (up to `maxAvatars`, default 2, then "+N"); the row shows all names joined, truncated. The avatar column is as wide as the avatars shown. |
+| `people`                     | `{ name, image? }[]`, latest sender first. The first person is the one avatar, in a column that is the same width on every row so the text lines up whatever the participant count. All of them show as chips on the third row (up to `maxChips`, then "+N"), like Twenty's thread list. |
 | `subject`, `snippet`, `time` | Text. Format `time` yourself.                                                                                  |
 | `unread`                     | Bold text and a blue dot.                                                                                      |
 | `selected`                   | Highlights the row and sets `aria-current`.                                                                    |
-| `count`                      | Message count, shown above 1.                                                                                  |
-| `labels`                     | `{ text, tone? }[]` as tone badges.                                                                            |
+| `count`                      | Message count, shown as a chip on the third row when above 1.                                                  |
+| `labels`                     | `{ text, tone? }[]` as tone badges, after the people chips.                                                    |
 | `href`, `onclick`            | With `href` the row is a link, otherwise a button.                                                             |
 | `actions`                    | Snippet shown on hover and focus, beside the link rather than inside it. Not shown on touch, so give touch users another way to act. |
 | `highlight`                  | Search terms (`string[]`) marked in the names, subject and snippet with [Highlight](/docs/components/highlight). |
-| `maxAvatars`                 | Avatars before the "+N" count. Default 2.                                                                      |
+| `maxChips`                   | People chips before the "+N" chip. Default 3.                                                                  |
 | `class`, `ref`, other props  | Passed to the row element.                                                                                     |
 
 ## Loading
 
-`ThreadRowSkeleton` draws the same columns while the list loads. It takes `avatars` (circles to draw, default 2) and `withLabels` (a chip under the snippet), and is hidden from screen readers. Put `aria-busy` on the list that holds the rows.
+`ThreadRowSkeleton` draws the same columns while the list loads. It takes `chips` (chips to draw on the third row, default 2) and is hidden from screen readers. Put `aria-busy` on the list that holds the rows.
 
 ```svelte
 <div aria-busy={loading}>
   {#if loading}
     <ThreadRowSkeleton />
-    <ThreadRowSkeleton avatars={1} withLabels />
+    <ThreadRowSkeleton chips={3} />
   {:else}
     ...
   {/if}

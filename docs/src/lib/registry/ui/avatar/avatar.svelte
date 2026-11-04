@@ -9,7 +9,7 @@
 		class: className,
 		...restProps
 	}: AvatarPrimitive.RootProps & {
-		size?: "default" | "sm" | "lg";
+		size?: "default" | "sm" | "lg" | "xs";
 	} = $props();
 </script>
 
