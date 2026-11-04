@@ -62,7 +62,7 @@
 	// Collapsing is a wide layout feature; in the stacked layout the list is always usable.
 	const collapsedNow = $derived(!narrow && collapsible && listCollapsed);
 
-	let pct = $state(untrack(() => listSize));
+	let pct = $state(untrack(() => Math.min(hi, Math.max(lo, listSize))));
 	let dragging = $state(false);
 	let listEl = $state<HTMLElement | null>(null);
 	let detailEl = $state<HTMLElement | null>(null);
@@ -101,7 +101,7 @@
 			listCollapsed = true;
 			return;
 		}
-		listCollapsed = false;
+		if (collapsible) listCollapsed = false;
 		pct = clamp(next);
 	}
 	function onPointerDown(event: PointerEvent) {
@@ -144,13 +144,17 @@
 
 	// Focus: opening a thread in the stacked layout moves focus to the detail; closing puts it back on the row that opened it,
 	// or else on the selected row, so keyboard users are never dropped on the page.
+	const SELECTED = "[aria-current='true'], [data-selected]:not([data-selected='false'])";
 	let opener: Element | null = null;
 	let lastShowDetail = untrack(() => showDetail);
 	$effect(() => {
 		const open = showDetail;
 		if (open === lastShowDetail) return;
 		lastShowDetail = open;
-		if (!narrow) return;
+		if (!narrow) {
+			opener = null;
+			return;
+		}
 		if (open) {
 			opener = document.activeElement;
 			queueMicrotask(() => detailEl?.focus());
@@ -158,19 +162,34 @@
 			const target =
 				opener instanceof HTMLElement && opener.isConnected
 					? opener
-					: (listEl?.querySelector<HTMLElement>("[aria-current='true'], [data-selected]") ??
-						listEl);
+					: (listEl?.querySelector<HTMLElement>(SELECTED) ?? listEl);
+			opener = null;
 			queueMicrotask(() => target?.focus());
 		}
 	});
 
-	// If the layout stacks mid-drag or with the handle focused, the handle unmounts: end the drag and keep focus in the pane.
-	let handleFocused = false;
+	// If the layout stacks mid-drag, or with focus in the list or on the handle, the pane the focus was in goes away.
+	// Read where focus is just before the DOM changes (a pre effect), then put it where it can stay afterwards: on the
+	// detail when a thread is open, else on the list.
+	let focusBefore: { handle: boolean; inList: Element | null } = { handle: false, inList: null };
+	$effect.pre(() => {
+		void narrow;
+		const active = document.activeElement;
+		focusBefore = {
+			handle: !!active && active === handleEl,
+			inList: active && listEl?.contains(active) ? active : null,
+		};
+	});
 	$effect(() => {
 		if (!narrow) return;
 		dragging = false;
-		if (handleFocused) {
-			handleFocused = false;
+		const before = focusBefore;
+		focusBefore = { handle: false, inList: null };
+		if (!before.handle && !before.inList) return;
+		if (untrack(() => showDetail)) {
+			if (before.inList) opener = before.inList;
+			queueMicrotask(() => detailEl?.focus());
+		} else {
 			queueMicrotask(() => listEl?.focus());
 		}
 	});
@@ -199,7 +218,7 @@
 		inert={collapsedNow || undefined}
 		aria-hidden={collapsedNow || undefined}
 		class={cn("min-w-0 overflow-auto outline-none", narrow ? "flex-1" : "shrink-0")}
-		style={narrow ? undefined : `width: ${collapsedNow ? 0 : pct}%`}
+		style={narrow ? undefined : `width: ${collapsedNow ? 0 : clamp(pct)}%`}
 	>
 		{@render list({ narrow })}
 	</div>
@@ -221,10 +240,13 @@
 			onpointerup={onPointerUp}
 			onpointercancel={onPointerUp}
 			onkeydown={onKeyDown}
-			onfocus={() => (handleFocused = true)}
-			onblur={() => (handleFocused = false)}
 			onlostpointercapture={onPointerUp}
-		></div>
+		>
+			<span
+				aria-hidden="true"
+				class="absolute top-1/2 left-1/2 z-10 h-6 w-1 -translate-x-1/2 -translate-y-1/2 rounded-sm border bg-border"
+			></span>
+		</div>
 	{/if}
 	<div
 		bind:this={detailEl}
