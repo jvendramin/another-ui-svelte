@@ -146,11 +146,12 @@
 	let adding = $state<string | null>(null);
 	let drafts = $state<Record<string, string>>({});
 	let busy = $state(false);
-	let createFailed = $state(false);
+	let failedColumn = $state<string | null>(null);
 	let addInput = $state<HTMLInputElement | null>(null);
 
 	async function startAdd(columnId: string) {
 		adding = columnId;
+		failedColumn = null;
 		await tick();
 		addInput?.focus();
 	}
@@ -159,13 +160,13 @@
 		const value = (drafts[columnId] ?? "").trim();
 		if (!value || busy) return;
 		busy = true;
-		createFailed = false;
+		failedColumn = null;
 		try {
 			await onCreate?.(columnId, value);
 			drafts[columnId] = "";
 		} catch {
 			// Keep the text so it can be sent again, and mark the input.
-			createFailed = true;
+			failedColumn = columnId;
 		} finally {
 			busy = false;
 		}
@@ -231,14 +232,15 @@
 							aria-label="{createLabel} to {column.title}"
 							placeholder={createPlaceholder}
 							readonly={busy}
-							aria-invalid={createFailed || undefined}
+							aria-invalid={failedColumn === column.id || undefined}
 							class="h-7"
 							onkeydown={(e: KeyboardEvent) => {
 								if (e.key === "Enter") {
 									e.preventDefault();
 									submit(column.id);
-								} else if (e.key === "Escape") {
+								} else if (e.key === "Escape" && !busy) {
 									drafts[column.id] = "";
+									failedColumn = null;
 									adding = null;
 								}
 							}}
