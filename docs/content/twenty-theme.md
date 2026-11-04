@@ -42,14 +42,18 @@ The CLI writes the file to `ui/twenty-theme.css` (a single file item has no fold
 Put both classes on `<html>`. Dialog, Popover, Select, Tooltip and Sheet portal to `body`, so on a wrapper element their content would stay on plain Ledger tokens.
 
 ```html
-<html lang="en" class="style-ledger theme-twenty"></html>
+<html lang="en" class="style-ledger theme-twenty">
+  <body>
+    <!-- your app -->
+  </body>
+</html>
 ```
 
 Dark mode works as before. Add `dark` to the same element or an ancestor.
 
 ## Buttons and badges
 
-Buttons are 32 px with a small size of 24 px and a 4 px radius. Tags and status use the Badge `tone` prop (soft tint, readable ink). They never use the solid primary fill, which stays on buttons. The default badge is a soft blue chip and works for counts.
+Tags and status use the Badge `tone` prop (soft tint, readable ink). They never use the solid primary fill, which stays on buttons. The default badge is a soft blue chip and works for counts.
 
 ## Controls
 

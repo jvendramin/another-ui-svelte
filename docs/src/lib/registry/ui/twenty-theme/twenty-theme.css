@@ -206,8 +206,8 @@
 		.cn-button-size-default,
 		.h-7
 	):not(#_) {
-	height: 2rem;
-	min-height: 2rem;
+	height: var(--twenty-control-height);
+	min-height: var(--twenty-control-height);
 	padding-inline: 0.75rem;
 }
 .theme-twenty
@@ -216,8 +216,8 @@
 		.cn-button-size-sm,
 		.h-6
 	):not(#_) {
-	height: 1.5rem;
-	min-height: 1.5rem;
+	height: var(--twenty-control-height-sm);
+	min-height: var(--twenty-control-height-sm);
 	padding-inline: 0.5rem;
 }
 .theme-twenty
@@ -226,9 +226,9 @@
 		.cn-button-size-icon,
 		.size-7
 	):not(#_) {
-	width: 2rem;
-	height: 2rem;
-	min-height: 2rem;
+	width: var(--twenty-control-height);
+	height: var(--twenty-control-height);
+	min-height: var(--twenty-control-height);
 	padding: 0;
 }
 .theme-twenty
@@ -237,9 +237,9 @@
 		.cn-button-size-icon-sm,
 		.size-6
 	):not(#_) {
-	width: 1.5rem;
-	height: 1.5rem;
-	min-height: 1.5rem;
+	width: var(--twenty-control-height-sm);
+	height: var(--twenty-control-height-sm);
+	min-height: var(--twenty-control-height-sm);
 	padding: 0;
 }
 
