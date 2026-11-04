@@ -19,13 +19,18 @@
 			tone: {
 				gray: "bg-[var(--ledger-chip-gray-bg)] text-[var(--ledger-chip-gray-ink)] [a]:hover:opacity-80",
 				blue: "bg-[var(--ledger-chip-blue-bg)] text-[var(--ledger-chip-blue-ink)] [a]:hover:opacity-80",
-				green: "bg-[var(--ledger-chip-green-bg)] text-[var(--ledger-chip-green-ink)] [a]:hover:opacity-80",
+				green:
+					"bg-[var(--ledger-chip-green-bg)] text-[var(--ledger-chip-green-ink)] [a]:hover:opacity-80",
 				red: "bg-[var(--ledger-chip-red-bg)] text-[var(--ledger-chip-red-ink)] [a]:hover:opacity-80",
-				orange: "bg-[var(--ledger-chip-orange-bg)] text-[var(--ledger-chip-orange-ink)] [a]:hover:opacity-80",
-				yellow: "bg-[var(--ledger-chip-yellow-bg)] text-[var(--ledger-chip-yellow-ink)] [a]:hover:opacity-80",
-				purple: "bg-[var(--ledger-chip-purple-bg)] text-[var(--ledger-chip-purple-ink)] [a]:hover:opacity-80",
+				orange:
+					"bg-[var(--ledger-chip-orange-bg)] text-[var(--ledger-chip-orange-ink)] [a]:hover:opacity-80",
+				yellow:
+					"bg-[var(--ledger-chip-yellow-bg)] text-[var(--ledger-chip-yellow-ink)] [a]:hover:opacity-80",
+				purple:
+					"bg-[var(--ledger-chip-purple-bg)] text-[var(--ledger-chip-purple-ink)] [a]:hover:opacity-80",
 				pink: "bg-[var(--ledger-chip-pink-bg)] text-[var(--ledger-chip-pink-ink)] [a]:hover:opacity-80",
-				turquoise: "bg-[var(--ledger-chip-turquoise-bg)] text-[var(--ledger-chip-turquoise-ink)] [a]:hover:opacity-80",
+				turquoise:
+					"bg-[var(--ledger-chip-turquoise-bg)] text-[var(--ledger-chip-turquoise-ink)] [a]:hover:opacity-80",
 			},
 		},
 		defaultVariants: {
