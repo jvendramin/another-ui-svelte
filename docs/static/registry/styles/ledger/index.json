@@ -327,7 +327,8 @@
 			"button",
 			"input",
 			"switch",
-			"textarea"
+			"textarea",
+			"record-picker"
 		],
 		"relativeUrl": "record-fields.json"
 	},
@@ -336,6 +337,15 @@
 		"type": "registry:ui",
 		"registryDependencies": [],
 		"relativeUrl": "record-layout.json"
+	},
+	{
+		"name": "record-picker",
+		"type": "registry:ui",
+		"registryDependencies": [
+			"command",
+			"popover"
+		],
+		"relativeUrl": "record-picker.json"
 	},
 	{
 		"name": "record-table",

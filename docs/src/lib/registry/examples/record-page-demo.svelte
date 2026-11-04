@@ -14,6 +14,7 @@
 		founded: string | null;
 		active: boolean;
 		notes: string | null;
+		owner: { id: string; label: string } | null;
 		[key: string]: unknown;
 	};
 
@@ -27,7 +28,24 @@
 		founded: "2012-03-09",
 		active: true,
 		notes: "Annual contract, renews in June.",
+		owner: { id: "p2", label: "Priya Shah" },
 	});
+
+	const people = [
+		{ id: "p1", label: "Alex Moreau", description: "alex@advena.ca" },
+		{ id: "p2", label: "Priya Shah", description: "priya@advena.ca" },
+		{ id: "p3", label: "Sam Okafor", description: "sam@advena.ca" },
+		{ id: "p4", label: "Jordan Lee", description: "jordan@advena.ca" },
+	];
+
+	// Stands in for an API call.
+	async function searchPeople(query: string) {
+		await new Promise((r) => setTimeout(r, 250));
+		const q = query.trim().toLowerCase();
+		return people.filter(
+			(p) => !q || p.label.toLowerCase().includes(q) || p.description.includes(q)
+		);
+	}
 
 	const companyFields: RecordField<Company>[] = [
 		{ id: "name", label: "Name", type: "text" },
@@ -42,6 +60,14 @@
 				{ value: "customer", label: "Customer", tone: "green" },
 				{ value: "lost", label: "Lost", tone: "red" },
 			],
+		},
+		{
+			id: "owner",
+			label: "Owner",
+			type: "relation",
+			search: searchPeople,
+			clearLabel: "No owner",
+			placeholder: "Add an owner",
 		},
 		{ id: "value", label: "Value", type: "currency", currency: "CAD" },
 		{ id: "employees", label: "Employees", type: "number" },
