@@ -34,7 +34,16 @@ describe("phosphorWeight", () => {
 	});
 
 	it("keeps filled shapes that start with the same word duotone", () => {
-		for (const name of ["CheckCircleIcon", "PlusCircleIcon", "XCircleIcon", "ArrowSquareOutIcon"]) {
+		for (const name of [
+			"CheckCircleIcon",
+			"PlusCircleIcon",
+			"XCircleIcon",
+			"ArrowSquareOutIcon",
+			"CaretCircleDownIcon",
+			"CaretSquareDownIcon",
+			"DotsThreeCircleIcon",
+			"DotsThreeCircleVerticalIcon",
+		]) {
 			expect(phosphorWeight(name), name).toBe("duotone");
 		}
 	});

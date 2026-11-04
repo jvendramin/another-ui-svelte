@@ -40,7 +40,7 @@ export const DEFAULT_CONFIG = {
 	typescript: true,
 	registry: `${SITE_BASE_URL}/registry`,
 	style: "ledger",
-	// Another UI Svelte uses Phosphor: duotone for form and field icons, bold for arrows, carets, plus, check and X.
+	// Another UI Svelte uses Phosphor; phosphorWeight (icons/libraries.ts) picks duotone or bold per icon.
 	iconLibrary: "phosphor",
 	menuColor: "default",
 	menuAccent: "subtle",
