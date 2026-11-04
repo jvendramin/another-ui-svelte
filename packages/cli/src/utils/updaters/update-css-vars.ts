@@ -204,10 +204,12 @@ function updateThemePlugin(ast: Root, cssVars: CssVars): void {
 			continue;
 		}
 
-		let prop =
-			isLocalHSLValue(value) || isColorValue(value)
-				? `--color-${variable.replace(/^--/, "")}`
-				: `--${variable.replace(/^--/, "")}`;
+		// Only colors get a Tailwind theme mapping (`--color-x: var(--x)`). Any other token (a shadow, a length) would map
+		// to `--x: var(--x)`, a variable that refers to itself, which is invalid if Tailwind ever emits it at :root. It
+		// already lives in :root, and Tailwind reads it from there, so there is nothing to add to @theme.
+		if (!(isLocalHSLValue(value) || isColorValue(value))) continue;
+
+		let prop = `--color-${variable.replace(/^--/, "")}`;
 		if (prop === "--color-sidebar-background") {
 			prop = "--color-sidebar";
 		}
