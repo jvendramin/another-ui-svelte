@@ -190,7 +190,13 @@
 			</span>
 		</span>
 		{#if status === "denied" && undoLeft > 0}
-			<Button type="button" variant="ghost" size="xs" onclick={undo} class="shrink-0">
+			<Button
+				type="button"
+				variant="ghost"
+				size="xs"
+				onclick={undo}
+				class="shrink-0 max-sm:h-11 max-sm:px-3 max-sm:text-[13px]"
+			>
 				<IconPlaceholder
 					lucide="Undo2Icon"
 					tabler="IconArrowBackUp"
@@ -274,17 +280,27 @@
 			</div>
 		{/if}
 
-		<div class="flex flex-wrap items-center gap-x-3 gap-y-2 border-t px-3 pt-3">
+		<!-- On a phone every decision control is at least 44 px tall: the checkbox row, then Deny, Edit and Approve share a full-width row. -->
+		<div class="flex flex-wrap items-center gap-x-3 gap-y-2 border-t px-3 pt-3 max-sm:gap-y-3">
 			{#if allowAlways}
-				<div class="flex items-center gap-2">
+				<div class="flex items-center gap-2 max-sm:min-h-11 max-sm:w-full">
 					<Checkbox id="{uid}-always" bind:checked={always} />
-					<Label for="{uid}-always" class="text-xs font-normal text-muted-foreground">
+					<Label
+						for="{uid}-always"
+						class="text-xs font-normal text-muted-foreground max-sm:min-h-11 max-sm:flex-1 max-sm:text-[13px]"
+					>
 						Always allow this action
 					</Label>
 				</div>
 			{/if}
-			<div class="ml-auto flex items-center gap-2">
-				<Button type="button" variant="destructive" size="sm" onclick={() => decide("denied")}>
+			<div class="ml-auto flex items-center gap-2 max-sm:ml-0 max-sm:w-full">
+				<Button
+					type="button"
+					variant="destructive"
+					size="sm"
+					onclick={() => decide("denied")}
+					class="max-sm:h-11 max-sm:flex-1"
+				>
 					Deny
 				</Button>
 				{#if editable}
@@ -294,11 +310,17 @@
 						size="sm"
 						aria-pressed={editing}
 						onclick={() => (editing = !editing)}
+						class="max-sm:h-11 max-sm:flex-1"
 					>
 						{editing ? "Done" : "Edit"}
 					</Button>
 				{/if}
-				<Button type="button" size="sm" onclick={() => decide("approved")} class="sm:pr-1.5!">
+				<Button
+					type="button"
+					size="sm"
+					onclick={() => decide("approved")}
+					class="max-sm:h-11 max-sm:flex-1 sm:pr-1.5!"
+				>
 					Approve
 					<Kbd class="hidden bg-primary-foreground/15 text-primary-foreground sm:inline-flex">⌘↵</Kbd>
 				</Button>

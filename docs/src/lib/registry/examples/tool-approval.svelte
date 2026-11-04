@@ -123,6 +123,7 @@
 										<Button
 											size="sm"
 											variant="outline"
+											class="max-sm:h-11 max-sm:flex-1"
 											onclick={() =>
 												chat.addToolApprovalResponse({ id: approvalId, approved: false })}
 										>
@@ -130,6 +131,7 @@
 										</Button>
 										<Button
 											size="sm"
+											class="max-sm:h-11 max-sm:flex-1"
 											onclick={() =>
 												chat.addToolApprovalResponse({ id: approvalId, approved: true })}
 										>
