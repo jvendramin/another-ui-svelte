@@ -61,4 +61,10 @@ describe("updateCssVars: @theme mapping", () => {
 		// They still land in :root.
 		expect(out).toContain("--ledger-text-size: 1px;");
 	});
+
+	it("does not map a bare namespace name, which makes no utility", () => {
+		const out = transformCss(SOURCE, { cssVars: { light: { text: "1px", font: "Inter" } } });
+		expect(out).not.toContain("--text: var(--text)");
+		expect(out).not.toContain("--font: var(--font)");
+	});
 });

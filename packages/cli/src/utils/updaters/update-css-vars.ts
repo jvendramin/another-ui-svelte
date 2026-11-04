@@ -208,7 +208,8 @@ function updateThemePlugin(ast: Root, cssVars: CssVars): void {
 		// for it: a color (`--color-x`) or a name in a theme namespace such as `shadow-card` or `font-heading`. Inline mode
 		// puts var(--x) into the utility, which resolves from :root and .dark. Any other token, for example
 		// `ledger-field-shadow`, would only gain a variable that refers to itself, which is invalid if Tailwind emits it at
-		// :root. It already lives in :root, and var() or an arbitrary value reads it from there.
+		// :root. It already lives in :root, and var() or an arbitrary value reads it from there. The namespaced lines still
+		// refer to themselves and rely on `@theme inline` (the supported mode); only tokens with no utility are skipped.
 		const isColor = isLocalHSLValue(value) || isColorValue(value);
 		if (!isColor && !isInTailwindNamespace(variable)) continue;
 
@@ -266,7 +267,8 @@ const TAILWIND_THEME_NAMESPACES = [
 
 function isInTailwindNamespace(variable: string): boolean {
 	const name = variable.replace(/^--/, "");
-	return TAILWIND_THEME_NAMESPACES.some((ns) => name === ns || name.startsWith(`${ns}-`));
+	// Tailwind reads `--<namespace>-<key>`; the only bare name it uses is `--spacing`. A bare `--text` or `--font` makes no utility.
+	return name === "spacing" || TAILWIND_THEME_NAMESPACES.some((ns) => name.startsWith(`${ns}-`));
 }
 
 function upsertThemeNode(ast: Root): AtRule {
