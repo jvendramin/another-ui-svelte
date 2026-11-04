@@ -1,5 +1,6 @@
 <script lang="ts" module>
 	import type { BadgeTone } from "$lib/registry/ui/badge/badge.svelte";
+	import type { RecordPickerOption } from "$lib/registry/ui/record-picker/record-picker.svelte";
 
 	export type RecordFieldOption = { value: string; label: string; tone?: BadgeTone };
 
@@ -12,7 +13,8 @@
 		| "select"
 		| "boolean"
 		| "email"
-		| "url";
+		| "url"
+		| "relation";
 
 	export type RecordField<TRecord> = {
 		id: string;
@@ -22,6 +24,10 @@
 		options?: RecordFieldOption[];
 		/** An ISO currency code for a currency field. Default USD. */
 		currency?: string;
+		/** A relation field: returns the records to pick from for a query. May call your API. */
+		search?: (query: string) => RecordPickerOption[] | Promise<RecordPickerOption[]>;
+		/** A relation field: shows a first row with this text (for example "No company") that clears the link. */
+		clearLabel?: string;
 		placeholder?: string;
 		readonly?: boolean;
 		/** Read the value from the record. Default: record[id]. */
@@ -30,7 +36,7 @@
 </script>
 
 <script lang="ts" generics="TRecord extends Record<string, unknown>">
-	import { tick } from "svelte";
+	import { tick, type Component } from "svelte";
 	import * as NativeSelect from "$lib/registry/ui/native-select/index.js";
 	import { Badge } from "$lib/registry/ui/badge/index.js";
 	import { Button } from "$lib/registry/ui/button/index.js";
@@ -52,7 +58,10 @@
 	}: {
 		record: TRecord;
 		fields: RecordField<TRecord>[];
-		/** Called with the field id and the new value (a string, a number, a boolean or null). May be async. */
+		/**
+		 * Called with the field id and the new value (a string, a number, a boolean or null; for a relation field the picked
+		 * `{ id, label }` option or null). May be async: throw to reject the change.
+		 */
 		onChange?: (fieldId: string, value: unknown) => void | Promise<void>;
 		/** Show the values without editing. */
 		readonly?: boolean;
@@ -63,6 +72,20 @@
 
 	const valueOf = (field: RecordField<TRecord>) =>
 		field.get ? field.get(record) : record[field.id];
+
+	// The record picker loads on its own the first time a relation field shows, so a page without one never fetches it.
+	let Picker = $state<Component<Record<string, any>> | null>(null);
+	$effect(() => {
+		if (Picker || !fields.some((f) => f.type === "relation")) return;
+		import("$lib/registry/ui/record-picker/index.js")
+			.then((m) => (Picker = m.RecordPicker as unknown as Component<Record<string, any>>))
+			.catch(() => {});
+	});
+
+	const relationOf = (field: RecordField<TRecord>) => {
+		const v = valueOf(field) as RecordPickerOption | null | undefined;
+		return v && typeof v === "object" && "id" in v ? v : null;
+	};
 
 	let editing = $state<string | null>(null);
 	let draft = $state("");
@@ -94,13 +117,22 @@
 					? String(value)
 					: d.toLocaleDateString(locale, { year: "numeric", month: "short", day: "numeric" });
 			}
+			case "relation":
+				return (value as RecordPickerOption).label ?? "";
 			default:
 				return String(value);
 		}
 	}
 
 	async function startEdit(field: RecordField<TRecord>) {
-		if (readonly || field.readonly || field.type === "boolean" || saving) return;
+		if (
+			readonly ||
+			field.readonly ||
+			field.type === "boolean" ||
+			field.type === "relation" ||
+			saving
+		)
+			return;
 		const value = valueOf(field);
 		draft = value === null || value === undefined ? "" : String(value);
 		invalid = null;
@@ -247,6 +279,41 @@
 							onkeydown={(e: KeyboardEvent) => keydown(e, field)}
 						/>
 					{/if}
+				{:else if field.type === "relation" && !locked}
+					{@const picked = relationOf(field)}
+					{#snippet relationButton(props: Record<string, unknown>)}
+						<Button
+							{...props}
+							type="button"
+							variant="ghost"
+							class={cn(
+								"-ms-2 h-8 w-full justify-start gap-2 px-2 text-[13px] font-normal",
+								!picked && "text-muted-foreground"
+							)}
+						>
+							<span class="sr-only">Edit {field.label}:</span>
+							{#if picked}
+								<Badge tone="gray" class="max-w-full truncate">{picked.label}</Badge>
+							{:else}
+								<span>{field.placeholder ?? "Empty"}</span>
+							{/if}
+						</Button>
+					{/snippet}
+					{#if Picker && field.search}
+						<Picker
+							value={picked}
+							search={field.search}
+							label={field.label}
+							clearLabel={field.clearLabel}
+							onSelect={(option: RecordPickerOption | null) => onChange?.(field.id, option)}
+						>
+							{#snippet trigger({ props }: { props: Record<string, unknown> })}
+								{@render relationButton(props)}
+							{/snippet}
+						</Picker>
+					{:else}
+						{@render relationButton({ disabled: true })}
+					{/if}
 				{:else if field.type === "boolean"}
 					<div class="flex h-8 items-center">
 						<Switch
@@ -261,6 +328,15 @@
 							{field.placeholder ?? "Empty"}
 						{:else if field.type === "select"}
 							<Badge tone={option?.tone ?? "gray"}>{option?.label ?? text}</Badge>
+						{:else if field.type === "relation"}
+							{@const rel = relationOf(field)}
+							{#if rel?.href}
+								<a href={rel.href} class="min-w-0 hover:underline"
+									><Badge tone="gray" class="max-w-full truncate">{text}</Badge></a
+								>
+							{:else}
+								<Badge tone="gray" class="max-w-full truncate">{text}</Badge>
+							{/if}
 						{:else}
 							<span class="truncate">{text}</span>
 						{/if}
