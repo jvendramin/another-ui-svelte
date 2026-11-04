@@ -1,0 +1,20 @@
+{
+	"$schema": "https://shadcn-svelte.com/schema/registry-item.json",
+	"name": "status-dot",
+	"type": "registry:ui",
+	"devDependencies": [
+		"tailwind-variants@^3.3.0"
+	],
+	"files": [
+		{
+			"content": "import StatusDot, {\n\tstatusDotVariants,\n\ttype StatusDotSize,\n\ttype StatusDotTone,\n} from \"./status-dot.svelte\";\n\nexport { StatusDot, statusDotVariants, type StatusDotSize, type StatusDotTone };\n",
+			"type": "registry:file",
+			"target": "status-dot/index.ts"
+		},
+		{
+			"content": "<script lang=\"ts\" module>\n\timport { type VariantProps, tv } from \"tailwind-variants/lite\";\n\n\t// A small coloured dot for status: online, unread, failed. Colours are the chip ink tokens, so the dot follows the\n\t// theme and reads in dark mode. Pair it with text; the dot alone says nothing to a screen reader unless you pass `label`.\n\texport const statusDotVariants = tv({\n\t\tbase: \"inline-block shrink-0 rounded-full align-middle forced-colors:bg-[CanvasText]\",\n\t\tvariants: {\n\t\t\ttone: {\n\t\t\t\tgray: \"bg-[var(--ledger-chip-gray-ink)]\",\n\t\t\t\tblue: \"bg-[var(--ledger-chip-blue-ink)]\",\n\t\t\t\tgreen: \"bg-[var(--ledger-chip-green-ink)]\",\n\t\t\t\tred: \"bg-[var(--ledger-chip-red-ink)]\",\n\t\t\t\torange: \"bg-[var(--ledger-chip-orange-ink)]\",\n\t\t\t\tyellow: \"bg-[var(--ledger-chip-yellow-ink)]\",\n\t\t\t\tpurple: \"bg-[var(--ledger-chip-purple-ink)]\",\n\t\t\t\tpink: \"bg-[var(--ledger-chip-pink-ink)]\",\n\t\t\t\tturquoise: \"bg-[var(--ledger-chip-turquoise-ink)]\",\n\t\t\t},\n\t\t\tsize: {\n\t\t\t\tsm: \"size-1.5\",\n\t\t\t\tdefault: \"size-2\",\n\t\t\t\tlg: \"size-2.5\",\n\t\t\t},\n\t\t},\n\t\tdefaultVariants: { tone: \"gray\", size: \"default\" },\n\t});\n\n\texport type StatusDotTone = VariantProps<typeof statusDotVariants>[\"tone\"];\n\texport type StatusDotSize = VariantProps<typeof statusDotVariants>[\"size\"];\n</script>\n\n<script lang=\"ts\">\n\timport { cn, type WithElementRef } from \"$UTILS$.js\";\n\timport type { HTMLAttributes } from \"svelte/elements\";\n\n\tlet {\n\t\tref = $bindable(null),\n\t\ttone = \"gray\",\n\t\tsize = \"default\",\n\t\tlabel,\n\t\tclass: className,\n\t\t...restProps\n\t}: WithElementRef<HTMLAttributes<HTMLSpanElement>> & {\n\t\ttone?: StatusDotTone;\n\t\tsize?: StatusDotSize;\n\t\t/** Text for screen readers, such as \"Unread\". Without it the dot is hidden from them. */\n\t\tlabel?: string;\n\t} = $props();\n</script>\n\n<span\n\tbind:this={ref}\n\tdata-slot=\"status-dot\"\n\trole={label ? \"img\" : undefined}\n\taria-label={label}\n\taria-hidden={label ? undefined : true}\n\tclass={cn(statusDotVariants({ tone, size }), className)}\n\t{...restProps}\n></span>\n",
+			"type": "registry:file",
+			"target": "status-dot/status-dot.svelte"
+		}
+	]
+}
