@@ -4,6 +4,8 @@
 	import type { Snippet } from "svelte";
 	import type { HTMLAttributes } from "svelte/elements";
 
+	// A labelled region, not a fieldset: a settings section is not always a form group, and a legend only names a
+	// fieldset when it is the fieldset's first child.
 	let {
 		ref = $bindable(null),
 		class: className,
@@ -12,18 +14,33 @@
 		actions,
 		children,
 		...restProps
-	}: WithElementRef<HTMLAttributes<HTMLFieldSetElement>> & {
+	}: WithElementRef<HTMLAttributes<HTMLElement>> & {
 		title: string;
 		description?: string;
 		/** Controls placed at the end of the header, for example an Add button. */
 		actions?: Snippet;
 	} = $props();
+
+	const id = $props.id();
 </script>
 
-<Field.Set bind:ref data-slot="settings-section" class={cn("gap-3", className)} {...restProps}>
+<section
+	bind:this={ref}
+	data-slot="settings-section"
+	aria-labelledby="{id}-title"
+	class={cn("flex flex-col gap-3", className)}
+	{...restProps}
+>
 	<div class="flex items-start justify-between gap-4">
 		<div class="flex min-w-0 flex-col gap-1">
-			<Field.Legend variant="label" class="mb-0">{title}</Field.Legend>
+			<h2
+				id="{id}-title"
+				data-slot="field-legend"
+				data-variant="label"
+				class="cn-field-legend mb-0"
+			>
+				{title}
+			</h2>
 			{#if description}
 				<Field.Description>{description}</Field.Description>
 			{/if}
@@ -33,4 +50,4 @@
 		{/if}
 	</div>
 	{@render children?.()}
-</Field.Set>
+</section>

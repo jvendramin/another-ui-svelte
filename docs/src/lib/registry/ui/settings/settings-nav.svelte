@@ -4,7 +4,8 @@
 	import type { HTMLAttributes } from "svelte/elements";
 
 	// The sub navigation of a settings area. Ported from the shadcn-svelte settings dialog block (sidebar-13): a
-	// Sidebar.Provider with a non collapsible Sidebar.Root, so it can sit inside a page that has its own sidebar.
+	// Sidebar.Provider with a non collapsible Sidebar.Root. The nested provider has its Cmd/Ctrl+B shortcut and its
+	// cookie turned off, so it never fights the app sidebar that wraps the page.
 	let {
 		ref = $bindable(null),
 		class: className,
@@ -17,7 +18,12 @@
 	} = $props();
 </script>
 
-<Sidebar.Provider class="min-h-0 w-auto items-stretch" style="--sidebar-width: {width};">
+<Sidebar.Provider
+	class="min-h-0 w-auto items-stretch"
+	style="--sidebar-width: {width};"
+	keyboardShortcut={false}
+	persist={false}
+>
 	<Sidebar.Root
 		bind:ref
 		collapsible="none"

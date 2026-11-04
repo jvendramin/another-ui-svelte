@@ -10,11 +10,11 @@
 	import SettingsIcon from "@lucide/svelte/icons/settings";
 	import SparklesIcon from "@lucide/svelte/icons/sparkles";
 	import UsersIcon from "@lucide/svelte/icons/users";
+	import * as InputGroup from "$lib/registry/ui/input-group/index.js";
 	import * as Settings from "$lib/registry/ui/settings/index.js";
 	import * as Table from "$lib/registry/ui/table/index.js";
 	import { Badge } from "$lib/registry/ui/badge/index.js";
 	import { Button } from "$lib/registry/ui/button/index.js";
-	import { Input } from "$lib/registry/ui/input/index.js";
 	import { Switch } from "$lib/registry/ui/switch/index.js";
 </script>
 
@@ -98,20 +98,32 @@
 			description="Exclude the following people and domains from my email sync."
 		>
 			<div class="flex gap-2">
-				<Input placeholder="eddy@gmail.com, @apple.com" />
+				<InputGroup.Root>
+					<InputGroup.Input
+						aria-label="Email or domain to block"
+						placeholder="eddy@gmail.com, @apple.com"
+					/>
+					<InputGroup.Addon>
+						<MailIcon />
+					</InputGroup.Addon>
+				</InputGroup.Root>
 				<Button variant="outline">Add to blocklist</Button>
 			</div>
 		</Settings.Section>
 
 		<Settings.Section title="Settings" description="Configure your emails and calendar settings.">
 			<Settings.Row title="Emails" description="Set email visibility and manage your blocklist.">
-				<Switch />
+				{#snippet children({ labelId, descriptionId })}
+					<Switch aria-labelledby={labelId} aria-describedby={descriptionId} />
+				{/snippet}
 			</Settings.Row>
 			<Settings.Row
 				title="Calendar"
 				description="Configure and customize your calendar preferences."
 			>
-				<Switch checked />
+				{#snippet children({ labelId, descriptionId })}
+					<Switch checked aria-labelledby={labelId} aria-describedby={descriptionId} />
+				{/snippet}
 			</Settings.Row>
 		</Settings.Section>
 	</Settings.Content>

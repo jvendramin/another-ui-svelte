@@ -72,7 +72,9 @@ Copy and paste the following code into your project.
   <Settings.Content>
     <Settings.Section title="Blocklist" description="Exclude people and domains.">
       <Settings.Row title="Emails" description="Set email visibility.">
-        <Switch />
+        {#snippet children({ labelId, descriptionId })}
+          <Switch aria-labelledby={labelId} aria-describedby={descriptionId} />
+        {/snippet}
       </Settings.Row>
     </Settings.Section>
   </Settings.Content>
@@ -84,10 +86,10 @@ Copy and paste the following code into your project.
 | Part | What it is |
 | --- | --- |
 | `Settings.Root` | The flex container. Give it a height. |
-| `Settings.Nav` | The sub navigation. `width` sets its width (default 220 px). Hidden below `md`. |
+| `Settings.Nav` | The sub navigation. `width` sets its width (default 220 px). Hidden below `md`. It has its own Sidebar provider with the Cmd/Ctrl+B shortcut and the cookie turned off, so it can sit inside a page that has an app sidebar. |
 | `Settings.NavGroup` | A heading (`label`) and a menu. |
-| `Settings.NavItem` | A link with `href`, `active`, an `icon` snippet and an optional `sub` snippet for nested items. |
+| `Settings.NavItem` | A link with `href`, `active`, an `icon` snippet and an optional `sub` snippet for nested items. Extra attributes (`class`, `onclick`, `data-sveltekit-*`) go to the link. Without `href` it renders a button. |
 | `Settings.NavSubItem` | A nested link, drawn with a tree line. |
-| `Settings.Content` | The scrolling column, centered, 44 rem wide. |
-| `Settings.Section` | A `title`, a `description` and optional `actions`, then the section body. |
-| `Settings.Row` | A `title` and `description` on the left, the control on the right. |
+| `Settings.Content` | The scrolling area, with a centered 44 rem column. `columnClass` styles the column. It is a `div`, so your app shell keeps the page's one `main`. |
+| `Settings.Section` | A labelled `section` with a `title`, a `description` and optional `actions`, then the body. |
+| `Settings.Row` | A `title` and `description` on the left, the control on the right. The control snippet receives `{ labelId, descriptionId }`; pass them as `aria-labelledby` and `aria-describedby` so the control has a name. |
