@@ -78,7 +78,7 @@ Copy and paste the following code into your project.
 
 | Prop                         | What it does                                                                                                   |
 | ---------------------------- | -------------------------------------------------------------------------------------------------------------- |
-| `people`                     | `{ name, image? }[]`, newest first. Shown as an avatar group (up to `maxAvatars`, default 2, then "+N"). The first leads. |
+| `people`                     | `{ name, image? }[]`, newest first. Shown as an avatar group (up to `maxAvatars`, default 2, then "+N"); the row shows all names joined, truncated. The avatar column is as wide as the avatars shown. |
 | `subject`, `snippet`, `time` | Text. Format `time` yourself.                                                                                  |
 | `unread`                     | Bold text and a blue dot.                                                                                      |
 | `selected`                   | Highlights the row and sets `aria-current`.                                                                    |
@@ -86,5 +86,21 @@ Copy and paste the following code into your project.
 | `labels`                     | `{ text, tone? }[]` as tone badges.                                                                            |
 | `href`, `onclick`            | With `href` the row is a link, otherwise a button.                                                             |
 | `actions`                    | Snippet shown on hover and focus, beside the link rather than inside it. Not shown on touch, so give touch users another way to act. |
+| `highlight`                  | Search terms (`string[]`) marked in the names, subject and snippet with [Highlight](/docs/components/highlight). |
 | `maxAvatars`                 | Avatars before the "+N" count. Default 2.                                                                      |
 | `class`, `ref`, other props  | Passed to the row element.                                                                                     |
+
+## Loading
+
+`ThreadRowSkeleton` draws the same columns while the list loads. It takes `avatars` (circles to draw, default 2) and `withLabels` (a chip under the snippet), and is hidden from screen readers. Put `aria-busy` on the list that holds the rows.
+
+```svelte
+<div aria-busy={loading}>
+  {#if loading}
+    <ThreadRowSkeleton />
+    <ThreadRowSkeleton avatars={1} withLabels />
+  {:else}
+    ...
+  {/if}
+</div>
+```

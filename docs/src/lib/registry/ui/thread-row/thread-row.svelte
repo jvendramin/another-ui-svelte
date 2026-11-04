@@ -8,6 +8,7 @@
 <script lang="ts">
 	import * as Avatar from "$lib/registry/ui/avatar/index.js";
 	import { Badge } from "$lib/registry/ui/badge/index.js";
+	import { Highlight } from "$lib/registry/ui/highlight/index.js";
 	import { StatusDot } from "$lib/registry/ui/status-dot/index.js";
 	import { cn, type WithElementRef } from "$lib/utils.js";
 	import type { Snippet } from "svelte";
@@ -15,7 +16,7 @@
 
 	// One row of an inbox list: the people on the thread as an avatar group, the sender names, subject, a snippet of the
 	// last message, the time, an unread dot and labels. `actions` shows on hover and keyboard focus, beside the row's link,
-	// so it never nests a button inside the link. Composed from Avatar, Badge and StatusDot.
+	// so it never nests a button inside the link. Composed from Avatar, Badge, Highlight and StatusDot.
 	let {
 		ref = $bindable(null),
 		people,
@@ -26,6 +27,7 @@
 		selected = false,
 		count,
 		labels = [],
+		highlight = [],
 		maxAvatars = 2,
 		href,
 		onclick,
@@ -33,7 +35,7 @@
 		class: className,
 		...restProps
 	}: WithElementRef<Omit<HTMLAttributes<HTMLDivElement>, "onclick" | "children">> & {
-		/** Who is on the thread, newest first. The first name leads the row. */
+		/** Who is on the thread, newest first. All names show in the row, joined and truncated; the avatars show the first `maxAvatars`. */
 		people: ThreadPerson[];
 		subject: string;
 		snippet?: string;
@@ -45,6 +47,8 @@
 		/** Number of messages, shown beside the sender when above 1. */
 		count?: number;
 		labels?: ThreadLabel[];
+		/** Search terms to mark in the names, subject and snippet. Case and accent insensitive. */
+		highlight?: string[];
 		/** Avatars shown before the "+N" count. Default 2. */
 		maxAvatars?: number;
 		/** Makes the row a link. With only `onclick` it is a button. With neither, the row is not interactive. */
@@ -54,11 +58,13 @@
 		actions?: Snippet;
 	} = $props();
 
-	const shown = $derived(people.slice(0, maxAvatars));
+	const max = $derived(Number.isFinite(maxAvatars) ? Math.max(1, Math.floor(maxAvatars)) : 2);
+	const shown = $derived(people.slice(0, max));
 	const extra = $derived(Math.max(0, people.length - shown.length));
 	const sender = $derived(people.map((p) => p.name).join(", "));
-	// Width of the avatar column from maxAvatars: each avatar is 1.5rem and overlaps the next by 0.375rem, plus one slot for "+N".
-	const stackWidth = $derived(`${(maxAvatars + 1) * 1.5 - maxAvatars * 0.375}rem`);
+	// Width of the avatar column from what is shown: each avatar is 1.5rem and overlaps the next by 0.25rem, plus a slot for "+N".
+	const slots = $derived(shown.length + (extra > 0 ? 1 : 0));
+	const stackWidth = $derived(`${slots * 1.5 - Math.max(0, slots - 1) * 0.25}rem`);
 	const hasLink = $derived(Boolean(href || onclick));
 	const initials = (name: string) =>
 		name
@@ -104,12 +110,12 @@
 	</div>
 
 	<Avatar.Group
-		class="pointer-events-none shrink-0 -space-x-1.5"
+		class="pointer-events-none shrink-0 -space-x-1"
 		style="width: {stackWidth}"
 		aria-hidden="true"
 	>
 		{#each shown as person, i (i)}
-			<Avatar.Root size="sm">
+			<Avatar.Root size="sm" style="z-index: {shown.length - i}">
 				{#if person.image}<Avatar.Image src={person.image} alt="" />{/if}
 				<Avatar.Fallback>{initials(person.name)}</Avatar.Fallback>
 			</Avatar.Root>
@@ -127,7 +133,8 @@
 				actions && "group-focus-within/thread:pe-24 group-hover/thread:pe-24"
 			)}
 		>
-			<span class={cn("truncate", unread ? "font-semibold" : "font-medium")}>{people[0]?.name}</span
+			<span class={cn("truncate", unread ? "font-semibold" : "font-medium")}
+				><Highlight text={sender} terms={highlight} /></span
 			>
 			{#if count && count > 1}<span class="text-xs text-muted-foreground">{count}</span>{/if}
 			{#if time}
@@ -140,9 +147,11 @@
 			{/if}
 		</div>
 		<div class={cn("truncate", unread ? "font-medium text-foreground" : "text-foreground/80")}>
-			{subject}
+			<Highlight text={subject} terms={highlight} />
 		</div>
-		{#if snippet}<div class="truncate text-muted-foreground">{snippet}</div>{/if}
+		{#if snippet}<div class="truncate text-muted-foreground">
+				<Highlight text={snippet} terms={highlight} />
+			</div>{/if}
 		{#if labels.length}
 			<div class="mt-1 flex flex-wrap gap-1">
 				{#each labels as label, i (i)}
