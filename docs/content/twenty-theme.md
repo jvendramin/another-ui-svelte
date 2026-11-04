@@ -24,19 +24,25 @@ Colors, radii, spacing, type sizes, the side panel width and the table geometry 
 
 <PMAddComp name="twenty-theme" />
 
-Import the file once, after your Ledger styles:
+The CLI writes the file to `ui/twenty-theme.css` (a single file item has no folder). Import it once, after your Ledger styles:
 
 ```css
-@import "$lib/components/ui/twenty-theme/twenty-theme.css";
+@import "$lib/components/ui/twenty-theme.css";
 ```
 
 ## Usage
+
+Put both classes on `<html>`. Dialog, Popover, Select, Tooltip and Sheet portal to `body`, so on a wrapper element their content would stay on plain Ledger tokens.
 
 ```html
 <html lang="en" class="style-ledger theme-twenty">
 ```
 
 Dark mode works as before. Add `dark` to the same element or an ancestor.
+
+## Buttons and badges
+
+Buttons are 32 px with a small size of 24 px and a 4 px radius. Tags and status use the Badge `tone` prop (soft tint, readable ink). They never use the solid primary fill, which stays on buttons and on count badges.
 
 ## What it sets
 

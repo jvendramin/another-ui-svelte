@@ -6,7 +6,7 @@
 	import * as Card from "$lib/registry/ui/card/index.js";
 
 	const modes = [
-		{ name: "Light", class: "" },
+		{ name: "Light", class: "light" },
 		{ name: "Dark", class: "dark" },
 	];
 </script>
@@ -21,13 +21,33 @@
 					<Card.Title>{mode.name}</Card.Title>
 					<Card.Description>Twenty tokens on Ledger</Card.Description>
 				</Card.Header>
-				<Card.Content class="flex flex-col gap-3">
+				<Card.Content class="flex flex-col gap-4">
 					<Input placeholder="Search records" />
-					<div class="flex flex-wrap items-center gap-2">
-						<Button>Save</Button>
-						<Button variant="outline">Cancel</Button>
-						<Badge>Customer</Badge>
-						<Badge variant="secondary">Lead</Badge>
+					<div class="flex flex-col gap-2">
+						<p class="text-xs text-muted-foreground">Buttons, 32 px</p>
+						<div class="flex items-center gap-2">
+							<Button>Save</Button>
+							<Button variant="outline">Cancel</Button>
+						</div>
+						<p class="text-xs text-muted-foreground">Small, 24 px</p>
+						<div class="flex items-center gap-2">
+							<Button size="sm">Save</Button>
+							<Button size="sm" variant="outline">Cancel</Button>
+						</div>
+					</div>
+					<div class="flex flex-col gap-2">
+						<p class="text-xs text-muted-foreground">Badges: tones for tags and status</p>
+						<div class="flex flex-wrap items-center gap-2">
+							<Badge tone="blue">Customer</Badge>
+							<Badge tone="gray">Lead</Badge>
+							<Badge tone="green">Active</Badge>
+							<Badge tone="orange">Pending</Badge>
+							<Badge tone="red">Overdue</Badge>
+						</div>
+						<p class="text-xs text-muted-foreground">Solid badge, for counts only</p>
+						<div class="flex flex-wrap items-center gap-2">
+							<Badge>12</Badge>
+						</div>
 					</div>
 					<div class="flex items-center gap-2 text-sm">
 						<Switch id="notify-{mode.name}" />

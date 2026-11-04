@@ -6,12 +6,15 @@
  * Only design tokens are copied: colors, radii, spacing, type sizes, side panel width,
  * table geometry. No Twenty component code is used.
  *
- * Use: add class "theme-twenty" next to "style-ledger" on <html> (or any wrapper). Without
- * the class nothing changes. Colors are written as sRGB first and upgraded to the exact
+ * Use: add class "theme-twenty" next to "style-ledger" on <html>. Dialog, Popover, Select,
+ * Tooltip and Sheet portal to <body>, so a wrapper element would leave them on plain Ledger
+ * tokens; put the classes on <html>. Without the class nothing changes. Colors are written as sRGB first and upgraded to the exact
  * display-p3 values from twenty-ui where the browser supports them.
  *
- * Layout tokens (--twenty-*) are read by the sidebar, settings layout, side panel and
- * record table components. They are plain variables, so an app can read them too.
+ * Layout tokens (--twenty-*) are for the sidebar, side panel and record table components to
+ * read as they land. They are plain variables, so an app can read them too.
+ *
+ * A ".light" element inside a dark page (the docs demo) keeps the light tokens.
  */
 
 /* Shared geometry, light and dark. twenty-ui: border-radius sm 4px and md 8px, 4px spacing grid, side panel 500px, table checkbox column 32px, cell padding 8px. Type sizes are twenty-ui rem values at its 13px root. */
@@ -41,7 +44,7 @@
 }
 
 /* Light, sRGB fallback */
-.theme-twenty.style-ledger, .theme-twenty .style-ledger {
+.theme-twenty.style-ledger, .theme-twenty .style-ledger, .dark .theme-twenty.light.style-ledger, .dark .theme-twenty .light.style-ledger {
   --background: #ffffff;
   --foreground: #333333;
   --card: #ffffff;
@@ -56,7 +59,7 @@
   --muted-foreground: #666666;
   --accent: #f1f1f1;
   --accent-foreground: #333333;
-  --destructive: #d45452;
+  --destructive: #bc3a35;
   --border: #ebebeb;
   --input: #d6d6d6;
   --ring: #4561d6;
@@ -75,7 +78,7 @@
   --ledger-field-border: #ebebeb;
 }
 
-/* Dark, sRGB fallback */
+/* Dark, sRGB fallback. --primary is Ledger's lighter blue (7:1 on the page) for links, focus rings and text on dark surfaces. Filled buttons and badges use --primary-fill (#4561d6) behind white, 5.3:1, as Ledger does; --sidebar-primary matches that fill. */
 :is(.dark .theme-twenty.style-ledger, .dark .theme-twenty .style-ledger, .theme-twenty.dark.style-ledger, .theme-twenty.dark .style-ledger, .theme-twenty .dark.style-ledger) {
   --background: #171717;
   --foreground: #ebebeb;
@@ -83,18 +86,18 @@
   --card-foreground: #ebebeb;
   --popover: #1b1b1b;
   --popover-foreground: #ebebeb;
-  --primary: #5b73de;
-  --primary-foreground: #ffffff;
+  --primary: #6f8bf0;
+  --primary-foreground: #0d1330;
   --secondary: #1d1d1d;
   --secondary-foreground: #ebebeb;
   --muted: #1d1d1d;
   --muted-foreground: #b3b3b3;
   --accent: #222222;
   --accent-foreground: #ebebeb;
-  --destructive: #d45452;
+  --destructive: #f28781;
   --border: #222222;
   --input: #484848;
-  --ring: #5b73de;
+  --ring: #6f8bf0;
   --sidebar: #1b1b1b;
   --sidebar-foreground: #ebebeb;
   --sidebar-primary: #4561d6;
@@ -102,7 +105,7 @@
   --sidebar-accent: #222222;
   --sidebar-accent-foreground: #ebebeb;
   --sidebar-border: #222222;
-  --sidebar-ring: #5b73de;
+  --sidebar-ring: #6f8bf0;
   --ledger-surface-hover: #1d1d1d;
   --primary-fill: #4561d6;
   --primary-fill-foreground: #ffffff;
@@ -111,7 +114,7 @@
 }
 
 @supports (color: color(display-p3 1 1 1)) {
-  .theme-twenty.style-ledger, .theme-twenty .style-ledger {
+  .theme-twenty.style-ledger, .theme-twenty .style-ledger, .dark .theme-twenty.light.style-ledger, .dark .theme-twenty .light.style-ledger {
     --background: color(display-p3 1 1 1);
     --foreground: color(display-p3 0.2 0.2 0.2);
     --muted-foreground: color(display-p3 0.4 0.4 0.4);
@@ -123,7 +126,6 @@
     --sidebar: color(display-p3 0.988 0.988 0.988);
     --primary: color(display-p3 0.276 0.384 0.837);
     --ring: color(display-p3 0.276 0.384 0.837);
-    --destructive: color(display-p3 0.83 0.329 0.324);
   }
   :is(.dark .theme-twenty.style-ledger, .dark .theme-twenty .style-ledger, .theme-twenty.dark.style-ledger, .theme-twenty.dark .style-ledger, .theme-twenty .dark.style-ledger) {
     --background: color(display-p3 0.09 0.09 0.09);
@@ -135,8 +137,60 @@
     --border: color(display-p3 0.133 0.133 0.133);
     --input: color(display-p3 0.282 0.282 0.282);
     --sidebar: color(display-p3 0.106 0.106 0.106);
-    --primary: color(display-p3 0.354 0.445 0.866);
-    --ring: color(display-p3 0.354 0.445 0.866);
-    --destructive: color(display-p3 0.83 0.329 0.324);
   }
+}
+
+/* A .light element inside a dark page also needs the light chip tones, which Ledger redefines under .dark. */
+.dark .theme-twenty.light.style-ledger, .dark .theme-twenty .light.style-ledger {
+  --ledger-chip-gray-bg: #f4f4f4;
+  --ledger-chip-gray-ink: #555555;
+  --ledger-chip-blue-bg: #eaeffc;
+  --ledger-chip-blue-ink: #3556b8;
+  --ledger-chip-green-bg: #e6f5ea;
+  --ledger-chip-green-ink: #256b42;
+  --ledger-chip-red-bg: #fbeaea;
+  --ledger-chip-red-ink: #b0332e;
+  --ledger-chip-orange-bg: #fcefd9;
+  --ledger-chip-orange-ink: #9a4300;
+  --ledger-chip-yellow-bg: #fcf5bd;
+  --ledger-chip-yellow-ink: #7a5600;
+  --ledger-chip-purple-bg: #f3ecfb;
+  --ledger-chip-purple-ink: #6a3aa3;
+  --ledger-chip-pink-bg: #fae9f3;
+  --ledger-chip-pink-ink: #a52f78;
+  --ledger-chip-turquoise-bg: #e1f6ee;
+  --ledger-chip-turquoise-ink: #0f6f56;
+}
+
+/*
+ * Button geometry (Twenty): 32px, small 24px, 4px radius. Badges keep the Ledger badge and its tone prop (chip tones), so a tag never
+ * wears the solid primary fill: use <Badge tone="blue"> for tags and keep the solid default badge for counts.
+ *
+ * The rules hook on what a Button renders: data-size when a build adds it, and the utility classes the component carries otherwise
+ * (h-7, h-6, size-7). :not(#_) lifts them above the Ledger rules, which use :not(#_) themselves.
+ */
+.theme-twenty :is([data-slot="button"], [class*="group/button"]):not(.rounded-full):not(#_) {
+  border-radius: var(--twenty-radius-sm);
+}
+.theme-twenty :is([data-slot="button"], [class*="group/button"]):is([data-size="default"], .h-7, :not([data-size], [class*="h-"])):not(#_) {
+  height: 2rem;
+  min-height: 2rem;
+  padding-inline: 0.75rem;
+}
+.theme-twenty :is([data-slot="button"], [class*="group/button"]):is([data-size="sm"], .h-6):not(#_) {
+  height: 1.5rem;
+  min-height: 1.5rem;
+  padding-inline: 0.5rem;
+}
+.theme-twenty :is([data-slot="button"], [class*="group/button"]):is([data-size="icon"], .size-7):not(#_) {
+  width: 2rem;
+  height: 2rem;
+  min-height: 2rem;
+  padding: 0;
+}
+.theme-twenty :is([data-slot="button"], [class*="group/button"]):is([data-size="icon-sm"], .size-6):not(#_) {
+  width: 1.5rem;
+  height: 1.5rem;
+  min-height: 1.5rem;
+  padding: 0;
 }
