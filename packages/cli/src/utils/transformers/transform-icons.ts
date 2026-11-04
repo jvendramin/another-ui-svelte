@@ -72,8 +72,14 @@ export const transformIcons: Transformer = async ({ content, filePath, config })
 	// replace IconPlaceholder default import with the actual icon imports
 	if (placeholderImportNode) {
 		const imports: string[] = (iconLibrary as IconLibrary).getAdditionalImports?.() ?? [];
+		// An icon used twice in one file (a placeholder in two branches) is imported once; a second
+		// `import SparkleIcon from ...` is a "has already been declared" parse error.
+		const seen = new Set<string>(imports);
 		for (const icon of icons) {
-			imports.push(iconLibrary.import(icon));
+			const line = iconLibrary.import(icon);
+			if (seen.has(line)) continue;
+			seen.add(line);
+			imports.push(line);
 		}
 
 		// @ts-expect-error wrong

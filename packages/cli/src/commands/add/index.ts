@@ -125,6 +125,7 @@ async function runAdd(cwd: string, config: cliConfig.ResolvedConfig, options: Ad
 		config,
 		deps: options.deps,
 		overwrite: options.overwrite,
+		yes: options.yes,
 		selectedItems: Array.from(selectedComponents),
 	});
 
