@@ -57,6 +57,8 @@ SOFTWARE.
   --primary-fill: #3c5fd7;
   --primary-fill-foreground: #ffffff;
   --ledger-track: #f1f1f1;
+  --skullet-base: rgb(0 0 0 / 0.06);
+  --skullet-highlight: rgb(0 0 0 / 0.1);
   --ledger-chip-gray-bg: #f4f4f4;
   --ledger-chip-gray-ink: #555555;
   --ledger-chip-blue-bg: #eaeffc;
@@ -109,6 +111,8 @@ SOFTWARE.
   --primary-fill: #4966dc;
   --primary-fill-foreground: #ffffff;
   --ledger-track: #1f1f1f;
+  --skullet-base: rgb(255 255 255 / 0.08);
+  --skullet-highlight: rgb(255 255 255 / 0.1);
   --ledger-chip-gray-bg: #262626;
   --ledger-chip-gray-ink: #b8b8b8;
   --ledger-chip-blue-bg: #1b2342;

@@ -255,6 +255,16 @@
 		"relativeUrl": "label.json"
 	},
 	{
+		"name": "loading",
+		"type": "registry:ui",
+		"registryDependencies": [
+			"alert",
+			"empty",
+			"button"
+		],
+		"relativeUrl": "loading.json"
+	},
+	{
 		"name": "marker",
 		"type": "registry:ui",
 		"registryDependencies": [],
