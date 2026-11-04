@@ -139,44 +139,41 @@ describe("addRegistryItems", () => {
 			registryDependencies: [],
 		} satisfies ResolvedRegistryItem;
 
-		vi.mocked(existsSync).mockImplementation((path) => path.toString().includes("button"));
-		vi.mocked(registry.resolveRegistryItems).mockResolvedValue([customComponent, buttonComponent]);
-		vi.mocked(registry.fetchRegistryItems).mockResolvedValue([customComponent, buttonComponent]);
-		vi.mocked(registry.resolveItemFilePath).mockImplementation((config, item, file) => {
-			return `/path/to/${item.name}/${file.target}`;
-		});
-		vi.mocked(registry.getItemAliasDir).mockReturnValue("/test/components");
-		vi.mocked(p.tasks).mockResolvedValue(undefined);
+		// button already exists on disk, data-grid is new
+		const arrange = () => {
+			vi.clearAllMocks();
+			vi.mocked(existsSync).mockImplementation((path) => path.toString().includes("button"));
+			vi.mocked(registry.resolveRegistryItems).mockResolvedValue([customComponent, buttonComponent]);
+			vi.mocked(registry.fetchRegistryItems).mockResolvedValue([customComponent, buttonComponent]);
+			vi.mocked(registry.resolveItemFilePath).mockImplementation((config, item, file) => {
+				return `/path/to/${item.name}/${file.target}`;
+			});
+			vi.mocked(registry.getItemAliasDir).mockReturnValue("/test/components");
+			vi.mocked(p.tasks).mockResolvedValue(undefined);
+		};
+		const run = (overwrite: boolean) =>
+			addRegistryItems({
+				selectedItems: ["https://example.com/data-grid.json"],
+				config: mockConfig,
+				overwrite,
+				yes: true,
+				deps: true,
+			});
+		// The install tasks are queued per item; button is queued only when it will be rewritten.
+		const wroteButton = () =>
+			(vi.mocked(p.tasks).mock.calls[0]?.[0] ?? []).some((t) => String(t.title).includes("button"));
 
-		await addRegistryItems({
-			selectedItems: ["https://example.com/data-grid.json"],
-			config: mockConfig,
-			overwrite: false,
-			yes: true,
-			deps: true,
-		});
+		arrange();
+		await run(false);
 		expect(p.confirm).not.toHaveBeenCalled();
 		expect(p.log.warn).toHaveBeenCalledWith(expect.stringContaining("Keeping existing items"));
+		expect(wroteButton()).toBe(false);
 
-		vi.clearAllMocks();
-		vi.mocked(existsSync).mockImplementation((path) => path.toString().includes("button"));
-		vi.mocked(registry.resolveRegistryItems).mockResolvedValue([customComponent, buttonComponent]);
-		vi.mocked(registry.fetchRegistryItems).mockResolvedValue([customComponent, buttonComponent]);
-		vi.mocked(registry.resolveItemFilePath).mockImplementation((config, item, file) => {
-			return `/path/to/${item.name}/${file.target}`;
-		});
-		vi.mocked(registry.getItemAliasDir).mockReturnValue("/test/components");
-		vi.mocked(p.tasks).mockResolvedValue(undefined);
-
-		await addRegistryItems({
-			selectedItems: ["https://example.com/data-grid.json"],
-			config: mockConfig,
-			overwrite: true,
-			yes: true,
-			deps: true,
-		});
+		arrange();
+		await run(true);
 		expect(p.confirm).not.toHaveBeenCalled();
 		expect(p.log.warn).not.toHaveBeenCalledWith(expect.stringContaining("Keeping existing items"));
+		expect(wroteButton()).toBe(true);
 	});
 
 	it("should include all resolved dependencies in selectedItems for custom registry", async () => {

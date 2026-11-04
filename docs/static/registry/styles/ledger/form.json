@@ -2,10 +2,6 @@
 	"$schema": "https://shadcn-svelte.com/schema/registry-item.json",
 	"name": "form",
 	"type": "registry:ui",
-	"dependencies": [
-		"formsnap@^2.1.0",
-		"sveltekit-superforms@^3.0.0"
-	],
 	"devDependencies": [
 		"formsnap@^2.1.0",
 		"sveltekit-superforms@^3.0.0"

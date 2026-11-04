@@ -2,10 +2,6 @@
 	"$schema": "https://shadcn-svelte.com/schema/registry-item.json",
 	"name": "calendar-16",
 	"type": "registry:block",
-	"dependencies": [
-		"@internationalized/date@^3.12.0",
-		"@lucide/svelte@^1.27.0"
-	],
 	"devDependencies": [
 		"@lucide/svelte@^1.27.0",
 		"@internationalized/date@^3.12.0"

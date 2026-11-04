@@ -2,9 +2,6 @@
 	"$schema": "https://shadcn-svelte.com/schema/registry-item.json",
 	"name": "attachment",
 	"type": "registry:ui",
-	"dependencies": [
-		"tailwind-variants@^3.3.0"
-	],
 	"devDependencies": [
 		"tailwind-variants@^3.3.0"
 	],

@@ -2,9 +2,6 @@
 	"$schema": "https://shadcn-svelte.com/schema/registry-item.json",
 	"name": "sheet",
 	"type": "registry:ui",
-	"dependencies": [
-		"bits-ui@^2.20.0"
-	],
 	"devDependencies": [
 		"bits-ui@^2.20.0",
 		"@internationalized/date@^3.12.0"

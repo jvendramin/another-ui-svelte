@@ -2,10 +2,6 @@
 	"$schema": "https://shadcn-svelte.com/schema/registry-item.json",
 	"name": "new-components-01",
 	"type": "registry:block",
-	"dependencies": [
-		"@lucide/svelte@^1.27.0",
-		"@tabler/icons-svelte@^3.40.0"
-	],
 	"devDependencies": [
 		"@lucide/svelte@^1.27.0",
 		"@tabler/icons-svelte@^3.40.0"

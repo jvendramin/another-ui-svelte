@@ -259,8 +259,7 @@ export async function addRegistryItems(opts: AddRegistryItemsProps) {
 		const isModified = cssSource !== modifiedCss;
 
 		if (isModified) {
-			// `--yes` has already said continue.
-			let writeStylesheet = opts.overwrite || opts.yes === true || opts.forceStylesheet === true;
+			let writeStylesheet = opts.overwrite || opts.forceStylesheet === true;
 			if (!writeStylesheet) {
 				const overwrite = await p.confirm({
 					message: `Updates to your ${highlight(relative)} are required. Existing CSS variables may be ${color.bold(color.red("overwritten"))}. Continue?`,
