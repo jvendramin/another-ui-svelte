@@ -312,6 +312,7 @@
 		"type": "registry:ui",
 		"registryDependencies": [
 			"table",
+			"button",
 			"checkbox",
 			"input",
 			"skeleton"

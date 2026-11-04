@@ -1,5 +1,5 @@
 <script lang="ts" module>
-	import type { Snippet } from "svelte";
+	import { tick, type Snippet } from "svelte";
 
 	export type RecordTableColumn<TData> = {
 		id: string;
@@ -34,6 +34,7 @@
 	} from "@tanstack/svelte-table";
 	import * as Table from "$lib/registry/ui/table/index.js";
 	import IconPlaceholder from "$lib/components/icon-placeholder/icon-placeholder.svelte";
+	import { Button } from "$lib/registry/ui/button/index.js";
 	import { Checkbox } from "$lib/registry/ui/checkbox/index.js";
 	import { Input } from "$lib/registry/ui/input/index.js";
 	import { Skeleton } from "$lib/registry/ui/skeleton/index.js";
@@ -50,6 +51,7 @@
 		selectedIds = $bindable([]),
 		onRowClick,
 		onCreate,
+		onCreateError,
 		createPlaceholder = "Name",
 		createLabel = "Add new",
 		loading = false,
@@ -72,6 +74,8 @@
 		onRowClick?: (row: TData) => void;
 		/** Called with the typed text from the "Add new" row. The row is not shown without it. */
 		onCreate?: (value: string) => void | Promise<void>;
+		/** Called when `onCreate` throws or rejects. The typed text is kept and the input is marked invalid. */
+		onCreateError?: (error: unknown, value: string) => void;
 		createPlaceholder?: string;
 		createLabel?: string;
 		/** Show skeleton rows while there is no data yet. */
@@ -85,11 +89,20 @@
 		class?: string;
 	} = $props();
 
+	// Numbers compare as numbers (so 1.25 sorts before 1.5 and -10 before -5); everything else sorts alphanumerically.
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	const sortSmart = (rowA: any, rowB: any, columnId: string) => {
+		const a = rowA.getValue(columnId);
+		const b = rowB.getValue(columnId);
+		if (typeof a === "number" && typeof b === "number") return a === b ? 0 : a < b ? -1 : 1;
+		return sortFn_alphanumeric(rowA, rowB, columnId);
+	};
+
 	const features = tableFeatures({
 		rowSelectionFeature,
 		rowSortingFeature,
 		sortedRowModel: createSortedRowModel(),
-		sortFns: { alphanumeric: sortFn_alphanumeric },
+		sortFns: { alphanumeric: sortFn_alphanumeric, smart: sortSmart },
 	});
 	const columnHelper = createColumnHelper<typeof features, TData>();
 
@@ -100,7 +113,7 @@
 					? columnHelper.accessor((row: TData) => col.accessor?.(row) ?? "", {
 							id: col.id,
 							header: col.header,
-							sortFn: "alphanumeric",
+							sortFn: "smart",
 							enableSorting: col.sortable ?? true,
 						})
 					: columnHelper.display({ id: col.id, header: col.header })
@@ -150,6 +163,15 @@
 		},
 	});
 
+	// Only visible rows can be selected: a row hidden by the filter, or removed from data, is dropped from selectedIds,
+	// so a bulk action never touches rows the user cannot see.
+	$effect(() => {
+		if (!selectedIds.length) return;
+		const visible = new Set(filtered.map((row) => getRowId(row)));
+		const next = selectedIds.filter((id) => visible.has(id));
+		if (next.length !== selectedIds.length) selectedIds = next;
+	});
+
 	const rows = $derived(table.getRowModel().rows);
 	const colCount = $derived(columns.length + (selectable ? 1 : 0));
 
@@ -159,22 +181,31 @@
 	let busy = $state(false);
 	let createInput = $state<HTMLInputElement | null>(null);
 
+	let invalid = $state(false);
+
 	async function submit() {
 		const value = draft.trim();
 		if (!value || busy) return;
 		busy = true;
+		invalid = false;
 		try {
 			await onCreate?.(value);
 			draft = "";
-			createInput?.focus();
+		} catch (error) {
+			invalid = true;
+			onCreateError?.(error, value);
 		} finally {
 			busy = false;
 		}
+		// The input is readonly while busy (not disabled, which would drop focus); focus it again once the DOM settles.
+		await tick();
+		createInput?.focus();
 	}
 
 	function cancel() {
 		creating = false;
 		draft = "";
+		invalid = false;
 	}
 
 	function rowClick(event: Event, row: TData) {
@@ -185,7 +216,10 @@
 	}
 
 	function rowKeydown(event: KeyboardEvent, row: TData) {
-		if (event.key === "Enter" && event.target === event.currentTarget) onRowClick?.(row);
+		if ((event.key === "Enter" || event.key === " ") && event.target === event.currentTarget) {
+			event.preventDefault();
+			onRowClick?.(row);
+		}
 	}
 
 	const sortLabel = { asc: "ascending", desc: "descending" } as const;
@@ -228,11 +262,13 @@
 							)}
 						>
 							{#if header.column.getCanSort()}
-								<button
+								<Button
 									type="button"
+									variant="ghost"
+									size="sm"
 									class={cn(
-										"inline-flex items-center gap-1 font-medium outline-none hover:text-foreground focus-visible:underline",
-										def?.align === "end" && "flex-row-reverse"
+										"-ms-2 h-6 gap-1 px-2 font-medium text-muted-foreground hover:text-foreground",
+										def?.align === "end" && "ms-0 -me-2 flex-row-reverse"
 									)}
 									onclick={header.column.getToggleSortingHandler()}
 									aria-label="Sort by {def?.header}{sorted ? `, ${sortLabel[sorted]}` : ''}"
@@ -257,7 +293,7 @@
 											class="size-3"
 										/>
 									{/if}
-								</button>
+								</Button>
 							{:else}
 								{def?.header}
 							{/if}
@@ -280,13 +316,17 @@
 						tabindex={onRowClick ? 0 : undefined}
 						class={cn(
 							"h-[var(--twenty-table-row-height,2rem)] bg-background",
-							onRowClick && "cursor-pointer"
+							onRowClick &&
+								"cursor-pointer focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring"
 						)}
 						onclick={(e: MouseEvent) => rowClick(e, row.original)}
 						onkeydown={(e: KeyboardEvent) => rowKeydown(e, row.original)}
 					>
 						{#if selectable}
-							<Table.Cell class="sticky left-0 z-[1] w-8 max-w-8 min-w-8 bg-inherit">
+							<Table.Cell
+								class="sticky left-0 z-[1] w-8 max-w-8 min-w-8 bg-inherit"
+								onclick={(e: MouseEvent) => e.stopPropagation()}
+							>
 								<Checkbox
 									aria-label="Select row"
 									checked={row.getIsSelected()}
@@ -333,8 +373,10 @@
 								bind:value={draft}
 								aria-label={createPlaceholder}
 								placeholder={createPlaceholder}
-								disabled={busy}
+								readonly={busy}
+								aria-invalid={invalid || undefined}
 								class="my-1 h-6 max-w-xs"
+								oninput={() => (invalid = false)}
 								onkeydown={(e: KeyboardEvent) => {
 									if (e.key === "Enter") {
 										e.preventDefault();
@@ -346,12 +388,14 @@
 								}}
 							/>
 						{:else}
-							<button
+							<Button
 								type="button"
-								class="flex h-full w-full items-center gap-2 text-muted-foreground outline-none hover:text-foreground focus-visible:text-foreground"
+								variant="ghost"
+								size="sm"
+								class="-ms-2 gap-2 px-2 text-muted-foreground hover:text-foreground"
 								onclick={async () => {
 									creating = true;
-									await Promise.resolve();
+									await tick();
 									createInput?.focus();
 								}}
 							>
@@ -364,7 +408,7 @@
 									class="size-3.5"
 								/>
 								{createLabel}
-							</button>
+							</Button>
 						{/if}
 					</Table.Cell>
 				</Table.Row>
