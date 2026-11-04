@@ -1,0 +1,142 @@
+/*
+ * Theme variant "twenty": the Twenty CRM look on top of Ledger.
+ *
+ * Source: the twenty-ui theme tokens (packages/twenty-ui/src/theme/theme-light.css and
+ * theme-dark.css in github.com/twentyhq/twenty, MIT, same license text as ledger-tokens.css).
+ * Only design tokens are copied: colors, radii, spacing, type sizes, side panel width,
+ * table geometry. No Twenty component code is used.
+ *
+ * Use: add class "theme-twenty" next to "style-ledger" on <html> (or any wrapper). Without
+ * the class nothing changes. Colors are written as sRGB first and upgraded to the exact
+ * display-p3 values from twenty-ui where the browser supports them.
+ *
+ * Layout tokens (--twenty-*) are read by the sidebar, settings layout, side panel and
+ * record table components. They are plain variables, so an app can read them too.
+ */
+
+/* Shared geometry, light and dark. twenty-ui: border-radius sm 4px and md 8px, 4px spacing grid, side panel 500px, table checkbox column 32px, cell padding 8px. Type sizes are twenty-ui rem values at its 13px root. */
+.theme-twenty.style-ledger, .theme-twenty .style-ledger {
+  --radius: 8px;
+  --ui-radius: 4px;
+  --twenty-radius-xs: 2px;
+  --twenty-radius-sm: 4px;
+  --twenty-radius-md: 8px;
+  --twenty-radius-lg: 12px;
+  --twenty-spacing-unit: 4px;
+  --twenty-side-panel-width: 500px;
+  --twenty-table-checkbox-column-width: 32px;
+  --twenty-table-cell-padding-x: 8px;
+  --twenty-table-row-height: 32px;
+  --twenty-font-size-xs: 11px;
+  --twenty-font-size-sm: 12px;
+  --twenty-font-size-md: 13px;
+  --twenty-font-size-lg: 16px;
+  --twenty-font-size-xl: 20px;
+  --twenty-font-weight-regular: 400;
+  --twenty-font-weight-medium: 500;
+  --twenty-font-weight-semibold: 600;
+  --twenty-hover-transition: background 0.1s ease;
+  --twenty-duration-fast: 150ms;
+  --twenty-duration-normal: 300ms;
+}
+
+/* Light, sRGB fallback */
+.theme-twenty.style-ledger, .theme-twenty .style-ledger {
+  --background: #ffffff;
+  --foreground: #333333;
+  --card: #ffffff;
+  --card-foreground: #333333;
+  --popover: #ffffff;
+  --popover-foreground: #333333;
+  --primary: #4561d6;
+  --primary-foreground: #ffffff;
+  --secondary: #f1f1f1;
+  --secondary-foreground: #333333;
+  --muted: #f1f1f1;
+  --muted-foreground: #666666;
+  --accent: #f1f1f1;
+  --accent-foreground: #333333;
+  --destructive: #d45452;
+  --border: #ebebeb;
+  --input: #d6d6d6;
+  --ring: #4561d6;
+  --sidebar: #fcfcfc;
+  --sidebar-foreground: #333333;
+  --sidebar-primary: #4561d6;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #f1f1f1;
+  --sidebar-accent-foreground: #333333;
+  --sidebar-border: #ebebeb;
+  --sidebar-ring: #4561d6;
+  --ledger-surface-hover: #f7f7f7;
+  --primary-fill: #4561d6;
+  --primary-fill-foreground: #ffffff;
+  --ledger-track: #f1f1f1;
+  --ledger-field-border: #ebebeb;
+}
+
+/* Dark, sRGB fallback */
+:is(.dark .theme-twenty.style-ledger, .dark .theme-twenty .style-ledger, .theme-twenty.dark.style-ledger, .theme-twenty.dark .style-ledger, .theme-twenty .dark.style-ledger) {
+  --background: #171717;
+  --foreground: #ebebeb;
+  --card: #1b1b1b;
+  --card-foreground: #ebebeb;
+  --popover: #1b1b1b;
+  --popover-foreground: #ebebeb;
+  --primary: #5b73de;
+  --primary-foreground: #ffffff;
+  --secondary: #1d1d1d;
+  --secondary-foreground: #ebebeb;
+  --muted: #1d1d1d;
+  --muted-foreground: #b3b3b3;
+  --accent: #222222;
+  --accent-foreground: #ebebeb;
+  --destructive: #d45452;
+  --border: #222222;
+  --input: #484848;
+  --ring: #5b73de;
+  --sidebar: #1b1b1b;
+  --sidebar-foreground: #ebebeb;
+  --sidebar-primary: #4561d6;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #222222;
+  --sidebar-accent-foreground: #ebebeb;
+  --sidebar-border: #222222;
+  --sidebar-ring: #5b73de;
+  --ledger-surface-hover: #1d1d1d;
+  --primary-fill: #4561d6;
+  --primary-fill-foreground: #ffffff;
+  --ledger-track: #1d1d1d;
+  --ledger-field-border: #2c2c2c;
+}
+
+@supports (color: color(display-p3 1 1 1)) {
+  .theme-twenty.style-ledger, .theme-twenty .style-ledger {
+    --background: color(display-p3 1 1 1);
+    --foreground: color(display-p3 0.2 0.2 0.2);
+    --muted-foreground: color(display-p3 0.4 0.4 0.4);
+    --secondary: color(display-p3 0.945 0.945 0.945);
+    --muted: color(display-p3 0.945 0.945 0.945);
+    --accent: color(display-p3 0.945 0.945 0.945);
+    --border: color(display-p3 0.922 0.922 0.922);
+    --input: color(display-p3 0.839 0.839 0.839);
+    --sidebar: color(display-p3 0.988 0.988 0.988);
+    --primary: color(display-p3 0.276 0.384 0.837);
+    --ring: color(display-p3 0.276 0.384 0.837);
+    --destructive: color(display-p3 0.83 0.329 0.324);
+  }
+  :is(.dark .theme-twenty.style-ledger, .dark .theme-twenty .style-ledger, .theme-twenty.dark.style-ledger, .theme-twenty.dark .style-ledger, .theme-twenty .dark.style-ledger) {
+    --background: color(display-p3 0.09 0.09 0.09);
+    --foreground: color(display-p3 0.922 0.922 0.922);
+    --muted-foreground: color(display-p3 0.702 0.702 0.702);
+    --secondary: color(display-p3 0.114 0.114 0.114);
+    --muted: color(display-p3 0.114 0.114 0.114);
+    --accent: color(display-p3 0.133 0.133 0.133);
+    --border: color(display-p3 0.133 0.133 0.133);
+    --input: color(display-p3 0.282 0.282 0.282);
+    --sidebar: color(display-p3 0.106 0.106 0.106);
+    --primary: color(display-p3 0.354 0.445 0.866);
+    --ring: color(display-p3 0.354 0.445 0.866);
+    --destructive: color(display-p3 0.83 0.329 0.324);
+  }
+}
