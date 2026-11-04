@@ -30,4 +30,35 @@ describe("updateCssVars: @theme mapping", () => {
 		expect(out).not.toContain("--font-sans: var(--font-sans)");
 		expect(out).toContain("--radius-md: calc(var(--radius) * 0.8);");
 	});
+
+	it("keeps the mapping for non-color tokens in a Tailwind theme namespace, so the utility exists", () => {
+		const out = transformCss(SOURCE, {
+			cssVars: {
+				light: {
+					"shadow-card": "0 1px 2px 0 rgb(0 0 0 / 0.04)",
+					"font-heading": "Inter, sans-serif",
+					"tracking-tight": "-0.02em",
+				},
+			},
+		});
+		// `@theme inline` puts var(--shadow-card) into the shadow-card utility, which resolves from :root and .dark.
+		expect(out).toContain("--shadow-card: var(--shadow-card);");
+		expect(out).toContain("--font-heading: var(--font-heading);");
+		expect(out).toContain("--tracking-tight: var(--tracking-tight);");
+	});
+
+	it("does not treat a name that merely contains a namespace as one", () => {
+		const out = transformCss(SOURCE, {
+			cssVars: {
+				light: {
+					"ledger-field-shadow": "0 1px 2px 0 rgb(0 0 0 / 0.04)",
+					"ledger-text-size": "1px",
+				},
+			},
+		});
+		expect(out).not.toContain("--ledger-field-shadow: var(--ledger-field-shadow)");
+		expect(out).not.toContain("--ledger-text-size: var(--ledger-text-size)");
+		// They still land in :root.
+		expect(out).toContain("--ledger-text-size: 1px;");
+	});
 });

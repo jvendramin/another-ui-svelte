@@ -204,12 +204,17 @@ function updateThemePlugin(ast: Root, cssVars: CssVars): void {
 			continue;
 		}
 
-		// Only colors get a Tailwind theme mapping (`--color-x: var(--x)`). Any other token (a shadow, a length) would map
-		// to `--x: var(--x)`, a variable that refers to itself, which is invalid if Tailwind ever emits it at :root. It
-		// already lives in :root, and Tailwind reads it from there, so there is nothing to add to @theme.
-		if (!(isLocalHSLValue(value) || isColorValue(value))) continue;
+		// A token needs a Tailwind theme mapping (`--x: var(--x)` in `@theme inline`) when Tailwind should generate a utility
+		// for it: a color (`--color-x`) or a name in a theme namespace such as `shadow-card` or `font-heading`. Inline mode
+		// puts var(--x) into the utility, which resolves from :root and .dark. Any other token, for example
+		// `ledger-field-shadow`, would only gain a variable that refers to itself, which is invalid if Tailwind emits it at
+		// :root. It already lives in :root, and var() or an arbitrary value reads it from there.
+		const isColor = isLocalHSLValue(value) || isColorValue(value);
+		if (!isColor && !isInTailwindNamespace(variable)) continue;
 
-		let prop = `--color-${variable.replace(/^--/, "")}`;
+		let prop = isColor
+			? `--color-${variable.replace(/^--/, "")}`
+			: `--${variable.replace(/^--/, "")}`;
 		if (prop === "--color-sidebar-background") {
 			prop = "--color-sidebar";
 		}
@@ -235,6 +240,33 @@ function updateThemePlugin(ast: Root, cssVars: CssVars): void {
 			}
 		}
 	}
+}
+
+// Tailwind v4 theme namespaces: `--<namespace>-<name>` in @theme generates the matching utility.
+const TAILWIND_THEME_NAMESPACES = [
+	"color",
+	"font",
+	"text",
+	"tracking",
+	"leading",
+	"breakpoint",
+	"container",
+	"spacing",
+	"radius",
+	"shadow",
+	"inset-shadow",
+	"drop-shadow",
+	"text-shadow",
+	"blur",
+	"perspective",
+	"aspect",
+	"ease",
+	"animate",
+];
+
+function isInTailwindNamespace(variable: string): boolean {
+	const name = variable.replace(/^--/, "");
+	return TAILWIND_THEME_NAMESPACES.some((ns) => name === ns || name.startsWith(`${ns}-`));
 }
 
 function upsertThemeNode(ast: Root): AtRule {
