@@ -44,7 +44,8 @@ class SidebarState {
 	handleShortcutKeydown = (e: KeyboardEvent) => {
 		if (e.key === SIDEBAR_KEYBOARD_SHORTCUT && (e.metaKey || e.ctrlKey)) {
 			// Cmd+B is bold in a text editor: leave it to the field being typed in, or to a handler that already took it.
-			if (e.defaultPrevented || e.repeat || isEditableTarget(e.target)) return;
+			if (e.defaultPrevented || e.repeat || isEditableTarget(e.composedPath()[0] ?? e.target))
+				return;
 			e.preventDefault();
 			this.toggle();
 		}
@@ -59,14 +60,25 @@ class SidebarState {
 	};
 }
 
+const NON_TEXT_INPUTS = [
+	"button",
+	"checkbox",
+	"color",
+	"file",
+	"image",
+	"radio",
+	"range",
+	"reset",
+	"submit",
+];
+
 function isEditableTarget(target: EventTarget | null) {
 	if (!(target instanceof HTMLElement)) return false;
-	return (
-		target.isContentEditable ||
-		target.closest(
-			"input, textarea, select, [contenteditable=''], [contenteditable='true'], [role='textbox']"
-		) !== null
-	);
+	if (target.isContentEditable) return true;
+	const field = target.closest("input, textarea, select, [role='textbox']");
+	if (!field) return false;
+	// A checkbox or slider has no Bold, so the shortcut still works there.
+	return !(field instanceof HTMLInputElement && NON_TEXT_INPUTS.includes(field.type));
 }
 
 const SYMBOL_KEY = "scn-sidebar";
