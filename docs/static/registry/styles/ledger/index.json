@@ -486,9 +486,7 @@
 	{
 		"name": "split-pane",
 		"type": "registry:ui",
-		"registryDependencies": [
-			"resizable"
-		],
+		"registryDependencies": [],
 		"relativeUrl": "split-pane.json"
 	},
 	{
