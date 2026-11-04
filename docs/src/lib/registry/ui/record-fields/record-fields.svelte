@@ -20,7 +20,7 @@
 		type: RecordFieldType;
 		/** The choices of a select field. A tone colors its badge. */
 		options?: RecordFieldOption[];
-		/** An ISO currency code for a currency field. Default CAD. */
+		/** An ISO currency code for a currency field. Default USD. */
 		currency?: string;
 		placeholder?: string;
 		readonly?: boolean;
@@ -47,6 +47,7 @@
 		fields,
 		onChange,
 		readonly = false,
+		locale,
 		class: className,
 	}: {
 		record: TRecord;
@@ -55,6 +56,8 @@
 		onChange?: (fieldId: string, value: unknown) => void | Promise<void>;
 		/** Show the values without editing. */
 		readonly?: boolean;
+		/** A BCP 47 locale for numbers, currency and dates. Default: the browser's. */
+		locale?: string;
 		class?: string;
 	} = $props();
 
@@ -72,19 +75,24 @@
 		if (value === null || value === undefined || value === "") return "";
 		switch (field.type) {
 			case "currency":
-				return new Intl.NumberFormat("en-CA", {
-					style: "currency",
-					currency: field.currency ?? "CAD",
-				}).format(Number(value));
+				try {
+					return new Intl.NumberFormat(locale, {
+						style: "currency",
+						currency: field.currency ?? "USD",
+					}).format(Number(value));
+				} catch {
+					// An invalid currency code must not break the whole list.
+					return new Intl.NumberFormat(locale).format(Number(value));
+				}
 			case "number":
-				return new Intl.NumberFormat("en-CA").format(Number(value));
+				return new Intl.NumberFormat(locale).format(Number(value));
 			case "date": {
 				const d = new Date(
 					/^\d{4}-\d{2}-\d{2}$/.test(String(value)) ? `${value}T00:00:00` : String(value)
 				);
 				return Number.isNaN(d.getTime())
 					? String(value)
-					: d.toLocaleDateString("en-CA", { year: "numeric", month: "short", day: "numeric" });
+					: d.toLocaleDateString(locale, { year: "numeric", month: "short", day: "numeric" });
 			}
 			default:
 				return String(value);
@@ -111,12 +119,25 @@
 		return text === "" ? null : field.type === "textarea" ? draft : text;
 	}
 
-	async function commit(field: RecordField<TRecord>) {
+	// viaKeyboard: the user pressed Enter. Only then is focus pulled back to a field whose save failed; a failed save after
+	// the user tabbed or clicked away leaves the field open and marked invalid, without stealing focus (no focus trap).
+	async function commit(field: RecordField<TRecord>, viaKeyboard = false) {
 		if (editing !== field.id || cancelled || saving) return;
 		const next = parse(field);
 		const current = valueOf(field) ?? null;
 		if (next === current || (next === null && current === "")) {
 			editing = null;
+			return;
+		}
+		// An email or URL field uses the browser's own validation before anything is saved.
+		if (
+			next !== null &&
+			(field.type === "email" || field.type === "url") &&
+			inputEl instanceof HTMLInputElement &&
+			!inputEl.checkValidity()
+		) {
+			invalid = field.id;
+			if (viaKeyboard) inputEl.focus();
 			return;
 		}
 		saving = true;
@@ -126,8 +147,10 @@
 			invalid = null;
 		} catch {
 			invalid = field.id;
-			await tick();
-			inputEl?.focus();
+			if (viaKeyboard) {
+				await tick();
+				inputEl?.focus();
+			}
 		} finally {
 			saving = false;
 		}
@@ -148,16 +171,18 @@
 			(field.type !== "textarea" || event.metaKey || event.ctrlKey)
 		) {
 			event.preventDefault();
-			commit(field);
+			commit(field, true);
 		}
 	}
 
+	// The switch is controlled: it reads the record's value, so when onChange throws the record keeps the old value and the
+	// switch snaps back.
 	async function toggle(field: RecordField<TRecord>, checked: boolean) {
 		if (readonly || field.readonly) return;
 		try {
 			await onChange?.(field.id, checked);
 		} catch {
-			// The parent keeps the old value, so the switch snaps back.
+			// Nothing to do: the record was not changed.
 		}
 	}
 </script>
@@ -226,24 +251,31 @@
 					<div class="flex h-8 items-center">
 						<Switch
 							aria-label={field.label}
-							checked={value === true}
+							bind:checked={() => value === true, (checked) => toggle(field, checked)}
 							disabled={locked}
-							onCheckedChange={(checked) => toggle(field, checked)}
 						/>
+					</div>
+				{:else if locked}
+					<div class={cn("flex h-8 items-center text-[13px]", !text && "text-muted-foreground")}>
+						{#if !text}
+							{field.placeholder ?? "Empty"}
+						{:else if field.type === "select"}
+							<Badge tone={option?.tone ?? "gray"}>{option?.label ?? text}</Badge>
+						{:else}
+							<span class="truncate">{text}</span>
+						{/if}
 					</div>
 				{:else}
 					<Button
 						type="button"
 						variant="ghost"
-						disabled={locked && !text}
-						aria-label={locked ? undefined : `Edit ${field.label}`}
 						class={cn(
 							"-ms-2 h-8 w-full justify-start gap-2 px-2 text-[13px] font-normal",
-							locked && "pointer-events-none",
 							!text && "text-muted-foreground"
 						)}
 						onclick={() => startEdit(field)}
 					>
+						<span class="sr-only">Edit {field.label}:</span>
 						{#if !text}
 							<span>{field.placeholder ?? "Empty"}</span>
 						{:else if field.type === "select"}

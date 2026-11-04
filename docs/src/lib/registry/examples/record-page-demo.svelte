@@ -43,7 +43,7 @@
 				{ value: "lost", label: "Lost", tone: "red" },
 			],
 		},
-		{ id: "value", label: "Value", type: "currency" },
+		{ id: "value", label: "Value", type: "currency", currency: "CAD" },
 		{ id: "employees", label: "Employees", type: "number" },
 		{ id: "founded", label: "Founded", type: "date" },
 		{ id: "active", label: "Active", type: "boolean" },
@@ -56,6 +56,9 @@
 		await new Promise((r) => setTimeout(r, 150));
 		if (id === "email" && typeof value === "string" && !value.includes("@")) {
 			throw new Error("Not an email");
+		}
+		if (id === "active" && value === false && company.stage === "customer") {
+			throw new Error("A customer stays active");
 		}
 		(company as Record<string, unknown>)[id] = value;
 		saved = `Saved ${id}`;

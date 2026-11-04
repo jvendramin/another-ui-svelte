@@ -11,6 +11,7 @@
 		class: className,
 		header,
 		fields,
+		fieldsLabel = "Fields",
 		children,
 		...restProps
 	}: Omit<WithElementRef<HTMLAttributes<HTMLDivElement>>, "children"> & {
@@ -18,6 +19,8 @@
 		header?: Snippet;
 		/** The fields rail, usually a RecordFields. */
 		fields?: Snippet;
+		/** The accessible name of the fields rail. Default "Fields". */
+		fieldsLabel?: string;
 		/** The main area. */
 		children?: Snippet;
 	} = $props();
@@ -37,12 +40,14 @@
 			{@render header()}
 		</header>
 	{/if}
-	<div class="grid min-h-0 flex-1 md:grid-cols-[20rem_minmax(0,1fr)]">
+	<div
+		class="grid min-h-0 flex-1 grid-rows-[auto_minmax(0,1fr)] md:grid-cols-[20rem_minmax(0,1fr)] md:grid-rows-1"
+	>
 		{#if fields}
 			<aside
 				data-slot="record-layout-fields"
-				aria-label="Fields"
-				class="min-h-0 overflow-y-auto border-b p-4 md:border-r md:border-b-0"
+				aria-label={fieldsLabel}
+				class="max-h-[45svh] min-h-0 overflow-y-auto border-b p-4 md:max-h-none md:border-r md:border-b-0"
 			>
 				{@render fields()}
 			</aside>
