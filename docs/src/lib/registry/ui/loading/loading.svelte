@@ -56,14 +56,15 @@
 	// and the error comes straight back, Svelte resumes that same exiting pane and it stays at opacity 0 with pointer events off:
 	// a blank list whose Try again button cannot be seen or clicked. So an error that returns within EXIT_MS of leaving gets a
 	// fresh Skeleton. Any other error keeps the one it has, and with it the skeleton to error cross-fade.
-	// TODO: drop the key once Skullet fixes the resume (upstream issue draft in crew state, loading-fix-1104).
+	// TODO: drop the key once Skullet fixes this (https://github.com/lochie/skullet/issues/13, seen in skullet 0.0.3).
 	// EXIT_MS is several times Skullet's exit fade, long enough to cover a pane still on its way out.
 	const EXIT_MS = 1500;
 	let retryEl = $state<HTMLElement | null>(null);
-	// When Try again was last pressed: the old button is gone (and focus with it) by the time the error returns.
-	let pressedAt = 0;
+	// Set when Try again is pressed, cleared when the error pane comes back. Pressing it removes the button that had focus (the
+	// error pane leaves for the skeleton), so when the error returns, however long the retry took, focus goes to its new button.
+	let retryPending = false;
 	const retry = () => {
-		pressedAt = Date.now();
+		retryPending = true;
 		props.onRetry?.();
 	};
 	// A `data` promise that rejects shows the error pane too, so watch for that as well as the `error` prop.
@@ -71,12 +72,14 @@
 	$effect(() => {
 		const source = props.data;
 		if (typeof (source as PromiseLike<T> | null)?.then !== "function") return;
+		let live = true;
 		(source as PromiseLike<T>).then(
 			() => {},
 			() => {
-				if (props.data === source) rejected = source;
+				if (live && props.data === source) rejected = source;
 			}
 		);
+		return () => (live = false);
 	});
 	const erroring = $derived(
 		!props.loading && (!!props.error || (rejected !== null && rejected === props.data))
@@ -87,11 +90,13 @@
 	$effect.pre(() => {
 		const now = erroring;
 		untrack(() => {
-			if (now && !wasErroring && Date.now() - leftAt < EXIT_MS) {
-				// The button that was pressed goes with the old Skeleton: put focus on its replacement.
-				const pressed = Date.now() - pressedAt < EXIT_MS * 2;
-				run++;
-				if (pressed) tick().then(() => retryEl?.focus());
+			const comesBack = now && !wasErroring;
+			if (comesBack && Date.now() - leftAt < EXIT_MS) run++;
+			if (comesBack && retryPending) {
+				retryPending = false;
+				// Only when focus was lost with the button: if the person has moved on (focus is somewhere real), leave it.
+				const lost = !document.activeElement || document.activeElement === document.body;
+				if (lost) tick().then(() => retryEl?.focus());
 			}
 			if (!now && wasErroring) leftAt = Date.now();
 			wasErroring = now;
