@@ -39,7 +39,7 @@
 
 <script lang="ts" generics="T">
 	import { Skeleton } from "skullet/svelte";
-	import { untrack } from "svelte";
+	import { tick, untrack } from "svelte";
 	import * as Alert from "$lib/registry/ui/alert/index.js";
 	import * as Empty from "$lib/registry/ui/empty/index.js";
 	import { Button } from "$lib/registry/ui/button/index.js";
@@ -56,7 +56,16 @@
 	// and the error comes straight back, Svelte resumes that same exiting pane and it stays at opacity 0 with pointer events off:
 	// a blank list whose Try again button cannot be seen or clicked. So an error that returns within EXIT_MS of leaving gets a
 	// fresh Skeleton. Any other error keeps the one it has, and with it the skeleton to error cross-fade.
+	// TODO: drop the key once Skullet fixes the resume (upstream issue draft in crew state, loading-fix-1104).
+	// EXIT_MS is several times Skullet's exit fade, long enough to cover a pane still on its way out.
 	const EXIT_MS = 1500;
+	let retryEl = $state<HTMLElement | null>(null);
+	// When Try again was last pressed: the old button is gone (and focus with it) by the time the error returns.
+	let pressedAt = 0;
+	const retry = () => {
+		pressedAt = Date.now();
+		props.onRetry?.();
+	};
 	// A `data` promise that rejects shows the error pane too, so watch for that as well as the `error` prop.
 	let rejected = $state.raw<unknown>(null);
 	$effect(() => {
@@ -78,7 +87,12 @@
 	$effect.pre(() => {
 		const now = erroring;
 		untrack(() => {
-			if (now && !wasErroring && Date.now() - leftAt < EXIT_MS) run++;
+			if (now && !wasErroring && Date.now() - leftAt < EXIT_MS) {
+				// The button that was pressed goes with the old Skeleton: put focus on its replacement.
+				const pressed = Date.now() - pressedAt < EXIT_MS * 2;
+				run++;
+				if (pressed) tick().then(() => retryEl?.focus());
+			}
 			if (!now && wasErroring) leftAt = Date.now();
 			wasErroring = now;
 		});
@@ -127,7 +141,14 @@
 					<Alert.Title>{props.errorTitle ?? "Could not load"}</Alert.Title>
 					{#if message(error)}<Alert.Description>{message(error)}</Alert.Description>{/if}
 					{#if props.onRetry}
-						<Button type="button" size="sm" variant="outline" class="mt-2" onclick={props.onRetry}>
+						<Button
+							bind:ref={retryEl}
+							type="button"
+							size="sm"
+							variant="outline"
+							class="mt-2"
+							onclick={retry}
+						>
 							{props.retryLabel ?? "Try again"}
 						</Button>
 					{/if}

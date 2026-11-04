@@ -3,6 +3,7 @@
 	import { Button } from "$lib/registry/ui/button/index.js";
 	import { Loading } from "$lib/registry/ui/loading/index.js";
 	import { ThreadRow, type ThreadPerson } from "$lib/registry/ui/thread-row/index.js";
+	import { Toggle } from "$lib/registry/ui/toggle/index.js";
 
 	type Thread = {
 		id: string;
@@ -58,15 +59,13 @@
 				size="sm"
 				variant={mode === m ? "secondary" : "outline"}
 				aria-pressed={mode === m}
-				onclick={() => (mode = m)}>{m}</Button
+				onclick={() => {
+					clearTimeout(retryTimer);
+					mode = m;
+				}}>{m}</Button
 			>
 		{/each}
-		<Button
-			size="sm"
-			variant={failFast ? "secondary" : "outline"}
-			aria-pressed={failFast}
-			onclick={() => (failFast = !failFast)}>Server down</Button
-		>
+		<Toggle size="sm" variant="outline" bind:pressed={failFast}>Server down</Toggle>
 	</div>
 	<div class="overflow-hidden rounded-md border">
 		<Loading
