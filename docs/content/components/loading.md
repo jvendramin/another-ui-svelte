@@ -67,6 +67,7 @@ Copy and paste the following code into your project.
 ```svelte
 <script lang="ts">
   import { Loading } from "$lib/components/ui/loading/index.js";
+  import CompanyTable from "$lib/components/company-table.svelte"; // your own component
 
   let { data } = $props(); // SvelteKit load can return the promise unawaited
   const SAMPLE = Array.from({ length: 5 }, () => ({ name: "Company name", owner: "Owner Name" }));
@@ -79,13 +80,13 @@ Copy and paste the following code into your project.
 </Loading>
 ```
 
-`data` can be `null` or a promise. It loads until the promise settles, then shows the value, or the error state if it rejects. To drive it yourself, leave `data` out and pass `loading`.
+`data` can be `null` or a promise. It loads until the promise settles, then shows the value, or the error state if it rejects. A rejection stays with that promise, so `onRetry` has to hand in a new one (in SvelteKit, call `invalidate` or `invalidateAll`). To drive it yourself, leave `data` out and pass `loading`.
 
 ## Props
 
 | Prop                                | What it does                                                                                              |
 | ----------------------------------- | --------------------------------------------------------------------------------------------------------- |
-| `data`, `sample`                    | Loading while `data` is empty. The skeleton is traced from `children` rendered with `sample`.              |
+| `data`, `sample`                    | Loading while `data` is null, undefined or a pending promise. The skeleton is traced from `children` rendered with `sample`.              |
 | `loading`                           | Shows the skeleton even over data, such as while refetching. Leave `data` out to use only this.            |
 | `id`                                | Remembers the skeleton's shape across visits under this key.                                              |
 | `label`                             | Read to screen readers while loading. Default "Loading".                                                  |
@@ -95,4 +96,4 @@ Copy and paste the following code into your project.
 | `onreveal`                          | Called once content has come in over a skeleton.                                                          |
 | `class`                             | Passed to the wrapper.                                                                                    |
 
-Write the `sample` once next to the component, with plausible text lengths: bars follow the text you give them.
+Write the `sample` once next to the component, with plausible text lengths: bars follow the text you give them. A custom `skeleton` snippet replaces both the traced skeleton and its screen reader label, so add your own hidden text there.

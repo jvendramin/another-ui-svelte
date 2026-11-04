@@ -33,6 +33,7 @@
 		/** Replaces the default error state. Receives the error. */
 		errorMessage?: Snippet<[unknown]>;
 		class?: string;
+		style?: string;
 	};
 </script>
 
@@ -65,6 +66,7 @@
 	onreveal={props.onreveal}
 	skeleton={props.skeleton}
 	class={props.class}
+	style={props.style}
 >
 	{#snippet children(value: T)}
 		{@render props.children?.(value)}
