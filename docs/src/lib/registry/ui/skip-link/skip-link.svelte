@@ -23,7 +23,7 @@
 	function skip(e: MouseEvent & { currentTarget: EventTarget & HTMLAnchorElement }) {
 		onclick?.(e);
 		if (e.defaultPrevented) return;
-		const id = href.startsWith("#") ? href.slice(1) : "";
+		const id = href.startsWith("#") ? decodeURIComponent(href.slice(1)) : "";
 		const target = id ? document.getElementById(id) : null;
 		if (!target) return;
 		e.preventDefault();
