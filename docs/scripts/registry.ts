@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
+import { ledgerFillCss } from "./ledger-fill.js";
 import * as acorn from "acorn";
 import * as svelte from "svelte/compiler";
 import { tsPlugin } from "@sveltejs/acorn-typescript";
@@ -266,6 +267,7 @@ async function assembleLedgerTokens(registryRootPath: string): Promise<RegistryI
 			// table row or a divider) and the outline of a focused control to the browser default. shadcn's init adds this;
 			// shipping it here means an app that installs the tokens gets it too.
 			css: {
+				...ledgerFillCss(fs.readFileSync(path.resolve(registryRootPath, "styles", "ledger-overrides.css"), "utf8")),
 				"@layer base": {
 					"*": {
 						"@apply border-border outline-ring/50": {},
