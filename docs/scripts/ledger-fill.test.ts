@@ -15,6 +15,8 @@ test("registry ships all three dark fill rules without a docs class", () => {
 		assert.ok(fill[0].includes(`[data-slot="${slot}"]`));
 	}
 	assert.ok(!fill[0].includes('[class~="text-primary"]'));
+	const hover = Object.entries(css).find(([, props]) => props["--foreground"] === "#000")!;
+	assert.ok(hover[0].includes('[data-slot="button"][class~="bg-primary"]'));
 	assert.ok(!Object.values(css).some((props) => "--ring" in props));
 });
 test("a missing source rule fails the registry build", () => {

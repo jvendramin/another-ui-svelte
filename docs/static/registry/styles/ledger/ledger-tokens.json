@@ -13,7 +13,7 @@
 			"--primary": "var(--primary-fill, var(--ledger-primary-own))",
 			"--primary-foreground": "var(--primary-fill-foreground, var(--ledger-primary-foreground-own))"
 		},
-		".dark :is([data-slot=\"button\"], [class*=\"group/button\"])[data-variant=\"default\"]": {
+		".dark :is(\n  :is([data-slot=\"button\"], [class*=\"group/button\"])[data-variant=\"default\"],\n  [data-slot=\"button\"][class~=\"bg-primary\"],\n  [class~=\"group/button\"][class~=\"bg-primary\"]\n)": {
 			"--foreground": "#000"
 		},
 		"@layer base": {

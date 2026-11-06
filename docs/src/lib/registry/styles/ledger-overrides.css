@@ -512,7 +512,11 @@
 /* The filled Button's hover and open states in dark. The slot mixes 10% of --foreground into the fill (on hover and on aria-expanded), which in dark is light grey and lowers
    the white text to 4.1:1. Pointing --foreground at black on the Button itself makes the same mix darken the fill instead, as light mode does with its near-black
    --foreground: no background is overridden, so a Button that brings its own bg-* class keeps it, and every state the slot styles that way follows. */
-:is(.dark .style-ledger, .style-ledger.dark, .style-ledger .dark) :is([data-slot="button"], [class*="group/button"])[data-variant="default"] {
+:is(.dark .style-ledger, .style-ledger.dark, .style-ledger .dark) :is(
+  :is([data-slot="button"], [class*="group/button"])[data-variant="default"],
+  [data-slot="button"][class~="bg-primary"],
+  [class~="group/button"][class~="bg-primary"]
+) {
   --foreground: #000;
 }
 
