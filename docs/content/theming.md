@@ -34,6 +34,23 @@ The `background` color of the following component will be `var(--primary)` and t
 <div class="bg-primary text-primary-foreground">Hello</div>
 ```
 
+## Ledger filled controls
+
+Re-add `ledger-tokens` from the Ledger registry to update the tokens and dark-mode fill rules together. The rules work with `.dark` on the app root; the docs-only `.style-ledger` class is optional.
+
+In dark mode, filled controls use `--primary-fill` (#4966dc) with white `--primary-fill-foreground`. Links and focus rings retain the lighter blue. If you customize the dark palette, update both the text and fill tokens.
+
+```svelte
+<script lang="ts">
+  import { Button } from "$lib/components/ui/button/index.js";
+</script>
+
+<Button>Email me a code</Button>
+<Button variant="link">Back to sign in</Button>
+```
+
+The filled button stays white on blue at rest, hover and open; the link keeps its text color. This also applies to checked controls, progress, slider ranges and selected calendar days.
+
 ## List of variables
 
 Here's the list of variables available for customization:
