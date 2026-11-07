@@ -26,7 +26,7 @@
 	<Separator class="absolute inset-0 top-1/2" />
 	{#if children}
 		<span
-			class="cn-field-separator-content relative mx-auto block w-fit bg-background"
+			class="cn-field-separator-content relative mx-auto block w-fit bg-background in-data-[slot=card]:bg-card in-data-[slot=popover-content]:bg-popover"
 			data-slot="field-separator-content"
 		>
 			{@render children()}
