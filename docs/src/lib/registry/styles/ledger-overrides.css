@@ -458,9 +458,13 @@
     [class~="data-[state=active]:bg-primary"][data-state="active"],
     [class~="data-[active=true]:bg-primary"][data-active="true"],
     [class~="data-[selected=true]:bg-primary"][data-selected="true"],
+    [class~="data-[selected]:bg-primary"][data-selected],
     [class~="data-[selected-single=true]:bg-primary"][data-selected-single="true"],
     [class~="data-[range-start=true]:bg-primary"][data-range-start="true"],
     [class~="data-[range-end=true]:bg-primary"][data-range-end="true"],
+    [class~="data-[range-start]:bg-primary"][data-range-start],
+    [class~="data-[range-end]:bg-primary"][data-range-end],
+    [class~="data-[highlighted=true]:bg-primary"][data-highlighted="true"],
     [class~="data-[state=completed]:bg-primary"][data-state="completed"],
     [class~="data-[state=indeterminate]:bg-primary"][data-state="indeterminate"]
   ) {
@@ -499,9 +503,13 @@
     [class~="data-[state=active]:bg-primary"][data-state="active"],
     [class~="data-[active=true]:bg-primary"][data-active="true"],
     [class~="data-[selected=true]:bg-primary"][data-selected="true"],
+    [class~="data-[selected]:bg-primary"][data-selected],
     [class~="data-[selected-single=true]:bg-primary"][data-selected-single="true"],
     [class~="data-[range-start=true]:bg-primary"][data-range-start="true"],
     [class~="data-[range-end=true]:bg-primary"][data-range-end="true"],
+    [class~="data-[range-start]:bg-primary"][data-range-start],
+    [class~="data-[range-end]:bg-primary"][data-range-end],
+    [class~="data-[highlighted=true]:bg-primary"][data-highlighted="true"],
     [class~="data-[state=completed]:bg-primary"][data-state="completed"],
     [class~="data-[state=indeterminate]:bg-primary"][data-state="indeterminate"]
   ) {
