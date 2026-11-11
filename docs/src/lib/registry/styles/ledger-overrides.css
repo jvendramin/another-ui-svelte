@@ -462,6 +462,8 @@
     [class~="data-[selected-single=true]:bg-primary"][data-selected-single="true"],
     [class~="data-[range-start=true]:bg-primary"][data-range-start="true"],
     [class~="data-[range-end=true]:bg-primary"][data-range-end="true"],
+    [class~="data-[range-start]:bg-primary"][data-range-start],
+    [class~="data-[range-end]:bg-primary"][data-range-end],
     [class~="data-[state=completed]:bg-primary"][data-state="completed"],
     [class~="data-[state=indeterminate]:bg-primary"][data-state="indeterminate"]
   ) {
@@ -504,6 +506,8 @@
     [class~="data-[selected-single=true]:bg-primary"][data-selected-single="true"],
     [class~="data-[range-start=true]:bg-primary"][data-range-start="true"],
     [class~="data-[range-end=true]:bg-primary"][data-range-end="true"],
+    [class~="data-[range-start]:bg-primary"][data-range-start],
+    [class~="data-[range-end]:bg-primary"][data-range-end],
     [class~="data-[state=completed]:bg-primary"][data-state="completed"],
     [class~="data-[state=indeterminate]:bg-primary"][data-state="indeterminate"]
   ) {
